@@ -429,7 +429,6 @@ const CODE_KEY='minecraft_java_26_3_cloud_code_v2';
 let cloud={code:localStorage.getItem(CODE_KEY)||'',synced:false,collectionId:null,user:null},cloudDirty=false,cloudChannel=null;
 function jbStatus(cls,msg){const t=$('#jbTxt');t.className='out '+cls;t.textContent=msg}
 async function cloudUser(){if(!sb)return null;const {data}=await sb.auth.getUser();return data?.user||null}
-async function ensureProfile(u){if(!sb||!u)return;await sb.from('profiles').upsert({id:u.id,username:(u.email||'').split('@')[0]||'Jogador'},{onConflict:'id'})}
 async function findCollection(code){
  if(!sb||!cloud.user)return null;
  const {data,error}=await sb.from('collections').select('id,name,code,owner_id').eq('code',code).maybeSingle();
@@ -457,7 +456,6 @@ async function cloudPull(){
  try{
    cloud.user=await cloudUser();
    if(!cloud.user){jbStatus('','Faça login para usar a nuvem.');return}
-   await ensureProfile(cloud.user);
    const code=cloud.code||$('#jbCode').value.trim().toUpperCase();
    if(!code){jbStatus('','Crie uma coleção ou informe o código compartilhado.');return}
    const col=await findCollection(code);
@@ -852,10 +850,10 @@ else if(e.key==='Escape'&&!dlg.open&&!$('#cfm').open){
 // ───────── Inicialização ─────────
 recount();rebuildNames();buildCatPanel();persist();updateStats();applyFilters();initCloud();syncSearchUi();
 if(sb){
- $('#loginBtn').onclick=async()=>{try{const email=$('#authEmail').value.trim(),password=$('#authPassword').value;if(!email||!password)return jbStatus('err','Informe e-mail e senha.');const {error}=await sb.auth.signInWithPassword({email,password});if(error)throw error;cloud.user=await cloudUser();await ensureProfile(cloud.user);jbStatus('ok','✓ Login realizado.');if(cloud.code)await cloudPull()}catch(e){jbStatus('err','Erro ao entrar: '+(e.message||'erro'))}};
- $('#signupBtn').onclick=async()=>{try{const email=$('#authEmail').value.trim(),password=$('#authPassword').value;if(!email||password.length<6)return jbStatus('err','Informe e-mail e senha (mínimo 6 caracteres).');const {data,error}=await sb.auth.signUp({email,password});if(error)throw error;if(data.user){cloud.user=data.user;await ensureProfile(data.user)}jbStatus('ok','✓ Conta criada. Se pedir confirmação, confirme o e-mail e depois entre.')}catch(e){jbStatus('err','Erro ao criar conta: '+(e.message||'erro'))}};
+ $('#loginBtn').onclick=async()=>{try{const email=$('#authEmail').value.trim(),password=$('#authPassword').value;if(!email||!password)return jbStatus('err','Informe e-mail e senha.');const {error}=await sb.auth.signInWithPassword({email,password});if(error)throw error;cloud.user=await cloudUser();jbStatus('ok','✓ Login realizado.');if(cloud.code)await cloudPull()}catch(e){jbStatus('err','Erro ao entrar: '+(e.message||'erro'))}};
+ $('#signupBtn').onclick=async()=>{try{const email=$('#authEmail').value.trim(),password=$('#authPassword').value;if(!email||password.length<6)return jbStatus('err','Informe e-mail e senha (mínimo 6 caracteres).');const {data,error}=await sb.auth.signUp({email,password});if(error)throw error;if(data.user){cloud.user=data.user}jbStatus('ok','✓ Conta criada. Se pedir confirmação, confirme o e-mail e depois entre.')}catch(e){jbStatus('err','Erro ao criar conta: '+(e.message||'erro'))}};
  $('#newCollectionBtn').onclick=async()=>{try{if(!cloud.user)throw new Error('Entre na sua conta primeiro.');const name=prompt('Nome da nova coleção:');if(!name?.trim())return;await createCollection(name.trim())}catch(e){jbStatus('err',e.message||'Erro ao criar coleção')}};
- sb.auth.onAuthStateChange(async(_event,session)=>{cloud.user=session?.user||null;if(cloud.user){await ensureProfile(cloud.user);if(cloud.code)await cloudPull()}else{cloud.collectionId=null;cloud.synced=false}});
+ sb.auth.onAuthStateChange(async(_event,session)=>{cloud.user=session?.user||null;if(cloud.user){if(cloud.code)await cloudPull()}else{cloud.collectionId=null;cloud.synced=false}});
 }
 $('#foot').textContent=nf.format(SURVIVAL_ITEMS.length)+' itens obteníveis no Survival de '+nf.format(ALL_ITEMS.length)+' registros · '+nf.format(EXCLUDED.length)+' excluídos (Creative/comandos/técnicos)'+'. Dados e progresso ficam neste dispositivo.';
 })();
