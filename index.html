@@ -486,20 +486,44 @@ async function cloudPush(){
 const cloudFlush=debounce(cloudPush,900);
 function markCloudDirty(){if(sb&&cloud.collectionId)cloudDirty=true;cloudFlush()}
 async function createCollection(name){
- if(!sb||!cloud.user)return;
- const code=(crypto.randomUUID().replaceAll('-','').slice(0,8)).toUpperCase().replace(/(.{4})/,'$1-');
- const {data,error}=await sb.from('collections').insert({name,code,owner_id:cloud.user.id}).select('id,name,code').single();
+ if(!sb||!cloud.user)throw new Error('Entre na sua conta primeiro.');
+ const {data,error}=await sb.rpc('create_collection',{p_name:name.trim()});
  if(error)throw error;
- await sb.from('collection_members').insert({collection_id:data.id,user_id:cloud.user.id,role:'owner'});
- cloud.code=data.code;cloud.collectionId=data.id;localStorage.setItem(CODE_KEY,data.code);$('#jbCode').value=data.code;await subscribeCollection();jbStatus('ok','✓ '+data.name+' criada · código '+data.code);cloudDirty=true;cloudFlush();
+ const col=Array.isArray(data)?data[0]:data;
+ if(!col?.id||!col?.code)throw new Error('A coleção foi criada, mas o Supabase não retornou os dados da coleção.');
+ cloud.code=col.code;
+ cloud.collectionId=col.id;
+ localStorage.setItem(CODE_KEY,col.code);
+ $('#jbCode').value=col.code;
+ await loadCollectionProgress();
+ await subscribeCollection();
+ cloud.synced=true;
+ jbStatus('ok','✓ '+col.name+' criada · código '+col.code);
+}
+async function joinCollection(code){
+ if(!sb||!cloud.user)throw new Error('Entre na sua conta primeiro.');
+ const clean=code.trim().toUpperCase();
+ if(!clean)throw new Error('Digite o código da coleção.');
+ const {data,error}=await sb.rpc('join_collection',{p_code:clean});
+ if(error)throw error;
+ const col=Array.isArray(data)?data[0]:data;
+ if(!col?.id||!col?.code)throw new Error('O Supabase não retornou os dados da coleção.');
+ cloud.code=col.code;
+ cloud.collectionId=col.id;
+ localStorage.setItem(CODE_KEY,col.code);
+ $('#jbCode').value=col.code;
+ await loadCollectionProgress();
+ await subscribeCollection();
+ cloud.synced=true;
+ jbStatus('ok','✓ '+col.name+' · '+nf.format(checked.size)+' itens sincronizados');
 }
 async function initCloud(){
  const c=$('#jbCode');c.value=cloud.code;
  if(!sb){jbStatus('err','Supabase não carregou.');return}
  const u=await cloudUser();cloud.user=u;
  c.addEventListener('keydown',e=>e.key==='Enter'&&$('#jbBtn').click());
- $('#jbBtn').onclick=async()=>{const v=c.value.trim().toUpperCase();if(!v){jbStatus('err','Digite o código da coleção.');return}cloud.code=v;localStorage.setItem(CODE_KEY,v);await cloudPull()};
- if(u&&cloud.code)await cloudPull();else if(u)jbStatus('','Login ativo. Informe o código da coleção.');
+ $('#jbBtn').onclick=async()=>{try{await joinCollection(c.value)}catch(e){console.error(e);jbStatus('err',e.message||'Erro ao entrar na coleção')}};
+ if(u&&cloud.code)await cloudPull();else if(u)jbStatus('','Login ativo. Crie uma coleção ou informe um código compartilhado.');
 }
 // ───────── Estado ─────────
 const S={q:'',status:'all',cat:'all',sort:'def',lang:(l=>LANGS[l]?l:'pt')(localStorage.getItem(LANG_KEY)),list:[],cols:1,first:-1,hl:null};
