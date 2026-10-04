@@ -483,37 +483,63 @@ async function cloudPush(){
 }
 const cloudFlush=debounce(cloudPush,900);
 function markCloudDirty(){if(sb&&cloud.collectionId)cloudDirty=true;cloudFlush()}
-async function createCollection(name){
- if(!sb||!cloud.user)throw new Error('Entre na sua conta primeiro.');
- const {data,error}=await sb.rpc('create_collection',{p_name:name.trim()});
- if(error)throw error;
- const col=Array.isArray(data)?data[0]:data;
- if(!col?.id||!col?.code)throw new Error('A coleção foi criada, mas o Supabase não retornou os dados da coleção.');
- cloud.code=col.code;
- cloud.collectionId=col.id;
- localStorage.setItem(CODE_KEY,col.code);
- $('#jbCode').value=col.code;
- await loadCollectionProgress();
- await subscribeCollection();
- cloud.synced=true;
- jbStatus('ok','✓ '+col.name+' criada · código '+col.code);
+async function createCollection() {
+  const input = document.getElementById('collectionName') || document.querySelector('[name="collectionName"]');
+  const name = (input?.value || '').trim();
+  if (!name) return showToast?.('Digite um nome para a coleção.', 'error');
+
+  try {
+    const { data: sessionData } = await sb.auth.getSession();
+    if (!sessionData?.session?.user) throw new Error('Você precisa estar conectado.');
+
+    const { data, error } = await sb.rpc('create_collection', { p_name: name });
+    if (error) throw error;
+
+    const collection = Array.isArray(data) ? data[0] : data;
+    if (!collection?.id) throw new Error('A coleção não retornou dados válidos.');
+
+    currentCollection = collection;
+    localStorage.setItem('stackvault_collection_id', collection.id);
+    localStorage.setItem('stackvault_collection_code', collection.code);
+    localStorage.setItem('stackvault_collection_name', collection.name);
+
+    showToast?.(`Coleção criada! Código: ${collection.code}`, 'success');
+    closeModal?.();
+    if (typeof loadCollection === 'function') await loadCollection(collection.id);
+    if (typeof render === 'function') render();
+  } catch (err) {
+    console.error('[StackVault] create_collection:', err);
+    showToast?.(err?.message || 'Não foi possível criar a coleção.', 'error');
+  }
 }
-async function joinCollection(code){
- if(!sb||!cloud.user)throw new Error('Entre na sua conta primeiro.');
- const clean=code.trim().toUpperCase();
- if(!clean)throw new Error('Digite o código da coleção.');
- const {data,error}=await sb.rpc('join_collection',{p_code:clean});
- if(error)throw error;
- const col=Array.isArray(data)?data[0]:data;
- if(!col?.id||!col?.code)throw new Error('O Supabase não retornou os dados da coleção.');
- cloud.code=col.code;
- cloud.collectionId=col.id;
- localStorage.setItem(CODE_KEY,col.code);
- $('#jbCode').value=col.code;
- await loadCollectionProgress();
- await subscribeCollection();
- cloud.synced=true;
- jbStatus('ok','✓ '+col.name+' · '+nf.format(checked.size)+' itens sincronizados');
+async function joinCollection() {
+  const input = document.getElementById('joinCode') || document.querySelector('[name="joinCode"]');
+  const code = (input?.value || '').trim().toUpperCase();
+  if (!code) return showToast?.('Digite o código da coleção.', 'error');
+
+  try {
+    const { data: sessionData } = await sb.auth.getSession();
+    if (!sessionData?.session?.user) throw new Error('Você precisa estar conectado.');
+
+    const { data, error } = await sb.rpc('join_collection', { p_code: code });
+    if (error) throw error;
+
+    const collection = Array.isArray(data) ? data[0] : data;
+    if (!collection?.id) throw new Error('A coleção não retornou dados válidos.');
+
+    currentCollection = collection;
+    localStorage.setItem('stackvault_collection_id', collection.id);
+    localStorage.setItem('stackvault_collection_code', collection.code);
+    localStorage.setItem('stackvault_collection_name', collection.name);
+
+    showToast?.(`Conectado à coleção ${collection.name}!`, 'success');
+    closeModal?.();
+    if (typeof loadCollection === 'function') await loadCollection(collection.id);
+    if (typeof render === 'function') render();
+  } catch (err) {
+    console.error('[StackVault] join_collection:', err);
+    showToast?.(err?.message || 'Não foi possível entrar na coleção.', 'error');
+  }
 }
 async function initCloud(){
  const c=$('#jbCode');c.value=cloud.code;
@@ -857,5 +883,9 @@ if(sb){
 }
 $('#foot').textContent=nf.format(SURVIVAL_ITEMS.length)+' itens obteníveis no Survival de '+nf.format(ALL_ITEMS.length)+' registros · '+nf.format(EXCLUDED.length)+' excluídos (Creative/comandos/técnicos)'+'. Dados e progresso ficam neste dispositivo.';
 })();
+</script>
+<script>
+window.addEventListener('error', e => console.error('[StackVault]', e.error || e.message));
+window.addEventListener('unhandledrejection', e => console.error('[StackVault promise]', e.reason));
 </script>
 </body></html>
