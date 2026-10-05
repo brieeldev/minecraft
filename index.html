@@ -130,6 +130,7 @@ details.panel>summary::before{content:"▶ ";color:var(--gold)}details[open]>sum
 .cloud{display:grid;gap:8px;grid-template-columns:1fr auto}
 .out{min-height:40px;background:var(--lo);padding:9px 11px;overflow-wrap:anywhere;font-size:13px;color:var(--dia);box-shadow:inset 2px 2px 0 #000,inset -2px -2px 0 #3d4252}
 .out.ok{color:#9be58a}.out.err{color:#ff9d94}
+.out:empty{display:none}
 /* ===== Inventory grid & slots ===== */
 #grid{position:relative}#layer{position:absolute;left:0;right:0;top:0;display:grid;gap:8px;grid-auto-rows:var(--rh);will-change:transform}
 .item{contain:layout style;position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;height:var(--rh);padding:10px 5px 6px;text-align:center;cursor:pointer;user-select:none;background:#3a3e4b;box-shadow:inset 3px 3px 0 #1a1c23,inset -3px -3px 0 #646a7e;transition:transform .14s,scale .12s,background .15s,box-shadow .15s}
