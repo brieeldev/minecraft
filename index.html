@@ -128,7 +128,7 @@ details.panel>summary::before{content:"▶ ";color:var(--gold)}details[open]>sum
 .item.pulse{animation:pop .4s ease}@keyframes pop{40%{scale:1.1}}
 .ck{appearance:none;position:absolute;top:6px;left:6px;width:20px;height:20px;margin:0;background:var(--lo);box-shadow:inset 2px 2px 0 #000,inset -2px -2px 0 #5d6376;display:grid;place-content:center;cursor:pointer;z-index:2}
 .ck:checked{background:var(--grass)}.ck:checked::after{content:"✓";color:#10300c;font-weight:900;font-size:14px;line-height:1}
-.ico{position:relative;flex:none;background-repeat:no-repeat;display:grid;place-items:center;pointer-events:none}.ico img{grid-area:1/1;width:100%;height:100%;object-fit:contain;image-rendering:pixelated;pointer-events:none}
+.ico{position:relative;flex:none;background-repeat:no-repeat;display:grid;place-items:center;pointer-events:none}.ico img{grid-area:1/1;width:100%;height:100%;object-fit:contain;image-rendering:auto;pointer-events:none}
 .ico.fb{background-image:none;color:#fff;font-weight:800;overflow:hidden}
 /* carregando: respiração lenta e discreta (o pulso rápido de 1s parecia "clique automático") */
 .ico.ld{background:#ffffff0d;animation:icold 2.8s ease-in-out infinite alternate}@keyframes icold{to{background:#ffffff1a}}
@@ -437,7 +437,26 @@ const ACTIVE_COLLECTION_KEY='stackvault_active_collection_v1';
 const sb=window.supabase&&window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 let currentUser=null,currentCollection=null,realtimeChannel=null,syncTimer=null,collectionRows=[],collectionsSeq=0,pendingConfirm=null;
 function jbStatus(cls,msg){const t=$('#jbTxt');t.className='out '+cls;t.textContent=msg}
-function friendlyError(error){return error&&error.message?error.message:'Não foi possível concluir a operação.'}
+const ERR_MSG={
+ over_email_send_rate_limit:'Muitas tentativas seguidas. Aguarde um minuto e tente de novo.',
+ over_request_rate_limit:'Muitas tentativas seguidas. Aguarde um minuto e tente de novo.',
+ over_email_rate_limit:'Muitas tentativas seguidas. Aguarde um minuto e tente de novo.',
+ too_many_requests:'Muitas tentativas seguidas. Aguarde um minuto e tente de novo.',
+ user_already_exists:'Já existe uma conta com esse e-mail. Tente entrar.',
+ invalid_credentials:'E-mail ou senha incorretos.',
+ email_not_confirmed:'Confirme o e-mail no link que recebeu antes de entrar.',
+ user_not_found:'Não existe conta com esse e-mail.',
+ weak_password:'Senha muito fraca. Use pelo menos 6 caracteres.',
+ password_too_short:'A senha precisa ter pelo menos 6 caracteres.'
+};
+function friendlyError(error){if(!error)return 'Não foi possível concluir a operação.';
+ const code=error.error_code||error.code;
+ if(code&&ERR_MSG[code])return ERR_MSG[code];
+ const msg=error.message||'';
+ if(/already (been )?registered/i.test(msg))return ERR_MSG.user_already_exists;
+ if(/Invalid login credentials/i.test(msg))return ERR_MSG.invalid_credentials;
+ if(/Email not confirmed/i.test(msg))return ERR_MSG.email_not_confirmed;
+ return msg||'Não foi possível concluir a operação.'}
 function setSignedInUi(){const signed=!!currentUser;$('#authBox').hidden=signed;$('#collectionBox').hidden=!signed}
 function setBusy(button,busy,label){button.disabled=busy;if(label)button.textContent=busy?'Aguarde…':label}
 function updateCollectionSelect(rows){collectionRows=rows;const select=$('#collectionSelect'),wanted=localStorage.getItem(ACTIVE_COLLECTION_KEY);select.replaceChildren();for(const c of rows){const o=new Option(c.name+' · '+c.code,c.id);o.dataset.code=c.code;select.add(o)}if(currentCollection)select.value=currentCollection.id;else if(wanted)select.value=wanted}
@@ -457,7 +476,20 @@ function openRename(){if(!currentCollection)return;const input=$('#renName');inp
 async function renameCollection(){const c=currentCollection;if(!c||!currentUser||c.owner_id!==currentUser.id)return;const input=$('#renName'),name=input.value.trim();if(!name){jbStatus('err','Digite um nome para a coleção.');input.focus();return}if(name.length>80){jbStatus('err','O nome pode ter no máximo 80 caracteres.');input.focus();return}const button=$('#renSave');setBusy(button,true,'Aguarde…');try{const {error}=await sb.from('collections').update({name}).eq('id',c.id);if(error)throw error;currentCollection=Object.assign({},c,{name});collectionRows=collectionRows.some(x=>x.id===c.id)?collectionRows.map(x=>x.id===c.id?currentCollection:x):[currentCollection].concat(collectionRows);updateCollectionSelect(collectionRows);updateCollectionActions();$('#renDlg').close();toast('✏️ Coleção renomeada para "'+name+'"');}catch(e){jbStatus('err','Não foi possível renomear: '+friendlyError(e));}finally{setBusy(button,false,'Salvar')}}
 function askConfirm(title,text,label,fn){$('#delTitle').textContent=title;$('#delCfmTxt').textContent=text;$('#delYes').textContent=label;pendingConfirm=fn;$('#delCfm').showModal()}
 async function signIn(){const email=$('#authEmail').value.trim(),password=$('#authPassword').value,button=$('#signInBtn');if(!email||!password){jbStatus('err','Informe e-mail e senha.');return}setBusy(button,true,'Entrar');try{const {error}=await sb.auth.signInWithPassword({email,password});if(error)throw error;}catch(e){jbStatus('err','Não foi possível entrar: '+friendlyError(e));}finally{setBusy(button,false,'Entrar')}}
-async function signUp(){const email=$('#authEmail').value.trim(),password=$('#authPassword').value,button=$('#signUpBtn');if(!email||password.length<6){jbStatus('err','Informe e-mail e uma senha com pelo menos 6 caracteres.');return}setBusy(button,true,'Criar conta');try{const {data,error}=await sb.auth.signUp({email,password});if(error)throw error;if(data.session)jbStatus('ok','✓ Conta criada e conectada.');else jbStatus('ok','✓ Conta criada. Confirme o e-mail e depois entre.');}catch(e){jbStatus('err','Não foi possível criar a conta: '+friendlyError(e));}finally{setBusy(button,false,'Criar conta')}}
+const SIGNUP_WAIT_KEY='mc_signup_wait',SIGNUP_WAIT_MS=10*60*1000;
+function signupWaitLeft(){const until=+(localStorage.getItem(SIGNUP_WAIT_KEY)||0);return until>Date.now()?until-Date.now():0}
+async function signUp(){const email=$('#authEmail').value.trim(),password=$('#authPassword').value,button=$('#signUpBtn');
+ if(!email||password.length<6){jbStatus('err','Informe e-mail e uma senha com pelo menos 6 caracteres.');return}
+ const wait=signupWaitLeft();
+ if(wait){jbStatus('err','Você já tentou criar conta há pouco. Aguarde '+Math.ceil(wait/60000)+' min antes de tentar de novo.');return}
+ setBusy(button,true,'Criar conta');
+ try{const {data,error}=await sb.auth.signUp({email,password});if(error)throw error;
+  localStorage.removeItem(SIGNUP_WAIT_KEY);
+if(data.session)jbStatus('ok','✓ Conta criada e conectada. Use o mesmo e-mail e senha para entrar em outros aparelhos.');
+   else jbStatus('ok','✓ Conta criada. Entre com esse e-mail e a senha que você escolheu.');}
+ catch(e){if(e&&(e.error_code||e.code)==='over_email_send_rate_limit')localStorage.setItem(SIGNUP_WAIT_KEY,String(Date.now()+SIGNUP_WAIT_MS));
+  jbStatus('err','Não foi possível criar a conta: '+friendlyError(e));}
+ finally{setBusy(button,false,'Criar conta')}}
 async function initCloud(){if(!sb){jbStatus('err','Não foi possível carregar o Supabase. Recarregue a página.');return}$('#signInBtn').onclick=signIn;$('#signUpBtn').onclick=signUp;$('#createCollectionBtn').onclick=createCollection;$('#joinCollectionBtn').onclick=joinCollection;$('#signOutBtn').onclick=()=>sb.auth.signOut();$('#renameCollectionBtn').onclick=openRename;$('#renCancel').onclick=()=>$('#renDlg').close();$('#renSave').onclick=renameCollection;$('#renName').addEventListener('keydown',e=>{if(e.key==='Enter')renameCollection()});$('#deleteCollectionBtn').onclick=()=>askConfirm('Excluir coleção?','A coleção "'+currentCollection.name+'" (código '+currentCollection.code+') será apagada para todos os membros, junto com todo o progresso marcado. Não é possível desfazer.','Excluir',deleteCollection);$('#leaveCollectionBtn').onclick=()=>askConfirm('Sair da coleção?','Você vai deixar de ver o progresso compartilhado de "'+currentCollection.name+'". O dono e os outros membros continuam com tudo, e você pode entrar de novo usando o código '+currentCollection.code+'.','Sair',leaveCollection);$('#delNo').onclick=()=>{pendingConfirm=null;$('#delCfm').close()};$('#delYes').onclick=()=>{const fn=pendingConfirm;pendingConfirm=null;if(fn)fn()};$('#collectionSelect').onchange=e=>selectCollection(e.target.value).catch(err=>jbStatus('err',friendlyError(err)));for(const el of [$('#authEmail'),$('#authPassword')])el.addEventListener('keydown',e=>{if(e.key==='Enter')signIn()});for(const el of [$('#collectionName'),$('#collectionCode')])el.addEventListener('keydown',e=>{if(e.key==='Enter')e.target===$('#collectionName')?createCollection():joinCollection()});const {data:{session}}=await sb.auth.getSession();currentUser=session&&session.user||null;setSignedInUi();if(currentUser)try{await loadCollections()}catch(e){jbStatus('err','Não foi possível carregar suas coleções: '+friendlyError(e));}sb.auth.onAuthStateChange((event,session)=>{currentUser=session&&session.user||null;setSignedInUi();updateCollectionActions();if(!currentUser){currentCollection=null;collectionRows=[];collectionsSeq++;$('#collectionSelect').replaceChildren();if(realtimeChannel)sb.removeChannel(realtimeChannel);realtimeChannel=null;jbStatus('','Entre para criar ou compartilhar uma coleção.');return}loadCollections().catch(e=>jbStatus('err','Não foi possível carregar suas coleções: '+friendlyError(e)));});}
 
 // ───────── Estado ─────────
@@ -506,7 +538,7 @@ function layout(){
 }
 const SPR=48,MC_API='https://mc-api.bisai.dev/v1/assets/items/';
 const ICON_BAD=new Set(),ICON_OK=new Map(),ICON_WAIT=new Map(),iconQueue=[];let iconActive=0,pumpQ=false;const ICON_PAR=24;
-function mcUrl(id,S){return MC_API+encodeURIComponent(id)+'/texture.png?size='+(S*2)}
+function mcUrl(id,S){return MC_API+encodeURIComponent(id)+'/texture.png?size='+(S*4)}
 function iconFallback(d,x,S){
  const [a,b]=colorForCategory(x.cat);d.classList.remove('ld');d.classList.add('fb');
  d.style.background='linear-gradient('+a+','+b+')';d.style.fontSize=S/3+'px';
