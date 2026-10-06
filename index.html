@@ -450,7 +450,7 @@ const SUPABASE_PUBLISHABLE_KEY='sb_publishable_zRhU2d65Ld2dWFewhx3mRg_g66eIe5d';
 const ACTIVE_COLLECTION_KEY='stackvault_active_collection_v1';
 const sb=window.supabase&&window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 let currentUser=null,currentCollection=null,realtimeChannel=null,syncTimer=null,collectionRows=[],collectionsSeq=0,pendingConfirm=null;
-function jbStatus(cls,msg){const t=$('#jbTxt');t.className='out '+cls;t.textContent=msg}
+function jbStatus(cls,msg){const t=$('#jbTxt');t.className='out '+cls;t.textContent=msg||'';t.hidden=!msg}
 const ERR_MSG={
  over_email_send_rate_limit:'Muitas tentativas seguidas. Aguarde um minuto e tente de novo.',
  over_request_rate_limit:'Muitas tentativas seguidas. Aguarde um minuto e tente de novo.',
@@ -574,7 +574,7 @@ async function measure(blob){
  const px=g.getImageData(0,0,32,32).data;
  let x0=32,y0=32,x1=-1,y1=-1;
  for(let y=0;y<32;y++){const r=y*128+3;
-  for(let x=0;x<32;x++){if(px[r+x*4]>24){if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y}}}
+  for(let x=0;x<32;x++){if(px[r+x*4+3]>24){if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y}}}
  if(x1<0)return null;
  const bw=x1-x0+1,bh=y1-y0+1;
  return {k:Math.min(32/bw,32/bh,2),ox:(x0+bw/2)/32,oy:(y0+bh/2)/32}
