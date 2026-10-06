@@ -164,6 +164,19 @@ dialog::backdrop{background:#05060acc;backdrop-filter:blur(2px)}dialog[open]{ani
 .x{margin-left:auto;border:0;background:var(--stone2);width:34px;height:34px;color:#fff;font-size:20px;line-height:1;box-shadow:inset 2px 2px 0 var(--hi),inset -2px -2px 0 var(--lo);flex:none}.x:hover{background:var(--red)}
 .kv{display:grid;grid-template-columns:96px 1fr;gap:8px 10px;font-size:11px;margin:0;background:var(--deep);padding:12px;box-shadow:inset 2px 2px 0 #12141a,inset -2px -2px 0 #4a4f60}.kv dt{color:var(--mut)}.kv dd{margin:0;overflow-wrap:anywhere}
 .macts{display:flex;gap:10px;flex-wrap:wrap}.macts .mbtn{flex:1}
+.mlist{display:grid;gap:6px;max-height:52vh;overflow:auto;padding-right:2px}
+.msec{font:400 10px var(--px);color:var(--mut);margin:6px 0 2px;text-transform:uppercase}
+.msec:first-child{margin-top:0}
+.mrow{display:grid;gap:4px;background:var(--deep);padding:10px 11px;box-shadow:inset 2px 2px 0 #12141a,inset -2px -2px 0 #4a4f60}
+.mrow .who{display:flex;gap:8px;align-items:center;min-width:0}
+.mrow .em{font-weight:700;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.mrow .tag{flex:none;font-size:9px;font-weight:700;padding:3px 6px;background:var(--stone2);color:var(--mut);box-shadow:inset 1px 1px 0 var(--hi),inset -1px -1px 0 var(--lo)}
+.mrow .tag.own{background:var(--gold2);color:#3a2b00}
+.mrow .tag.out{background:#4a2a2a;color:#e6a8a2}
+.mrow .when{font-size:11px;color:var(--mut);font-variant-numeric:tabular-nums}
+.mrow .when b{color:#fff;font-weight:600}
+.msub{color:var(--mut);font-size:12px;padding:6px 2px}
+.msub.err{color:#e6a8a2}
 .menu{position:relative}.menu>summary{list-style:none}.menu .pop{position:absolute;right:0;top:calc(100% + 8px);background:var(--stone);padding:6px;display:grid;gap:2px;min-width:200px;z-index:50;box-shadow:var(--bev),0 0 0 2px var(--lo),0 14px 30px #000a}
 .pop button{border:0;background:none;text-align:left;padding:11px 12px;color:#fff}.pop button:hover{background:var(--stone2)}.pop .dg{color:#ff9d94}
 .mtoast{position:fixed;right:16px;top:16px;z-index:300;display:flex;gap:10px;align-items:center;background:#1b1530f2;color:#fff;padding:12px 16px;box-shadow:inset 0 0 0 2px var(--gold),0 0 0 2px #0a0510,0 10px 24px #000a;opacity:0;transform:translateX(30px);pointer-events:none;transition:.25s;max-width:min(92vw,360px);font-weight:600}
@@ -257,7 +270,7 @@ dialog::backdrop{background:#05060acc;backdrop-filter:blur(2px)}dialog[open]{ani
  <details class="panel"><summary>PROGRESSO POR CATEGORIA</summary><div class="pbody"><div class="cats" id="cats"></div></div></details>
  <details class="panel"><summary>☁ COLEÇÃO COMPARTILHADA</summary><div class="pbody">
   <div id="authBox" class="cloud"><input id="authEmail" class="field" type="email" placeholder="Seu e-mail" autocomplete="email"><input id="authPassword" class="field" type="password" placeholder="Senha (mínimo 6 caracteres)" autocomplete="current-password"><button class="mbtn pri" id="signInBtn" type="button">Entrar</button><button class="mbtn" id="signUpBtn" type="button">Criar conta</button></div>
-  <div id="collectionBox" hidden><div class="cloud"><input id="collectionName" class="field" maxlength="80" placeholder="Nome da nova coleção"><button class="mbtn pri" id="createCollectionBtn" type="button">+ Nova coleção</button></div><div class="cloud" style="margin-top:8px"><input id="collectionCode" class="field" maxlength="17" placeholder="Código recebido (ex.: A1B2-C3D4)" autocomplete="off"><button class="mbtn pri" id="joinCollectionBtn" type="button">Entrar na coleção</button></div><div class="cloud" style="margin-top:8px"><select id="collectionSelect" class="field" aria-label="Coleção ativa"></select><button class="mbtn" id="signOutBtn" type="button">Sair</button></div><div style="margin-top:8px;display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap"><button class="mbtn" id="renameCollectionBtn" type="button" hidden>✏️ Renomear</button><button class="mbtn dng" id="deleteCollectionBtn" type="button" hidden>🗑 Excluir coleção</button><button class="mbtn" id="leaveCollectionBtn" type="button" hidden>🚪 Sair da coleção</button></div></div>
+  <div id="collectionBox" hidden><div class="cloud"><input id="collectionName" class="field" maxlength="80" placeholder="Nome da nova coleção"><button class="mbtn pri" id="createCollectionBtn" type="button">+ Nova coleção</button></div><div class="cloud" style="margin-top:8px"><input id="collectionCode" class="field" maxlength="17" placeholder="Código recebido (ex.: A1B2-C3D4)" autocomplete="off"><button class="mbtn pri" id="joinCollectionBtn" type="button">Entrar na coleção</button></div><div class="cloud" style="margin-top:8px"><select id="collectionSelect" class="field" aria-label="Coleção ativa"></select><button class="mbtn" id="signOutBtn" type="button">Sair</button></div><div style="margin-top:8px;display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap"><button class="mbtn" id="detailsBtn" type="button" hidden>👥 Detalhes</button><button class="mbtn" id="renameCollectionBtn" type="button" hidden>✏️ Renomear</button><button class="mbtn dng" id="deleteCollectionBtn" type="button" hidden>🗑 Excluir coleção</button><button class="mbtn" id="leaveCollectionBtn" type="button" hidden>🚪 Sair da coleção</button></div></div>
   <div class="out" id="jbTxt" aria-live="polite" style="margin-top:8px">Entre para criar ou compartilhar uma coleção.</div>
  </div></details>
 
@@ -285,6 +298,12 @@ dialog::backdrop{background:#05060acc;backdrop-filter:blur(2px)}dialog[open]{ani
   <p class="sub" style="font-size:13px;margin:6px 0 0">O código de compartilhamento continua o mesmo.</p>
   <input id="renName" class="field" maxlength="80" placeholder="Novo nome" autocomplete="off" style="margin-top:12px">
   <div class="macts" style="margin-top:12px"><button class="mbtn" id="renCancel">Cancelar</button><button class="mbtn pri" id="renSave">Salvar</button></div></div></dialog>
+<dialog id="detDlg" aria-labelledby="detTitle"><div class="mb">
+ <div class="mhead"><div><h2 id="detTitle" style="margin:0;font:400 14px/1.4 var(--px)">Detalhes da coleção</h2><div class="sub" id="detSub"></div></div><button class="x" id="detClose" aria-label="Fechar">×</button></div>
+ <dl class="kv"><dt>Coleção</dt><dd id="detName"></dd><dt>Código</dt><dd id="detCode"></dd><dt>Criada em</dt><dd id="detCreated"></dd></dl>
+ <div id="detList" class="mlist" aria-live="polite"></div>
+ <div class="macts"><button class="mbtn" id="detCloseBtn">Fechar</button></div>
+</div></dialog>
 <div class="mtoast" id="toast" role="status"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -474,7 +493,7 @@ function friendlyError(error){if(!error)return 'Não foi possível concluir a op
 function setSignedInUi(){const signed=!!currentUser;$('#authBox').hidden=signed;$('#collectionBox').hidden=!signed}
 function setBusy(button,busy,label){button.disabled=busy;if(label)button.textContent=busy?'Aguarde…':label}
 function updateCollectionSelect(rows){collectionRows=rows;const select=$('#collectionSelect'),wanted=localStorage.getItem(ACTIVE_COLLECTION_KEY);select.replaceChildren();for(const c of rows){const o=new Option(c.name+' · '+c.code,c.id);o.dataset.code=c.code;select.add(o)}if(currentCollection)select.value=currentCollection.id;else if(wanted)select.value=wanted}
-function updateCollectionActions(){const on=!!(currentUser&&currentCollection),owner=!!(on&&currentCollection.owner_id===currentUser.id),r=$('#renameCollectionBtn'),d=$('#deleteCollectionBtn'),l=$('#leaveCollectionBtn');if(r)r.hidden=!owner;if(d)d.hidden=!owner;if(l)l.hidden=owner||!on}
+function updateCollectionActions(){const on=!!(currentUser&&currentCollection),owner=!!(on&&currentCollection.owner_id===currentUser.id),r=$('#renameCollectionBtn'),d=$('#deleteCollectionBtn'),l=$('#leaveCollectionBtn'),v=$('#detailsBtn');if(r)r.hidden=!owner;if(d)d.hidden=!owner;if(v)v.hidden=!owner;if(l)l.hidden=owner||!on}
 async function loadCollections(preferredId){if(!currentUser)return;const seq=++collectionsSeq,{data,error}=await sb.from('collection_members').select('collections!inner(id,name,code,owner_id,created_at)').eq('user_id',currentUser.id).order('joined_at',{ascending:false});if(error)throw error;if(seq!==collectionsSeq)return;const rows=(data||[]).map(r=>r.collections).filter(Boolean);updateCollectionSelect(rows);const id=preferredId||localStorage.getItem(ACTIVE_COLLECTION_KEY)||$('#collectionSelect').value;const found=rows.find(c=>c.id===id);if(!found){currentCollection=null;updateCollectionActions();jbStatus('','Crie uma coleção ou entre usando um código.');return}if(currentCollection&&currentCollection.id===found.id)return;await activateCollection(found)}
 async function activateCollection(c){currentCollection=c;localStorage.setItem(ACTIVE_COLLECTION_KEY,c.id);const select=$('#collectionSelect');if(![...select.options].some(o=>o.value===c.id))select.add(new Option(c.name+' · '+c.code,c.id));select.value=c.id;$('#collectionCode').value=c.code;updateCollectionActions();jbStatus('','');subscribeRealtime();await loadProgress()}
 async function selectCollection(id){if(!id)return;let c=collectionRows.find(x=>x.id===id);if(!c){const{data,error}=await sb.from('collections').select('id,name,code,owner_id,created_at').eq('id',id).single();if(error)throw error;c=data}await activateCollection(c)}
@@ -489,6 +508,58 @@ async function leaveCollection(){const c=currentCollection;if(!c||!currentUser||
 function openRename(){if(!currentCollection)return;const input=$('#renName');input.value=currentCollection.name;$('#renDlg').showModal();input.focus();input.select()}
 async function renameCollection(){const c=currentCollection;if(!c||!currentUser||c.owner_id!==currentUser.id)return;const input=$('#renName'),name=input.value.trim();if(!name){jbStatus('err','Digite um nome para a coleção.');input.focus();return}if(name.length>80){jbStatus('err','O nome pode ter no máximo 80 caracteres.');input.focus();return}const button=$('#renSave');setBusy(button,true,'Aguarde…');try{const {error}=await sb.from('collections').update({name}).eq('id',c.id);if(error)throw error;currentCollection=Object.assign({},c,{name});collectionRows=collectionRows.some(x=>x.id===c.id)?collectionRows.map(x=>x.id===c.id?currentCollection:x):[currentCollection].concat(collectionRows);updateCollectionSelect(collectionRows);updateCollectionActions();$('#renDlg').close();toast('✏️ Coleção renomeada para "'+name+'"');}catch(e){jbStatus('err','Não foi possível renomear: '+friendlyError(e));}finally{setBusy(button,false,'Salvar')}}
 function askConfirm(title,text,label,fn){$('#delTitle').textContent=title;$('#delCfmTxt').textContent=text;$('#delYes').textContent=label;pendingConfirm=fn;$('#delCfm').showModal()}
+function fmtWhen(iso){if(!iso)return '—';const d=new Date(iso);if(isNaN(d))return '—';const p=n=>String(n).padStart(2,'0');return p(d.getDate())+'/'+p(d.getMonth()+1)+'/'+d.getFullYear()+' às '+p(d.getHours())+':'+p(d.getMinutes())}
+function detEmail(uid){for(const e of detEvents)if(e.user_id===uid&&e.email)return e.email;if(currentUser&&uid===currentUser.id&&currentUser.email)return currentUser.email;return 'ID '+String(uid).slice(0,8)}
+function detSec(list,text){const h=document.createElement('div');h.className='msec';h.textContent=text;list.appendChild(h)}
+function detMsg(list,text,err){const d=document.createElement('div');d.className='msub'+(err?' err':'');d.textContent=text;list.appendChild(d)}
+function detRow(list,email,tag,tagCls,lines){
+ const r=document.createElement('div');r.className='mrow';
+ const who=document.createElement('div');who.className='who';
+ const em=document.createElement('span');em.className='em';em.textContent=email;em.title=email;
+ const tg=document.createElement('span');tg.className='tag'+(tagCls?' '+tagCls:'');tg.textContent=tag;
+ who.append(em,tg);r.appendChild(who);
+ for(const [label,iso] of lines){const w=document.createElement('div');w.className='when';const b=document.createElement('b');b.textContent=fmtWhen(iso);w.append(label,b);r.appendChild(w)}
+ list.appendChild(r)
+}
+function renderDetails(members,events){
+ const list=$('#detList');list.replaceChildren();
+ const firstJoin=new Map(),lastLeave=new Map();
+ for(const e of events){if(e.event==='join'&&!firstJoin.has(e.user_id))firstJoin.set(e.user_id,e.at);if(e.event==='leave')lastLeave.set(e.user_id,e.at)}
+ const active=members.slice().sort((a,b)=>String(a.joined_at).localeCompare(String(b.joined_at)));
+ const activeIds=new Set(active.map(m=>m.user_id));
+ const gone=[...lastLeave.keys()].filter(uid=>!activeIds.has(uid)).sort((a,b)=>String(lastLeave.get(b)).localeCompare(String(lastLeave.get(a))));
+ detSec(list,'Na coleção ('+active.length+')');
+ if(!active.length)detMsg(list,'Ninguém por aqui.');
+ for(const m of active)detRow(list,detEmail(m.user_id),m.role==='owner'?'👑 Dono':'Membro',m.role==='owner'?'own':'',[['Entrou em ',m.joined_at]]);
+ detSec(list,'Saíram ('+gone.length+')');
+ if(!gone.length)detMsg(list,'Ninguém saiu até agora.');
+ for(const uid of gone){
+  const lines=[];
+  if(firstJoin.has(uid))lines.push(['Entrou em ',firstJoin.get(uid)]);
+  lines.push(['Saiu em ',lastLeave.get(uid)]);
+  detRow(list,detEmail(uid),'Saiu','out',lines)
+ }
+}
+let detEvents=[];
+async function openDetails(){
+ const c=currentCollection;
+ if(!c||!currentUser||c.owner_id!==currentUser.id)return;
+ $('#detName').textContent=c.name;$('#detCode').textContent=c.code;$('#detCreated').textContent=fmtWhen(c.created_at);
+ $('#detSub').textContent='Quem entrou, quem saiu, data e hora.';
+ const list=$('#detList');list.replaceChildren();detMsg(list,'Carregando…');
+ $('#detDlg').showModal();
+ try{
+  const [m,e]=await Promise.all([
+   sb.from('collection_members').select('user_id,role,joined_at').eq('collection_id',c.id),
+   sb.from('collection_member_events').select('user_id,email,event,at').eq('collection_id',c.id).order('at')
+  ]);
+  if(m.error)throw m.error;if(e.error)throw e.error;
+  detEvents=e.data||[];renderDetails(m.data||[],detEvents);
+ }catch(err){const msg=friendlyError(err);list.replaceChildren();
+  if(/collection_member_events|PGRST205|42P01|does not exist/i.test(String(err.message||'')))
+   detMsg(list,'O histórico ainda não existe no banco. Rode o arquivo supabase_migration_member_events.sql no SQL Editor do Supabase.',true);
+  else detMsg(list,'Não foi possível carregar: '+msg,true)}
+}
 async function signIn(){const email=$('#authEmail').value.trim(),password=$('#authPassword').value,button=$('#signInBtn');if(!email||!password){jbStatus('err','Informe e-mail e senha.');return}setBusy(button,true,'Entrar');try{const {error}=await sb.auth.signInWithPassword({email,password});if(error)throw error;}catch(e){jbStatus('err','Não foi possível entrar: '+friendlyError(e));}finally{setBusy(button,false,'Entrar')}}
 const SIGNUP_WAIT_KEY='mc_signup_wait',SIGNUP_WAIT_MS=10*60*1000;
 function signupWaitLeft(){const until=+(localStorage.getItem(SIGNUP_WAIT_KEY)||0);return until>Date.now()?until-Date.now():0}
@@ -504,7 +575,7 @@ if(data.session)jbStatus('ok','✓ Conta criada e conectada. Use o mesmo e-mail 
  catch(e){if(e&&(e.error_code||e.code)==='over_email_send_rate_limit')localStorage.setItem(SIGNUP_WAIT_KEY,String(Date.now()+SIGNUP_WAIT_MS));
   jbStatus('err','Não foi possível criar a conta: '+friendlyError(e));}
  finally{setBusy(button,false,'Criar conta')}}
-async function initCloud(){if(!sb){jbStatus('err','Não foi possível carregar o Supabase. Recarregue a página.');return}$('#signInBtn').onclick=signIn;$('#signUpBtn').onclick=signUp;$('#createCollectionBtn').onclick=createCollection;$('#joinCollectionBtn').onclick=joinCollection;$('#signOutBtn').onclick=()=>sb.auth.signOut();$('#renameCollectionBtn').onclick=openRename;$('#renCancel').onclick=()=>$('#renDlg').close();$('#renSave').onclick=renameCollection;$('#renName').addEventListener('keydown',e=>{if(e.key==='Enter')renameCollection()});$('#deleteCollectionBtn').onclick=()=>askConfirm('Excluir coleção?','A coleção "'+currentCollection.name+'" (código '+currentCollection.code+') será apagada para todos os membros, junto com todo o progresso marcado. Não é possível desfazer.','Excluir',deleteCollection);$('#leaveCollectionBtn').onclick=()=>askConfirm('Sair da coleção?','Você vai deixar de ver o progresso compartilhado de "'+currentCollection.name+'". O dono e os outros membros continuam com tudo, e você pode entrar de novo usando o código '+currentCollection.code+'.','Sair',leaveCollection);$('#delNo').onclick=()=>{pendingConfirm=null;$('#delCfm').close()};$('#delYes').onclick=()=>{const fn=pendingConfirm;pendingConfirm=null;if(fn)fn()};$('#collectionSelect').onchange=e=>selectCollection(e.target.value).catch(err=>jbStatus('err',friendlyError(err)));for(const el of [$('#authEmail'),$('#authPassword')])el.addEventListener('keydown',e=>{if(e.key==='Enter')signIn()});for(const el of [$('#collectionName'),$('#collectionCode')])el.addEventListener('keydown',e=>{if(e.key==='Enter')e.target===$('#collectionName')?createCollection():joinCollection()});const {data:{session}}=await sb.auth.getSession();currentUser=session&&session.user||null;setSignedInUi();if(currentUser)try{await loadCollections()}catch(e){jbStatus('err','Não foi possível carregar suas coleções: '+friendlyError(e));}sb.auth.onAuthStateChange((event,session)=>{currentUser=session&&session.user||null;setSignedInUi();updateCollectionActions();if(!currentUser){currentCollection=null;collectionRows=[];collectionsSeq++;$('#collectionSelect').replaceChildren();if(realtimeChannel)sb.removeChannel(realtimeChannel);realtimeChannel=null;jbStatus('','Entre para criar ou compartilhar uma coleção.');return}loadCollections().catch(e=>jbStatus('err','Não foi possível carregar suas coleções: '+friendlyError(e)));});}
+async function initCloud(){if(!sb){jbStatus('err','Não foi possível carregar o Supabase. Recarregue a página.');return}$('#signInBtn').onclick=signIn;$('#signUpBtn').onclick=signUp;$('#createCollectionBtn').onclick=createCollection;$('#joinCollectionBtn').onclick=joinCollection;$('#signOutBtn').onclick=()=>sb.auth.signOut();$('#renameCollectionBtn').onclick=openRename;$('#detailsBtn').onclick=openDetails;$('#detClose').onclick=()=>$('#detDlg').close();$('#detCloseBtn').onclick=()=>$('#detDlg').close();$('#detDlg').addEventListener('click',e=>{if(e.target===$('#detDlg'))$('#detDlg').close()});$('#renCancel').onclick=()=>$('#renDlg').close();$('#renSave').onclick=renameCollection;$('#renName').addEventListener('keydown',e=>{if(e.key==='Enter')renameCollection()});$('#deleteCollectionBtn').onclick=()=>askConfirm('Excluir coleção?','A coleção "'+currentCollection.name+'" (código '+currentCollection.code+') será apagada para todos os membros, junto com todo o progresso marcado. Não é possível desfazer.','Excluir',deleteCollection);$('#leaveCollectionBtn').onclick=()=>askConfirm('Sair da coleção?','Você vai deixar de ver o progresso compartilhado de "'+currentCollection.name+'". O dono e os outros membros continuam com tudo, e você pode entrar de novo usando o código '+currentCollection.code+'.','Sair',leaveCollection);$('#delNo').onclick=()=>{pendingConfirm=null;$('#delCfm').close()};$('#delYes').onclick=()=>{const fn=pendingConfirm;pendingConfirm=null;if(fn)fn()};$('#collectionSelect').onchange=e=>selectCollection(e.target.value).catch(err=>jbStatus('err',friendlyError(err)));for(const el of [$('#authEmail'),$('#authPassword')])el.addEventListener('keydown',e=>{if(e.key==='Enter')signIn()});for(const el of [$('#collectionName'),$('#collectionCode')])el.addEventListener('keydown',e=>{if(e.key==='Enter')e.target===$('#collectionName')?createCollection():joinCollection()});const {data:{session}}=await sb.auth.getSession();currentUser=session&&session.user||null;setSignedInUi();if(currentUser)try{await loadCollections()}catch(e){jbStatus('err','Não foi possível carregar suas coleções: '+friendlyError(e));}sb.auth.onAuthStateChange((event,session)=>{currentUser=session&&session.user||null;setSignedInUi();updateCollectionActions();if(!currentUser){currentCollection=null;collectionRows=[];collectionsSeq++;$('#collectionSelect').replaceChildren();if(realtimeChannel)sb.removeChannel(realtimeChannel);realtimeChannel=null;jbStatus('','Entre para criar ou compartilhar uma coleção.');return}loadCollections().catch(e=>jbStatus('err','Não foi possível carregar suas coleções: '+friendlyError(e)));});}
 
 // ───────── Estado ─────────
 const S={q:'',status:'all',cat:'all',sort:'def',lang:(l=>LANGS[l]?l:'pt')(localStorage.getItem(LANG_KEY)),list:[],cols:1,first:-1,hl:null};
