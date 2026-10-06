@@ -170,7 +170,7 @@ dialog::backdrop{background:#05060acc;backdrop-filter:blur(2px)}dialog[open]{ani
 .mrow{display:grid;gap:4px;background:var(--deep);padding:10px 11px;box-shadow:inset 2px 2px 0 #12141a,inset -2px -2px 0 #4a4f60}
 .mrow .who{display:flex;gap:8px;align-items:center;min-width:0}
 .mrow .em{flex:1;font-weight:700;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
-.mrow .tag{flex:none;font-size:9px;font-weight:700;padding:3px 6px;background:var(--stone2);color:var(--mut);box-shadow:inset 1px 1px 0 var(--hi),inset -1px -1px 0 var(--lo)}
+.mrow .tag{flex:none;margin:0;line-height:1;font-size:9px;font-weight:700;padding:1px 4px;background:var(--stone2);color:var(--mut);box-shadow:inset 1px 1px 0 var(--hi),inset -1px -1px 0 var(--lo)}
 .mrow .tag.own{background:var(--gold2);color:#3a2b00}
 .mrow .tag.out{background:#4a2a2a;color:#e6a8a2}
 .mrow .rm{flex:none;border:0;background:#4a2a2a;color:#e6a8a2;font:700 9px var(--px);padding:4px 8px;box-shadow:inset 1px 1px 0 var(--hi),inset -1px -1px 0 var(--lo);cursor:pointer}.mrow .rm:hover{background:#5c3331;color:#ffd9d5}
@@ -178,7 +178,9 @@ dialog::backdrop{background:#05060acc;backdrop-filter:blur(2px)}dialog[open]{ani
 .mrow .when b{color:#fff;font-weight:600}
 .msub{color:var(--mut);font-size:12px;padding:6px 2px}
 .msub.err{color:#e6a8a2}
-.menu{position:relative}.menu>summary{list-style:none}.menu .pop{position:absolute;right:0;top:calc(100% + 8px);background:var(--stone);padding:6px;display:grid;gap:2px;min-width:200px;z-index:50;box-shadow:var(--bev),0 0 0 2px var(--lo),0 14px 30px #000a}
+.menu.right .pop{left:auto;right:0}
+.menu.down .pop{top:calc(100% + 8px);bottom:auto}
+.menu.up .pop{top:auto;bottom:calc(100% + 8px)}
 .pop button{border:0;background:none;text-align:left;padding:11px 12px;color:#fff}.pop button:hover{background:var(--stone2)}.pop .dg{color:#ff9d94}
 .mtoast{position:fixed;right:16px;top:16px;z-index:300;display:flex;gap:10px;align-items:center;background:#1b1530f2;color:#fff;padding:12px 16px;box-shadow:inset 0 0 0 2px var(--gold),0 0 0 2px #0a0510,0 10px 24px #000a;opacity:0;transform:translateX(30px);pointer-events:none;transition:.25s;max-width:min(92vw,360px);font-weight:600}
 .mtoast.on{opacity:1;transform:none}.mtoast::before{content:"★";color:var(--gold);font-size:18px}
@@ -212,9 +214,9 @@ dialog::backdrop{background:#05060acc;backdrop-filter:blur(2px)}dialog[open]{ani
      <div><h1>Stack<b>Vault</b></h1><div class="tag">Cada stack conta.</div></div>
     </div>
     <div class="d-flex align-items-center gap-2">
-     <span class="ver">⛏ JAVA &amp; BEDROCK 26.3</span>
-     <details class="menu"><summary class="mbtn" role="button" aria-label="Menu de configurações">⚙ Menu</summary>
-      <div class="pop"><button id="importBtn">Importar progresso</button><button id="resetBtn" class="dng-t dg">Zerar progresso</button></div></details>
+      <span class="ver" id="verTxt">⛏ JAVA &amp; BEDROCK 26.3</span>
+      <details class="menu right"><summary class="mbtn" role="button" id="menuCfg" aria-label="Menu de configurações">⚙ Menu</summary>
+       <div class="pop"><button id="importBtn">Importar progresso</button><button id="resetBtn" class="dng-t dg">Zerar progresso</button></div></details>
      <input id="importFile" class="hidden" type="file" accept="application/json,.json">
     </div>
    </div>
@@ -222,16 +224,16 @@ dialog::backdrop{background:#05060acc;backdrop-filter:blur(2px)}dialog[open]{ani
     <div class="col-lg-5 hero-copy">
      <h2>Seu inventário.<br>Sua jornada.<br>Sua coleção.</h2>
      <p>Marque cada item do Survival que você já guardou nos seus baús, descubra o que falta e sincronize o progresso entre dispositivos.</p>
-     <div class="rankline"><span class="rank" id="rank">Novato</span><span class="sub" style="color:#c7d3ee">Seu título atual</span></div>
+     <div class="rankline"><span class="rank" id="rank">Novato</span><span class="sub" id="rankNow" style="color:#c7d3ee">Seu título atual</span></div>
     </div>
     <div class="col-lg-7">
      <section class="dash" id="dash" aria-label="Progresso geral">
-      <div class="qhead"><div class="eyebrow">MISSÃO · COLEÇÃO COMPLETA</div><div class="lvl">NÍVEL <span id="lvl">1</span></div></div>
-      <div class="big"><span id="dDone">0</span> <small>/ <span id="dTotal">0</span></small></div>
-      <div class="pct" id="dPct">0%</div>
-      <div class="bar" role="progressbar" aria-label="Progresso da coleção" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="barWrap"><i id="bar"></i></div>
-      <div class="qstats"><div class="qstat"><b id="dMiss">0</b><span>Restantes</span></div><div class="qstat"><b id="dCats">0</b><span>Categorias completas</span></div></div>
-      <div class="miles" id="miles" aria-label="Marcos"><span class="mile" data-n="100">100 itens</span><span class="mile" data-n="500">500 itens</span><span class="mile" data-n="1000">1000 itens</span><span class="mile" data-n="0">100% completo</span></div>
+   <div class="qhead"><div class="eyebrow" id="mission">MISSÃO · COLEÇÃO COMPLETA</div><div class="lvl"><span id="lvlTxt">NÍVEL</span> <span id="lvl">1</span></div></div>
+       <div class="big"><span id="dDone">0</span> <small>/ <span id="dTotal">0</span></small></div>
+       <div class="pct" id="dPct">0%</div>
+       <div class="bar" role="progressbar" aria-label="Progresso da coleção" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="barWrap"><i id="bar"></i></div>
+       <div class="qstats"><div class="qstat"><b id="dMiss">0</b><span id="restTxt">Restantes</span></div><div class="qstat"><b id="dCats">0</b><span id="fcatsTxt">Categorias completas</span></div></div>
+       <div class="miles" id="miles" aria-label="Marcos"><span class="mile" data-n="100">100 itens</span><span class="mile" data-n="500">500 itens</span><span class="mile" data-n="1000">1000 itens</span><span class="mile" data-n="0">100% completo</span></div>
       <div class="done-msg">★ LENDA DO OVERWORLD ★<br>Você coletou todos os itens do Survival!</div>
      </section>
     </div>
@@ -253,14 +255,14 @@ dialog::backdrop{background:#05060acc;backdrop-filter:blur(2px)}dialog[open]{ani
   </div>
  </div>
  <div class="sheetbg" id="sheetbg"></div>
- <div class="filters" id="filters" role="group" aria-label="Filtros">
-  <div class="seg" id="seg">
-   <button data-s="all" aria-pressed="true">Todos</button><button data-s="missing" aria-pressed="false">Faltantes</button><button data-s="done" aria-pressed="false">Meu Inventário</button>
+  <div class="filters" id="filters" role="group" aria-label="Filtros">
+   <div class="seg" id="seg">
+      <button id="allBtn" data-s="all" aria-pressed="true">Todos</button><button id="missingBtn" data-s="missing" aria-pressed="false">Faltantes</button><button id="doneBtn" data-s="done" aria-pressed="false">Meu Inventário</button>
+   </div>
+   <select id="catSel" aria-label="Categoria"></select>
+   <select id="langSel" aria-label="Idioma dos nomes"></select>
+   <select id="sortSel" aria-label="Ordenação"><option value="def">Ordem padrão</option><option value="az">Nome A → Z</option><option value="za">Nome Z → A</option><option value="doneFirst">Coletados primeiro</option><option value="missFirst">Faltantes primeiro</option></select>
   </div>
-  <select id="catSel" aria-label="Categoria"></select>
-  <select id="sortSel" aria-label="Ordenação"><option value="def">Ordem padrão</option><option value="az">Nome A → Z</option><option value="za">Nome Z → A</option><option value="doneFirst">Coletados primeiro</option><option value="missFirst">Faltantes primeiro</option></select>
-  <select id="langSel" aria-label="Idioma dos nomes"></select>
- </div>
 
  <nav class="chipbar" id="chipbar" aria-label="Categorias"></nav>
  <div class="bar2">
@@ -268,8 +270,8 @@ dialog::backdrop{background:#05060acc;backdrop-filter:blur(2px)}dialog[open]{ani
   <div class="d-flex gap-2 flex-wrap"><button class="mbtn pri" id="markBtn">✓ Marcar visíveis</button><button class="mbtn" id="unmarkBtn">Desmarcar visíveis</button><button class="mbtn" id="backupBtn" title="Baixar um backup do que está salvo">💾 Backup</button></div>
  </div>
 
- <details class="panel"><summary>PROGRESSO POR CATEGORIA</summary><div class="pbody"><div class="cats" id="cats"></div></div></details>
- <details class="panel"><summary>☁ COLEÇÃO COMPARTILHADA</summary><div class="pbody">
+ <details class="panel"><summary id="progSum">PROGRESSO POR CATEGORIA</summary><div class="pbody"><div class="cats" id="cats"></div></div></details>
+ <details class="panel"><summary id="cloudSum">☁ COLEÇÃO COMPARTILHADA</summary><div class="pbody">
   <div id="authBox" class="cloud"><input id="authEmail" class="field" type="email" placeholder="Seu e-mail" autocomplete="email"><input id="authPassword" class="field" type="password" placeholder="Senha (mínimo 6 caracteres)" autocomplete="current-password"><button class="mbtn pri" id="signInBtn" type="button">Entrar</button><button class="mbtn" id="signUpBtn" type="button">Criar conta</button></div>
   <div id="collectionBox" hidden><div class="cloud"><input id="collectionName" class="field" maxlength="80" placeholder="Nome da nova coleção"><button class="mbtn pri" id="createCollectionBtn" type="button">+ Nova coleção</button></div><div class="cloud" style="margin-top:8px"><input id="collectionCode" class="field" maxlength="17" placeholder="Código recebido (ex.: A1B2-C3D4)" autocomplete="off"><button class="mbtn pri" id="joinCollectionBtn" type="button">Entrar na coleção</button></div><div class="cloud" style="margin-top:8px"><select id="collectionSelect" class="field" aria-label="Coleção ativa"></select><button class="mbtn" id="signOutBtn" type="button">Sair</button></div><div style="margin-top:8px;display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap"><button class="mbtn" id="detailsBtn" type="button" hidden>👥 Detalhes</button><button class="mbtn" id="renameCollectionBtn" type="button" hidden>✏️ Renomear</button><button class="mbtn dng" id="deleteCollectionBtn" type="button" hidden>🗑 Excluir coleção</button><button class="mbtn" id="leaveCollectionBtn" type="button" hidden>🚪 Sair da coleção</button></div></div>
   <div class="out" id="jbTxt" aria-live="polite" style="margin-top:8px">Entre para criar ou compartilhar uma coleção.</div>
@@ -279,7 +281,7 @@ dialog::backdrop{background:#05060acc;backdrop-filter:blur(2px)}dialog[open]{ani
  <div class="empty" id="empty"><h2>NENHUM ITEM</h2><p>Nada por aqui. Tente outro nome ou ID.</p><button class="mbtn pri" id="clearBtn">Limpar filtros</button></div>
 
  <footer class="mcfoot">
-  <div class="d-flex justify-content-between flex-wrap gap-2"><div><span class="px">StackVault</span> · Minecraft Collection Tracker · v26.3</div><div>Feito para jogadores de Minecraft ⛏</div></div>
+   <div class="d-flex justify-content-between flex-wrap gap-2"><div><span class="px">StackVault</span> · Minecraft Collection Tracker · v26.3</div><div id="footMade">Feito para jogadores de Minecraft ⛏</div></div>
   <div class="mt-2" id="foot"></div>
   <div class="mt-2">Ícones e modelos: <a href="https://mc-api.bisai.dev/assets" target="_blank" rel="noopener noreferrer">mc-api.bisai.dev</a></div>
  </footer>
@@ -301,7 +303,7 @@ dialog::backdrop{background:#05060acc;backdrop-filter:blur(2px)}dialog[open]{ani
   <div class="macts" style="margin-top:12px"><button class="mbtn" id="renCancel">Cancelar</button><button class="mbtn pri" id="renSave">Salvar</button></div></div></dialog>
 <dialog id="detDlg" aria-labelledby="detTitle"><div class="mb">
  <div class="mhead"><div><h2 id="detTitle" style="margin:0;font:400 14px/1.4 var(--px)">Detalhes da coleção</h2><div class="sub" id="detSub"></div></div><button class="x" id="detClose" aria-label="Fechar">×</button></div>
- <dl class="kv"><dt>Coleção</dt><dd id="detName"></dd><dt>Código</dt><dd id="detCode"></dd><dt>Criada em</dt><dd id="detCreated"></dd></dl>
+  <dl class="kv"><dt id="kvCol">Coleção</dt><dd id="detName"></dd><dt id="kvCode">Código</dt><dd id="detCode"></dd><dt id="kvCreated">Criada em</dt><dd id="detCreated"></dd></dl>
  <div id="detList" class="mlist" aria-live="polite"></div>
  <div class="macts"><button class="mbtn" id="detCloseBtn">Fechar</button></div>
 </div></dialog>
@@ -439,7 +441,11 @@ function categorize(id){for(const[n,r]of CAT_RULES)if(r.test(id))return n;return
 const SURVIVAL_ITEMS=SURVIVAL_IDS.map(id=>({id,ptName:displayName(id),enName:englishName(id),name:'',cat:categorize(id),n:'',s:''}));
 const BYID=new Map(SURVIVAL_ITEMS.map(x=>[x.id,x]));
 // Nomes oficiais embutidos (arquivos de idioma do jogo, 100% offline)
-const LANGS={pt:'Português (PT-BR)',en:'English (US)',es:'Español',fr:'Français',de:'Deutsch',it:'Italiano',ja:'日本語',ko:'한국어',zh:'中文 (简体)',ru:'Русский'};
+const UI={
+  pt:{menuCfg:'⚙ Menu',import:'Importar progresso',reset:'Zerar progresso',searchPH:'Pesquisar itens, blocos ou minecraft:id…',filters:'⚙ Filtros',all:'Todos',missing:'Faltantes',doneInv:'Meu Inventário',allCats:'Todas as categorias',sortDef:'Ordem padrão',az:'Nome A → Z',za:'Nome Z → A',doneFirst:'Coletados primeiro',missFirst:'Faltantes primeiro',langLabel:'Idioma dos nomes',catsAll:'Todas',marked:'✓ Marcar visíveis',unmarked:'Desmarcar visíveis',backup:'💾 Backup',panelProg:'PROGRESSO POR CATEGORIA',panelCloud:'☁ COLEÇÃO COMPARTILHADA',hero2:'Seu inventário.<br>Sua jornada.<br>Sua coleção.',heroP:'Marque cada item do Survival que você já guardou nos seus baús, descubra o que falta e sincronize o progresso entre dispositivos.',rankNow:'Seu título atual',mission:'MISSÃO · COLEÇÃO COMPLETA',level:'NÍVEL',rest:'Restantes',fullCats:'Categorias completas',mile100:'100 itens',mile500:'500 itens',mile1000:'1000 itens',mileFull:'100% completo',legend:'★ LENDA DO OVERWORLD ★<br>Você coletou todos os itens do Survival!',emptyH:'NENHUM ITEM',emptyP:'Nada por aqui. Tente outro nome ou ID.',clearFilters:'Limpar filtros',btnSignIn:'Entrar',btnSignUp:'Criar conta',colNamePH:'Nome da nova coleção',newCol:'+ Nova coleção',colCodePH:'Código recebido (ex.: A1B2-C3D4)',joinCol:'Entrar na coleção',activeCol:'Coleção ativa',signOut:'Sair',details:'👥 Detalhes',rename:'✏️ Renomear',delCol:'🗑 Excluir coleção',leaveCol:'🚪 Sair da coleção',authMsg:'Entre para criar ou compartilhar uma coleção.',made:'Feito para jogadores de Minecraft ⛏',mCopy:'Copiar ID',mToggleMark:'Marcar como coletado',mToggleUnmark:'Desmarcar como coletado',mCol:'Coleção',mCode:'Código',mCreated:'Criada em',mSub:'Quem entrou, quem saiu, data e hora. Só o dono gerencia os membros.',close:'Fechar'},
+  en:{menuCfg:'⚙ Menu',import:'Import progress',reset:'Reset progress',searchPH:'Search items, blocks or minecraft:id…',filters:'⚙ Filters',all:'All',missing:'Missing',doneInv:'My Inventory',allCats:'All categories',sortDef:'Default order',az:'Name A → Z',za:'Name Z → A',doneFirst:'Collected first',missFirst:'Missing first',langLabel:'Language',catsAll:'All',marked:'✓ Mark visible',unmarked:'Unmark visible',backup:'💾 Backup',panelProg:'PROGRESS BY CATEGORY',panelCloud:'☁ SHARED COLLECTION',hero2:'Your inventory.<br>Your journey.<br>Your collection.',heroP:'Mark every Survival item you’ve stored in chests, see what’s missing and sync progress across devices.',rankNow:'Your current title',mission:'MISSION · COMPLETE COLLECTION',level:'LEVEL',rest:'Remaining',fullCats:'Categories complete',mile100:'100 items',mile500:'500 items',mile1000:'1000 items',mileFull:'100% complete',legend:'★ OVERWORLD LEGEND ★<br>You collected every Survival item!',emptyH:'NO ITEMS',emptyP:'Nothing here. Try another name or ID.',clearFilters:'Clear filters',btnSignIn:'Sign in',btnSignUp:'Sign up',colNamePH:'Collection name',newCol:'+ New collection',colCodePH:'Code (e.g. A1B2-C3D4)',joinCol:'Join collection',activeCol:'Active collection',signOut:'Sign out',details:'👥 Details',rename:'✏️ Rename',delCol:'🗑 Delete collection',leaveCol:'🚪 Leave collection',authMsg:'Sign in to create or share a collection.',made:'Made for Minecraft players ⛏',mCopy:'Copy ID',mToggleMark:'Mark as collected',mToggleUnmark:'Unmark as collected',mCol:'Collection',mCode:'Code',mCreated:'Created on',mSub:'Who joined, who left, date and time. Only owner manages members.',close:'Close'},
+  es:{},fr:{},de:{},it:{},ja:{},ko:{},zh:{},ru:{}
+};
 const NAMES={};for(const l in NAMES_RAW){const m=NAMES[l]={};NAME_IDS.forEach((id,i)=>{if(NAMES_RAW[l][i])m[id]=NAMES_RAW[l][i]})}
 for(const x of SURVIVAL_ITEMS){x.ptName=NAMES.pt[x.id]||x.ptName;x.enName=NAMES.en[x.id]||x.enName}
 const nameIn=(x,l)=>l==='pt'?x.ptName:l==='en'?x.enName:(NAMES[l]&&NAMES[l][x.id])||x.enName;
@@ -607,9 +613,12 @@ function recount(){doneCount=0;for(const k in catTotal)catDone[k]=0;for(const id
 const CATS=CAT_ORDER.filter(c=>catTotal[c]);
 
 // ───────── Nomes / idioma ─────────
-function rebuildNames(){
- for(const x of SURVIVAL_ITEMS){x.name=nameIn(x,S.lang);x.n=norm(x.name);x.s=norm(x.name+' '+x.ptName+' '+x.enName+' '+x.id+' '+x.id.replace(/_/g,' '))}
-}
+  const $t=(k)=>UI[S.lang]&&UI[S.lang][k]!==undefined?UI[S.lang][k]:(UI.pt[k]||k);
+  function rebuildNames(){
+    for(const x of SURVIVAL_ITEMS){x.name=nameIn(x,S.lang);x.n=norm(x.name);x.s=norm(x.name+' '+x.ptName+' '+x.enName+' '+x.id+' '+x.id.replace(/_/g,' '))}
+    // UI básica
+    const t=$t; if($('#menuCfg'))$('#menuCfg').textContent=t('menuCfg'); $('#importBtn').textContent=t('import'); $('#resetBtn').textContent=t('reset'); $('#search').placeholder=t('searchPH'); $('#filterBtn').textContent=t('filters'); $('#allBtn').textContent=t('all'); $('#missingBtn').textContent=t('missing'); $('#doneBtn').textContent=t('doneInv'); $('#catSel').options[0].text=t('allCats'); $('#sortSel').options[0].text=t('sortDef'); $('#sortSel').options[1].text=t('az'); $('#sortSel').options[2].text=t('za'); $('#sortSel').options[3].text=t('doneFirst'); $('#sortSel').options[4].text=t('missFirst'); $('#markBtn').textContent=t('marked'); $('#unmarkBtn').textContent=t('unmarked'); $('#backupBtn').textContent=t('backup'); $('#progSum').textContent=t('panelProg'); $('#cloudSum').textContent=t('panelCloud'); $('.hero-copy h2').innerHTML=t('hero2'); $('.hero-copy p').textContent=t('heroP'); $('#rankNow').textContent=t('rankNow'); $('#mission').textContent=t('mission'); $('#lvlTxt').textContent=t('level'); $('#restTxt').textContent=t('rest'); $('#fcatsTxt').textContent=t('fullCats'); $('[data-n="100"]').textContent=t('mile100'); $('[data-n="500"]').textContent=t('mile500'); $('[data-n="1000"]').textContent=t('mile1000'); $('[data-n="0"]').textContent=t('mileFull'); $('.done-msg').innerHTML=t('legend'); $('#empty h2').textContent=t('emptyH'); $('#empty p').textContent=t('emptyP'); $('#clearBtn').textContent=t('clearFilters'); $('#signInBtn').textContent=t('btnSignIn'); $('#signUpBtn').textContent=t('btnSignUp'); $('#collectionName').placeholder=t('colNamePH'); $('#createCollectionBtn').textContent=t('newCol'); $('#collectionCode').placeholder=t('colCodePH'); $('#joinCollectionBtn').textContent=t('joinCol'); $('#collectionSelect').setAttribute('aria-label',t('activeCol')); $('#signOutBtn').textContent=t('signOut'); $('#detailsBtn').textContent=t('details'); $('#renameCollectionBtn').textContent=t('rename'); $('#deleteCollectionBtn').textContent=t('delCol'); $('#leaveCollectionBtn').textContent=t('leaveCol'); $('#jbTxt').textContent=t('authMsg'); $('#footMade').textContent=t('made'); $('#mCopy').textContent=t('mCopy'); $('#mToggle').textContent(checked.has(cur)?t('mToggleUnmark'):t('mToggleMark')); $('#detTitle').textContent=t('details'); $('#detSub').textContent=t('mSub'); $('#kvCol').textContent=t('mCol'); $('#kvCode').textContent=t('mCode'); $('#kvCreated').textContent=t('mCreated'); $('#detCloseBtn').textContent=t('close');
+  }
 
 // ───────── Filtros / pesquisa ─────────
 function applyFilters(){
@@ -647,17 +656,19 @@ const SPR=48,MC_API='https://mc-api.bisai.dev/v1/assets/items/';
 const ICON_BAD=new Set(),ICON_OK=new Map(),ICON_WAIT=new Map(),iconQueue=[];let iconActive=0,pumpQ=false;const ICON_PAR=24;
 function mcUrl(id,S){return MC_API+encodeURIComponent(id)+'/texture.png?size='+(S*4)}
 function iconFallback(d,x,S){
- const [a,b]=colorForCategory(x.cat);d.classList.remove('ld');d.classList.add('fb');
- d.style.background='linear-gradient('+a+','+b+')';d.style.fontSize=S/3+'px';
- d.replaceChildren(h('span','fbx',shortLabel(x)))
+  const [a,b]=colorForCategory(x.cat);d.classList.remove('ld');d.classList.add('fb');
+  d.style.background='linear-gradient('+a+','+b+')';d.style.fontSize=S/3+'px';
+  d.replaceChildren(h('span','fbx',shortLabel(x)))
 }
-// escala o sprite até preencher a caixa e CENTRALIZA o conteúdo (antes escalava pelo centro do conteúdo e cortava o ícone)
+// escala o sprite até preencher a caixa e CENTRALIZA o conteúdo (corrigido para não cortar bordas)
 function applyFit(d,im,f){
- if(!f||f.k<=1.03)return;
- const S=parseFloat(d.style.width)||SPR;
- d.style.overflow='hidden';
- im.style.transformOrigin='0 0';
- im.style.transform='translate('+(S/2-f.k*f.ox*S)+'px,'+(S/2-f.k*f.oy*S)+'px) scale('+f.k+')'
+  if(!f)return;
+  const S=parseFloat(d.style.width)||SPR;
+  d.style.overflow='hidden';
+  im.style.transformOrigin='0 0';
+  // f.k limitado com segurança
+  const k=Math.min(f.k,1.85);
+  im.style.transform='translate('+(S/2-k*f.ox*S)+'px,'+(S/2-k*f.oy*S)+'px) scale('+k+')'
 }
 async function measure(blob){
  const c=document.createElement('canvas');c.width=c.height=32;
@@ -669,8 +680,10 @@ async function measure(blob){
  for(let y=0;y<32;y++){const r=y*128+3;
   for(let x=0;x<32;x++){if(px[r+x*4+3]>24){if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y}}}
  if(x1<0)return null;
- const bw=x1-x0+1,bh=y1-y0+1;
- return {k:Math.min(32/bw,32/bh,2),ox:(x0+bw/2)/32,oy:(y0+bh/2)/32}
+  const bw=x1-x0+1,bh=y1-y0+1;
+  if(!bw||!bh)return null;
+  const k=Math.min(32/bw,32/bh,1.8);
+  return {k,ox:(x0+bw/2)/32,oy:(y0+bh/2)/32}
 }
 function paint(w,rec){const {im,d}=w;d.classList.remove('ld');im.src=rec.src;applyFit(d,im,rec.f);im.style.visibility='visible'}
 const ALT='https://cdn.jsdelivr.net/gh/PrismarineJS/minecraft-assets@master/data/1.21.8/';
@@ -926,6 +939,8 @@ addEventListener('keydown',e=>{
 // ───────── Inicialização ─────────
 recount();rebuildNames();buildCatPanel();persist();updateStats();applyFilters();initCloud();syncSearchUi();
 $('#foot').textContent=nf.format(SURVIVAL_ITEMS.length)+' itens obteníveis no Survival de '+nf.format(ALL_ITEMS.length)+' registros · '+nf.format(EXCLUDED.length)+' excluídos (Creative/comandos/técnicos)'+'. Dados e progresso ficam neste dispositivo.';
+  const t=$t;
+  $('#menuCfg').textContent=t('menuCfg');$('#importBtn').textContent=t('import');$('#resetBtn').textContent=t('reset');$('#search').placeholder=t('searchPH');$('#filterBtn').textContent=t('filters');$('#allBtn').textContent=t('all');$('#missingBtn').textContent=t('missing');$('#doneBtn').textContent=t('doneInv');$('#catSel').options[0].text=t('allCats');$('#sortSel').options[0].text=t('sortDef');$('#sortSel').options[1].text=t('az');$('#sortSel').options[2].text=t('za');$('#sortSel').options[3].text=t('doneFirst');$('#sortSel').options[4].text=t('missFirst');$('#markBtn').textContent=t('marked');$('#unmarkBtn').textContent=t('unmarked');$('#backupBtn').textContent=t('backup');$('#progSum').textContent=t('panelProg');$('#cloudSum').textContent=t('panelCloud');$('.hero-copy h2').innerHTML=t('hero2');$('.hero-copy p').textContent=t('heroP');$('#rankNow').textContent=t('rankNow');$('#mission').textContent=t('mission');$('#lvlTxt').textContent=t('level');$('#restTxt').textContent=t('rest');$('#fcatsTxt').textContent=t('fullCats');$('[data-n="100"]').textContent=t('mile100');$('[data-n="500"]').textContent=t('mile500');$('[data-n="1000"]').textContent=t('mile1000');$('[data-n="0"]').textContent=t('mileFull');$('.done-msg').innerHTML=t('legend');$('#empty h2').textContent=t('emptyH');$('#empty p').textContent=t('emptyP');$('#clearBtn').textContent=t('clearFilters');$('#signInBtn').textContent=t('btnSignIn');$('#signUpBtn').textContent=t('btnSignUp');$('#collectionName').placeholder=t('colNamePH');$('#createCollectionBtn').textContent=t('newCol');$('#collectionCode').placeholder=t('colCodePH');$('#joinCollectionBtn').textContent=t('joinCol');$('#collectionSelect').setAttribute('aria-label',t('activeCol'));$('#signOutBtn').textContent=t('signOut');$('#detailsBtn').textContent=t('details');$('#renameCollectionBtn').textContent=t('rename');$('#deleteCollectionBtn').textContent=t('delCol');$('#leaveCollectionBtn').textContent=t('leaveCol');$('#jbTxt').textContent=t('authMsg');$('#footMade').textContent=t('made');
 })();
 </script>
 </body></html>
