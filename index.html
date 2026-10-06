@@ -169,10 +169,11 @@ dialog::backdrop{background:#05060acc;backdrop-filter:blur(2px)}dialog[open]{ani
 .msec:first-child{margin-top:0}
 .mrow{display:grid;gap:4px;background:var(--deep);padding:10px 11px;box-shadow:inset 2px 2px 0 #12141a,inset -2px -2px 0 #4a4f60}
 .mrow .who{display:flex;gap:8px;align-items:center;min-width:0}
-.mrow .em{font-weight:700;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.mrow .em{flex:1;font-weight:700;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 .mrow .tag{flex:none;font-size:9px;font-weight:700;padding:3px 6px;background:var(--stone2);color:var(--mut);box-shadow:inset 1px 1px 0 var(--hi),inset -1px -1px 0 var(--lo)}
 .mrow .tag.own{background:var(--gold2);color:#3a2b00}
 .mrow .tag.out{background:#4a2a2a;color:#e6a8a2}
+.mrow .rm{flex:none;border:0;background:#4a2a2a;color:#e6a8a2;font:700 9px var(--px);padding:4px 8px;box-shadow:inset 1px 1px 0 var(--hi),inset -1px -1px 0 var(--lo);cursor:pointer}.mrow .rm:hover{background:#5c3331;color:#ffd9d5}
 .mrow .when{font-size:11px;color:var(--mut);font-variant-numeric:tabular-nums}
 .mrow .when b{color:#fff;font-weight:600}
 .msub{color:var(--mut);font-size:12px;padding:6px 2px}
@@ -512,12 +513,14 @@ function fmtWhen(iso){if(!iso)return '—';const d=new Date(iso);if(isNaN(d))ret
 function detEmail(uid){for(const e of detEvents)if(e.user_id===uid&&e.email)return e.email;if(currentUser&&uid===currentUser.id&&currentUser.email)return currentUser.email;return 'ID '+String(uid).slice(0,8)}
 function detSec(list,text){const h=document.createElement('div');h.className='msec';h.textContent=text;list.appendChild(h)}
 function detMsg(list,text,err){const d=document.createElement('div');d.className='msub'+(err?' err':'');d.textContent=text;list.appendChild(d)}
-function detRow(list,email,tag,tagCls,lines){
+function detRow(list,email,tag,tagCls,lines,uid,onRemove){
  const r=document.createElement('div');r.className='mrow';
  const who=document.createElement('div');who.className='who';
  const em=document.createElement('span');em.className='em';em.textContent=email;em.title=email;
  const tg=document.createElement('span');tg.className='tag'+(tagCls?' '+tagCls:'');tg.textContent=tag;
- who.append(em,tg);r.appendChild(who);
+ who.append(em,tg);
+ if(uid&&onRemove){const rm=document.createElement('button');rm.type='button';rm.className='rm';rm.textContent='Remover';rm.title='Remover '+email+' da coleção';rm.addEventListener('click',()=>onRemove(uid));who.appendChild(rm)}
+ r.appendChild(who);
  for(const [label,iso] of lines){const w=document.createElement('div');w.className='when';const b=document.createElement('b');b.textContent=fmtWhen(iso);w.append(label,b);r.appendChild(w)}
  list.appendChild(r)
 }
@@ -530,7 +533,10 @@ function renderDetails(members,events){
  const gone=[...lastLeave.keys()].filter(uid=>!activeIds.has(uid)).sort((a,b)=>String(lastLeave.get(b)).localeCompare(String(lastLeave.get(a))));
  detSec(list,'Na coleção ('+active.length+')');
  if(!active.length)detMsg(list,'Ninguém por aqui.');
- for(const m of active)detRow(list,detEmail(m.user_id),m.role==='owner'?'👑 Dono':'Membro',m.role==='owner'?'own':'',[['Entrou em ',m.joined_at]]);
+ for(const m of active){
+  const remove=m.role==='owner'?null:(uid)=>askConfirm('Remover membro?','Remover "'+detEmail(uid)+'" de "'+currentCollection.name+'"? A pessoa para de ver o progresso compartilhado e o histórico registra a saída.','Remover',()=>removeMember(uid));
+  detRow(list,detEmail(m.user_id),m.role==='owner'?'👑 Dono':'Membro',m.role==='owner'?'own':'',[['Entrou em ',m.joined_at]],m.user_id,remove)
+ }
  detSec(list,'Saíram ('+gone.length+')');
  if(!gone.length)detMsg(list,'Ninguém saiu até agora.');
  for(const uid of gone){
@@ -541,13 +547,10 @@ function renderDetails(members,events){
  }
 }
 let detEvents=[];
-async function openDetails(){
+async function loadDetails(){
+ const list=$('#detList');list.replaceChildren();detMsg(list,'Carregando…');
  const c=currentCollection;
  if(!c||!currentUser||c.owner_id!==currentUser.id)return;
- $('#detName').textContent=c.name;$('#detCode').textContent=c.code;$('#detCreated').textContent=fmtWhen(c.created_at);
- $('#detSub').textContent='Quem entrou, quem saiu, data e hora.';
- const list=$('#detList');list.replaceChildren();detMsg(list,'Carregando…');
- $('#detDlg').showModal();
  try{
   const [m,e]=await Promise.all([
    sb.from('collection_members').select('user_id,role,joined_at').eq('collection_id',c.id),
@@ -559,6 +562,25 @@ async function openDetails(){
   if(/collection_member_events|PGRST205|42P01|does not exist/i.test(String(err.message||'')))
    detMsg(list,'O histórico ainda não existe no banco. Rode o arquivo supabase_migration_member_events.sql no SQL Editor do Supabase.',true);
   else detMsg(list,'Não foi possível carregar: '+msg,true)}
+}
+async function openDetails(){
+ const c=currentCollection;
+ if(!c||!currentUser||c.owner_id!==currentUser.id)return;
+ $('#detName').textContent=c.name;$('#detCode').textContent=c.code;$('#detCreated').textContent=fmtWhen(c.created_at);
+ $('#detSub').textContent='Quem entrou, quem saiu, data e hora. Só o dono gerencia os membros.';
+ $('#detDlg').showModal();
+ await loadDetails();
+}
+async function removeMember(uid){
+ const c=currentCollection;
+ if(!c||!currentUser||c.owner_id!==currentUser.id||uid===currentUser.id)return;
+ try{
+  const {error}=await sb.from('collection_members').delete().eq('collection_id',c.id).eq('user_id',uid);
+  if(error)throw error;
+  $('#delCfm').close();
+  toast('Membro removido de "'+c.name+'"');
+  await loadDetails();
+ }catch(err){detMsg($('#detList'),'Não foi possível remover: '+friendlyError(err),true)}
 }
 async function signIn(){const email=$('#authEmail').value.trim(),password=$('#authPassword').value,button=$('#signInBtn');if(!email||!password){jbStatus('err','Informe e-mail e senha.');return}setBusy(button,true,'Entrar');try{const {error}=await sb.auth.signInWithPassword({email,password});if(error)throw error;}catch(e){jbStatus('err','Não foi possível entrar: '+friendlyError(e));}finally{setBusy(button,false,'Entrar')}}
 const SIGNUP_WAIT_KEY='mc_signup_wait',SIGNUP_WAIT_MS=10*60*1000;
