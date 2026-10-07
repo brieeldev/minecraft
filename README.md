@@ -11,7 +11,6 @@ Rastreador de coleção de itens do **Minecraft Survival (Java & Bedrock 26.3)**
 [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://developer.mozilla.org/docs/Web/JavaScript)
 [![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com)
 [![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-222222?style=for-the-badge&logo=githubpages&logoColor=white)](https://brieeldev.github.io/minecraft/)
-[![Idiomas](https://img.shields.io/badge/idiomas-10-5eb34a?style=for-the-badge)](#-idiomas)
 
 ### 🔗 [**Abrir o site**](https://brieeldev.github.io/stack_vault/)
 
