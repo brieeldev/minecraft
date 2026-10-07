@@ -1283,7 +1283,7 @@ async function normalizeIcon(blob){
   const bm=await createImageBitmap(blob),fw=bm.width,fh=bm.height;
   if(!fw||!fh){bm.close();return null}
   // tiras animadas (ex.: 16x80) -> só o 1º quadro; imagens não quadradas -> centralizadas
-  let sw=fw,sh=fh;if(fh>fw&&fh%fw===0)sh=fw;else if(fw>fh&&fw%fh===0)sw=fh;const W=Math.max(sw,sh);
+  const sw=fw;let sh=fh;if(fh>=fw*2&&fh%fw===0)sh=fw;const W=Math.max(sw,sh);
   const a=document.createElement('canvas');a.width=a.height=W;
   const g=a.getContext('2d',{willReadFrequently:true});
   g.drawImage(bm,0,0,sw,sh,(W-sw)>>1,(W-sh)>>1,sw,sh);bm.close();
@@ -1292,7 +1292,7 @@ async function normalizeIcon(blob){
   for(let y=0;y<W;y++)for(let x=0;x<W;x++)if(px[(y*W+x)*4+3]>24){if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y}
   if(x1<0)return null;
   const bw=x1-x0+1,bh=y1-y0+1,OUT=192;
-  let s=Math.min(OUT*.86/Math.max(bw,bh),1.8*OUT/W);   // o sprite ocupa no máx. 86% da caixa: nada encosta na borda
+  let s=Math.min(OUT*.9/Math.max(bw,bh),1.62*OUT/W);   // mesma escala dos ícones corretos: máx. 90% da caixa, nada encosta na borda
   if(W<=64&&s>1)s=Math.floor(s);                        // pixel art: escala inteira = nítido
   const o=document.createElement('canvas');o.width=o.height=OUT;
   const c=o.getContext('2d');c.imageSmoothingEnabled=s<1;
