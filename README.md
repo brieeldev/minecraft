@@ -109,6 +109,14 @@ python -m http.server 8000
 
 ---
 
+## 📄 Licença
+
+© 2026 **Gabriel** · Todos os direitos reservados.
+
+Uso livre para fins pessoais e de estudo. Os ícones e texturas do Minecraft pertencem à **Mojang / Microsoft** e são carregados via `mc-api.bisai.dev`.
+
+---
+
 <div align="center">
 
 Feito para jogadores de Minecraft ⛏
