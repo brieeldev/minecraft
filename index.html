@@ -441,12 +441,598 @@ function categorize(id){for(const[n,r]of CAT_RULES)if(r.test(id))return n;return
 const SURVIVAL_ITEMS=SURVIVAL_IDS.map(id=>({id,ptName:displayName(id),enName:englishName(id),name:'',cat:categorize(id),n:'',s:''}));
 const BYID=new Map(SURVIVAL_ITEMS.map(x=>[x.id,x]));
 // Nomes oficiais embutidos (arquivos de idioma do jogo, 100% offline)
+/* ───────── i18n: toda a interface, exceto o nome StackVault ───────── */
 const UI={
-  pt:{menuCfg:'⚙ Menu',import:'Importar progresso',reset:'Zerar progresso',searchPH:'Pesquisar itens, blocos ou minecraft:id…',filters:'⚙ Filtros',all:'Todos',missing:'Faltantes',doneInv:'Meu Inventário',allCats:'Todas as categorias',sortDef:'Ordem padrão',az:'Nome A → Z',za:'Nome Z → A',doneFirst:'Coletados primeiro',missFirst:'Faltantes primeiro',langLabel:'Idioma dos nomes',catsAll:'Todas',marked:'✓ Marcar visíveis',unmarked:'Desmarcar visíveis',backup:'💾 Backup',panelProg:'PROGRESSO POR CATEGORIA',panelCloud:'☁ COLEÇÃO COMPARTILHADA',hero2:'Seu inventário.<br>Sua jornada.<br>Sua coleção.',heroP:'Marque cada item do Survival que você já guardou nos seus baús, descubra o que falta e sincronize o progresso entre dispositivos.',rankNow:'Seu título atual',mission:'MISSÃO · COLEÇÃO COMPLETA',level:'NÍVEL',rest:'Restantes',fullCats:'Categorias completas',mile100:'100 itens',mile500:'500 itens',mile1000:'1000 itens',mileFull:'100% completo',legend:'★ LENDA DO OVERWORLD ★<br>Você coletou todos os itens do Survival!',emptyH:'NENHUM ITEM',emptyP:'Nada por aqui. Tente outro nome ou ID.',clearFilters:'Limpar filtros',btnSignIn:'Entrar',btnSignUp:'Criar conta',colNamePH:'Nome da nova coleção',newCol:'+ Nova coleção',colCodePH:'Código recebido (ex.: A1B2-C3D4)',joinCol:'Entrar na coleção',activeCol:'Coleção ativa',signOut:'Sair',details:'👥 Detalhes',rename:'✏️ Renomear',delCol:'🗑 Excluir coleção',leaveCol:'🚪 Sair da coleção',authMsg:'Entre para criar ou compartilhar uma coleção.',made:'Feito para jogadores de Minecraft ⛏',mCopy:'Copiar ID',mToggleMark:'Marcar como coletado',mToggleUnmark:'Desmarcar como coletado',mCol:'Coleção',mCode:'Código',mCreated:'Criada em',mSub:'Quem entrou, quem saiu, data e hora. Só o dono gerencia os membros.',close:'Fechar'},
-  en:{menuCfg:'⚙ Menu',import:'Import progress',reset:'Reset progress',searchPH:'Search items, blocks or minecraft:id…',filters:'⚙ Filters',all:'All',missing:'Missing',doneInv:'My Inventory',allCats:'All categories',sortDef:'Default order',az:'Name A → Z',za:'Name Z → A',doneFirst:'Collected first',missFirst:'Missing first',langLabel:'Language',catsAll:'All',marked:'✓ Mark visible',unmarked:'Unmark visible',backup:'💾 Backup',panelProg:'PROGRESS BY CATEGORY',panelCloud:'☁ SHARED COLLECTION',hero2:'Your inventory.<br>Your journey.<br>Your collection.',heroP:'Mark every Survival item you’ve stored in chests, see what’s missing and sync progress across devices.',rankNow:'Your current title',mission:'MISSION · COMPLETE COLLECTION',level:'LEVEL',rest:'Remaining',fullCats:'Categories complete',mile100:'100 items',mile500:'500 items',mile1000:'1000 items',mileFull:'100% complete',legend:'★ OVERWORLD LEGEND ★<br>You collected every Survival item!',emptyH:'NO ITEMS',emptyP:'Nothing here. Try another name or ID.',clearFilters:'Clear filters',btnSignIn:'Sign in',btnSignUp:'Sign up',colNamePH:'Collection name',newCol:'+ New collection',colCodePH:'Code (e.g. A1B2-C3D4)',joinCol:'Join collection',activeCol:'Active collection',signOut:'Sign out',details:'👥 Details',rename:'✏️ Rename',delCol:'🗑 Delete collection',leaveCol:'🚪 Leave collection',authMsg:'Sign in to create or share a collection.',made:'Made for Minecraft players ⛏',mCopy:'Copy ID',mToggleMark:'Mark as collected',mToggleUnmark:'Unmark as collected',mCol:'Collection',mCode:'Code',mCreated:'Created on',mSub:'Who joined, who left, date and time. Only owner manages members.',close:'Close'},
-    es:{},fr:{},de:{},it:{},ja:{},ko:{},zh:{},ru:{}
+pt:{
+tag:'Cada stack conta.',menuAria:'Menu de configurações',menuCfg:'⚙ Menu',import:'Importar progresso',reset:'Zerar progresso',
+hero2:'Seu inventário.<br>Sua jornada.<br>Sua coleção.',heroP:'Marque cada item do Survival que você já guardou nos seus baús, descubra o que falta e sincronize o progresso entre dispositivos.',
+rankNow:'Seu título atual',mission:'MISSÃO · COLEÇÃO COMPLETA',level:'NÍVEL',rest:'Restantes',fullCats:'Categorias completas',
+mile100:'100 itens',mile500:'500 itens',mile1000:'1000 itens',mileFull:'100% completo',
+legend:'★ LENDA DO OVERWORLD ★<br>Você coletou todos os itens do Survival!',
+searchPH:'Pesquisar itens, blocos ou minecraft:id…',searchAria:'Pesquisar itens',clearAria:'Limpar pesquisa',
+filters:'⚙ Filtros',filterAria:'Filtros',all:'Todos',missing:'Faltantes',doneInv:'Meu Inventário',
+catAria:'Categoria',langAria:'Idioma dos nomes',sortAria:'Ordenação',allCats:'Todas as categorias',catsAll:'Todas',
+sortDef:'Ordem padrão',az:'Nome A → Z',za:'Nome Z → A',doneFirst:'Coletados primeiro',missFirst:'Faltantes primeiro',catsAria:'Categorias',
+marked:'✓ Marcar visíveis',unmarked:'Desmarcar visíveis',backupTitle:'Baixar um backup do que está salvo',backup:'💾 Backup',
+panelProg:'PROGRESSO POR CATEGORIA',panelCloud:'☁ COLEÇÃO COMPARTILHADA',
+emailPH:'Seu e-mail',pwPH:'Senha (mínimo 6 caracteres)',btnSignIn:'Entrar',btnSignUp:'Criar conta',
+colNamePH:'Nome da nova coleção',newCol:'+ Nova coleção',colCodePH:'Código recebido (ex.: A1B2-C3D4)',joinCol:'Entrar na coleção',
+activeCol:'Coleção ativa',signOut:'Sair',details:'👥 Detalhes',rename:'✏️ Renomear',delCol:'🗑 Excluir coleção',leaveCol:'🚪 Sair da coleção',
+authMsg:'Entre para criar ou compartilhar uma coleção.',gridAria:'Inventário de itens',
+emptyH:'NENHUM ITEM',emptyP:'Nada por aqui. Tente outro nome ou ID.',clearFilters:'Limpar filtros',
+footTitle:'· Minecraft Collection Tracker · v26.3',made:'Feito para jogadores de Minecraft ⛏',iconsCredit:'Ícones e modelos:',
+close:'Fechar',mId:'ID',mCat:'Categoria',mStatus:'Status',mCopy:'Copiar ID',mCopied:'✓ Copiado',
+mToggleMark:'Marcar como coletado',mToggleUnmark:'Desmarcar como coletado',stDone:'✓ Coletado',notDone:'Faltando',
+resetTitle:'Zerar progresso?',resetMsg:'Todos os itens marcados serão desmarcados. Faça um backup antes se quiser guardar uma cópia.',cancel:'Cancelar',resetYes:'Zerar tudo',
+delTitle:'Excluir coleção?',delYes:'Excluir',renTitle:'Renomear coleção',renSub:'O código de compartilhamento continua o mesmo.',renPH:'Novo nome',save:'Salvar',
+detTitle:'Detalhes da coleção',mCol:'Coleção',mCode:'Código',mCreated:'Criada em',mSub:'Quem entrou, quem saiu, data e hora. Só o dono gerencia os membros.',
+rm:'Remover',rmTitle:'Remover {e} da coleção',confRmTitle:'Remover membro?',confRmMsg:'Remover "{e}" de "{x}"? A pessoa para de ver o progresso compartilhado e o histórico registra a saída.',
+confDelMsg:'A coleção "{x}" (código {c}) será apagada para todos os membros, junto com todo o progresso marcado. Não é possível desfazer.',
+confLeaveTitle:'Sair da coleção?',confLeaveMsg:'Você vai deixar de ver o progresso compartilhado de "{x}". O dono e os outros membros continuam com tudo, e você pode entrar de novo usando o código {c}.',
+detIn:'Na coleção ({n})',detNobody:'Ninguém por aqui.',detOut:'Saíram ({n})',detNobodyOut:'Ninguém saiu até agora.',
+detJoined:'Entrou em ',detLeft:'Saiu em ',tagOwner:'👑 Dono',tagMember:'Membro',tagLeft:'Saiu',loading:'Carregando…',
+histMissing:'O histórico ainda não existe no banco. Rode o arquivo supabase_migration_member_events.sql no SQL Editor do Supabase.',
+detLoadFail:'Não foi possível carregar: {e}',detRemoveFail:'Não foi possível remover: {e}',
+footA:'itens obteníveis no Survival de',footB:'registros',footC:'excluídos (Creative/comandos/técnicos)',footD:'Dados e progresso ficam neste dispositivo.',
+ariaCollected:'Coletado: ',ariaDetails:'Detalhes de ',ariaCopyId:'Copiar ID minecraft:',
+t100:'★ Parabéns! Checklist 100% completa.',tMarked:'✓ {n} itens marcados',tUnmarked:'{n} itens desmarcados',tCopied:'✓ Copiado: minecraft:{id}',
+tBackup:'💾 Backup gerado!',tImported:'✓ Progresso importado! {n} itens marcados.',tBadFile:'Arquivo de progresso inválido.',tReset:'Progresso zerado',
+colDeleted:'🗑 Coleção "{x}" excluída.',colLeft:'🚪 Você saiu de "{x}"',colRenamed:'✏️ Coleção renomeada para "{x}"',memberRemoved:'Membro removido de "{x}"',
+jbNoCol:'Crie uma coleção ou entre usando um código.',jbSyncFail:'Falha ao sincronizar: {e}',jbNoName:'Digite um nome para a coleção.',
+jbCreated:'✓ {x} criada · código {c}',jbCreateFail:'Não foi possível criar: {e}',jbNoCode:'Digite o código da coleção.',
+jbJoined:'✓ Você entrou em {x} · código {c}',jbJoinFail:'Não foi possível entrar: {e}',jbDelFail:'Não foi possível excluir: {e}',
+jbLeaveFail:'Não foi possível sair: {e}',jbNameLong:'O nome pode ter no máximo 80 caracteres.',jbRenFail:'Não foi possível renomear: {e}',
+jbLoadFail:'Não foi possível carregar suas coleções: {e}',
+authNeed:'Informe e-mail e senha.',authWeak:'Informe e-mail e uma senha com pelo menos 6 caracteres.',
+authWait:'Você já tentou criar conta há pouco. Aguarde {m} min antes de tentar de novo.',
+authCreated:'✓ Conta criada e conectada. Use o mesmo e-mail e senha para entrar em outros aparelhos.',
+authCreated2:'✓ Conta criada. Entre com esse e-mail e a senha que você escolheu.',authFail:'Não foi possível criar a conta: {e}',
+sbFail:'Não foi possível carregar o Supabase. Recarregue a página.',errDefault:'Não foi possível concluir a operação.',busyWait:'Aguarde…',
+errRate:'Muitas tentativas seguidas. Aguarde um minuto e tente de novo.',errExists:'Já existe uma conta com esse e-mail. Tente entrar.',
+errCreds:'E-mail ou senha incorretos.',errConfirm:'Confirme o e-mail no link que recebeu antes de entrar.',
+errNoUser:'Não existe conta com esse e-mail.',errShort:'A senha precisa ter pelo menos 6 caracteres.',
+rankNovato:'Novato',rankExplorador:'Explorador',rankMinerador:'Minerador',rankColecionador:'Colecionador',rankSobrevivente:'Sobrevivente',rankLenda:'Lenda do Overworld'
+},
+en:{
+tag:'Every stack counts.',menuAria:'Settings menu',menuCfg:'⚙ Menu',import:'Import progress',reset:'Reset progress',
+hero2:'Your inventory.<br>Your journey.<br>Your collection.',heroP:'Mark every Survival item you have stored in chests, see what is missing and sync progress across devices.',
+rankNow:'Your current title',mission:'MISSION · COMPLETE COLLECTION',level:'LEVEL',rest:'Remaining',fullCats:'Categories complete',
+mile100:'100 items',mile500:'500 items',mile1000:'1000 items',mileFull:'100% complete',
+legend:'★ OVERWORLD LEGEND ★<br>You collected every Survival item!',
+searchPH:'Search items, blocks or minecraft:id…',searchAria:'Search items',clearAria:'Clear search',
+filters:'⚙ Filters',filterAria:'Filters',all:'All',missing:'Missing',doneInv:'My Inventory',
+catAria:'Category',langAria:'Item name language',sortAria:'Sort order',allCats:'All categories',catsAll:'All',
+sortDef:'Default order',az:'Name A → Z',za:'Name Z → A',doneFirst:'Collected first',missFirst:'Missing first',catsAria:'Categories',
+marked:'✓ Mark visible',unmarked:'Unmark visible',backupTitle:'Download a backup of what is saved',backup:'💾 Backup',
+panelProg:'PROGRESS BY CATEGORY',panelCloud:'☁ SHARED COLLECTION',
+emailPH:'Your email',pwPH:'Password (min 6 characters)',btnSignIn:'Sign in',btnSignUp:'Create account',
+colNamePH:'New collection name',newCol:'+ New collection',colCodePH:'Received code (e.g. A1B2-C3D4)',joinCol:'Join collection',
+activeCol:'Active collection',signOut:'Sign out',details:'👥 Details',rename:'✏️ Rename',delCol:'🗑 Delete collection',leaveCol:'🚪 Leave collection',
+authMsg:'Sign in to create or share a collection.',gridAria:'Item inventory',
+emptyH:'NO ITEMS',emptyP:'Nothing here. Try another name or ID.',clearFilters:'Clear filters',
+footTitle:'· Minecraft Collection Tracker · v26.3',made:'Made for Minecraft players ⛏',iconsCredit:'Icons and models:',
+close:'Close',mId:'ID',mCat:'Category',mStatus:'Status',mCopy:'Copy ID',mCopied:'✓ Copied',
+mToggleMark:'Mark as collected',mToggleUnmark:'Unmark as collected',stDone:'✓ Collected',notDone:'Missing',
+resetTitle:'Reset progress?',resetMsg:'All marked items will be unchecked. Make a backup first if you want to keep a copy.',cancel:'Cancel',resetYes:'Reset everything',
+delTitle:'Delete collection?',delYes:'Delete',renTitle:'Rename collection',renSub:'The share code stays the same.',renPH:'New name',save:'Save',
+detTitle:'Collection details',mCol:'Collection',mCode:'Code',mCreated:'Created on',mSub:'Who joined, who left, date and time. Only the owner manages members.',
+rm:'Remove',rmTitle:'Remove {e} from the collection',confRmTitle:'Remove member?',confRmMsg:'Remove "{e}" from "{x}"? That person stops seeing the shared progress and the history records the exit.',
+confDelMsg:'The collection "{x}" (code {c}) will be deleted for every member, along with all checked progress. This cannot be undone.',
+confLeaveTitle:'Leave collection?',confLeaveMsg:'You will stop seeing the shared progress of "{x}". The owner and other members keep everything, and you can rejoin with the code {c}.',
+detIn:'In the collection ({n})',detNobody:'Nobody here.',detOut:'Left ({n})',detNobodyOut:'Nobody has left yet.',
+detJoined:'Joined on ',detLeft:'Left on ',tagOwner:'👑 Owner',tagMember:'Member',tagLeft:'Left',loading:'Loading…',
+histMissing:'The history table does not exist yet. Run the supabase_migration_member_events.sql file in the Supabase SQL Editor.',
+detLoadFail:'Could not load: {e}',detRemoveFail:'Could not remove: {e}',
+footA:'items obtainable in Survival out of',footB:'records',footC:'excluded (Creative/commands/technical)',footD:'Data and progress stay on this device.',
+ariaCollected:'Collected: ',ariaDetails:'Details of ',ariaCopyId:'Copy ID minecraft:',
+t100:'★ Congratulations! Checklist 100% complete.',tMarked:'✓ {n} items marked',tUnmarked:'{n} items unmarked',tCopied:'✓ Copied: minecraft:{id}',
+tBackup:'💾 Backup created!',tImported:'✓ Progress imported! {n} items marked.',tBadFile:'Invalid progress file.',tReset:'Progress reset',
+colDeleted:'🗑 Collection "{x}" deleted.',colLeft:'🚪 You left "{x}"',colRenamed:'✏️ Collection renamed to "{x}"',memberRemoved:'Member removed from "{x}"',
+jbNoCol:'Create a collection or join using a code.',jbSyncFail:'Sync failed: {e}',jbNoName:'Enter a collection name.',
+jbCreated:'✓ {x} created · code {c}',jbCreateFail:'Could not create: {e}',jbNoCode:'Enter the collection code.',
+jbJoined:'✓ You joined {x} · code {c}',jbJoinFail:'Could not join: {e}',jbDelFail:'Could not delete: {e}',
+jbLeaveFail:'Could not leave: {e}',jbNameLong:'The name can have at most 80 characters.',jbRenFail:'Could not rename: {e}',
+jbLoadFail:'Could not load your collections: {e}',
+authNeed:'Enter your email and password.',authWeak:'Enter an email and a password with at least 6 characters.',
+authWait:'You tried creating an account recently. Wait {m} min before trying again.',
+authCreated:'✓ Account created and connected. Use the same email and password to sign in on other devices.',
+authCreated2:'✓ Account created. Sign in with that email and the password you chose.',authFail:'Could not create the account: {e}',
+sbFail:'Could not load Supabase. Reload the page.',errDefault:'Could not complete the operation.',busyWait:'Please wait…',
+errRate:'Too many attempts. Wait a minute and try again.',errExists:'An account with this email already exists. Try signing in.',
+errCreds:'Incorrect email or password.',errConfirm:'Confirm the email from the link you received before signing in.',
+errNoUser:'No account exists with this email.',errShort:'The password needs at least 6 characters.',
+rankNovato:'Novice',rankExplorador:'Explorer',rankMinerador:'Miner',rankColecionador:'Collector',rankSobrevivente:'Survivor',rankLenda:'Overworld Legend'
+},
+es:{
+tag:'Cada stack cuenta.',menuAria:'Menú de configuración',menuCfg:'⚙ Menú',import:'Importar progreso',reset:'Reiniciar progreso',
+hero2:'Tu inventario.<br>Tu viaje.<br>Tu colección.',heroP:'Marca cada objeto del Survival que guardaste en tus cofres, descubre lo que falta y sincroniza el progreso entre dispositivos.',
+rankNow:'Tu título actual',mission:'MISIÓN · COLECCIÓN COMPLETA',level:'NIVEL',rest:'Restantes',fullCats:'Categorías completas',
+mile100:'100 objetos',mile500:'500 objetos',mile1000:'1000 objetos',mileFull:'100% completo',
+legend:'★ LEYENDA DEL OVERWORLD ★<br>¡Reuniste todos los objetos del Survival!',
+searchPH:'Buscar objetos, bloques o minecraft:id…',searchAria:'Buscar objetos',clearAria:'Borrar búsqueda',
+filters:'⚙ Filtros',filterAria:'Filtros',all:'Todos',missing:'Faltantes',doneInv:'Mi inventario',
+catAria:'Categoría',langAria:'Idioma de los nombres',sortAria:'Orden',allCats:'Todas las categorías',catsAll:'Todos',
+sortDef:'Orden predeterminado',az:'Nombre A → Z',za:'Nombre Z → A',doneFirst:'Recolectados primero',missFirst:'Faltantes primero',catsAria:'Categorías',
+marked:'✓ Marcar visibles',unmarked:'Desmarcar visibles',backupTitle:'Descargar una copia de seguridad de lo guardado',backup:'💾 Copia',
+panelProg:'PROGRESO POR CATEGORÍA',panelCloud:'☁ COLECCIÓN COMPARTIDA',
+emailPH:'Tu correo',pwPH:'Contraseña (mínimo 6 caracteres)',btnSignIn:'Entrar',btnSignUp:'Crear cuenta',
+colNamePH:'Nombre de la nueva colección',newCol:'+ Nueva colección',colCodePH:'Código recibido (ej.: A1B2-C3D4)',joinCol:'Unirse a la colección',
+activeCol:'Colección activa',signOut:'Salir',details:'👥 Detalles',rename:'✏️ Renombrar',delCol:'🗑 Eliminar colección',leaveCol:'🚪 Salir de la colección',
+authMsg:'Inicia sesión para crear o compartir una colección.',gridAria:'Inventario de objetos',
+emptyH:'SIN OBJETOS',emptyP:'Nada por aquí. Prueba otro nombre o ID.',clearFilters:'Borrar filtros',
+footTitle:'· Minecraft Collection Tracker · v26.3',made:'Hecho para jugadores de Minecraft ⛏',iconsCredit:'Iconos y modelos:',
+close:'Cerrar',mId:'ID',mCat:'Categoría',mStatus:'Estado',mCopy:'Copiar ID',mCopied:'✓ Copiado',
+mToggleMark:'Marcar como recolectado',mToggleUnmark:'Desmarcar como recolectado',stDone:'✓ Recolectado',notDone:'Falta',
+resetTitle:'¿Reiniciar progreso?',resetMsg:'Todos los objetos marcados se desmarcarán. Haz una copia de seguridad antes si quieres guardar una copia.',cancel:'Cancelar',resetYes:'Reiniciar todo',
+delTitle:'¿Eliminar colección?',delYes:'Eliminar',renTitle:'Renombrar colección',renSub:'El código de compartición sigue igual.',renPH:'Nuevo nombre',save:'Guardar',
+detTitle:'Detalles de la colección',mCol:'Colección',mCode:'Código',mCreated:'Creada el',mSub:'Quién entró, quién salió, fecha y hora. Solo el dueño gestiona los miembros.',
+rm:'Quitar',rmTitle:'Quitar {e} de la colección',confRmTitle:'¿Quitar miembro?',confRmMsg:'¿Quitar a "{e}" de "{x}"? Esa persona deja de ver el progreso compartido y el historial registra la salida.',
+confDelMsg:'La colección "{x}" (código {c}) se borrará para todos los miembros, junto con todo el progreso marcado. No se puede deshacer.',
+confLeaveTitle:'¿Salir de la colección?',confLeaveMsg:'Dejarás de ver el progreso compartido de "{x}". El dueño y los demás miembros conservan todo, y puedes volver con el código {c}.',
+detIn:'En la colección ({n})',detNobody:'Nadie aquí.',detOut:'Se fueron ({n})',detNobodyOut:'Nadie se ha ido todavía.',
+detJoined:'Entró el ',detLeft:'Salió el ',tagOwner:'👑 Dueño',tagMember:'Miembro',tagLeft:'Salió',loading:'Cargando…',
+histMissing:'El historial todavía no existe en la base. Ejecuta el archivo supabase_migration_member_events.sql en el SQL Editor de Supabase.',
+detLoadFail:'No se pudo cargar: {e}',detRemoveFail:'No se pudo quitar: {e}',
+footA:'objetos obtenibles en Survival de',footB:'registros',footC:'excluidos (Creative/commands/técnicos)',footD:'Los datos y el progreso quedan en este dispositivo.',
+ariaCollected:'Recolectado: ',ariaDetails:'Detalles de ',ariaCopyId:'Copiar ID minecraft:',
+t100:'★ ¡Felicidades! Lista al 100%.',tMarked:'✓ {n} objetos marcados',tUnmarked:'{n} objetos desmarcados',tCopied:'✓ Copiado: minecraft:{id}',
+tBackup:'💾 ¡Copia de seguridad creada!',tImported:'✓ ¡Progreso importado! {n} objetos marcados.',tBadFile:'Archivo de progreso no válido.',tReset:'Progreso reiniciado',
+colDeleted:'🗑 Colección "{x}" eliminada.',colLeft:'🚪 Saliste de "{x}"',colRenamed:'✏️ Colección renombrada a "{x}"',memberRemoved:'Miembro eliminado de "{x}"',
+jbNoCol:'Crea una colección o únete con un código.',jbSyncFail:'Error al sincronizar: {e}',jbNoName:'Escribe un nombre para la colección.',
+jbCreated:'✓ {x} creada · código {c}',jbCreateFail:'No se pudo crear: {e}',jbNoCode:'Escribe el código de la colección.',
+jbJoined:'✓ Te uniste a {x} · código {c}',jbJoinFail:'No se pudo unir: {e}',jbDelFail:'No se pudo eliminar: {e}',
+jbLeaveFail:'No se pudo salir: {e}',jbNameLong:'El nombre puede tener como máximo 80 caracteres.',jbRenFail:'No se pudo renombrar: {e}',
+jbLoadFail:'No se pudieron cargar tus colecciones: {e}',
+authNeed:'Introduce correo y contraseña.',authWeak:'Introduce un correo y una contraseña de al menos 6 caracteres.',
+authWait:'Intentaste crear una cuenta hace poco. Espera {m} min antes de intentarlo de nuevo.',
+authCreated:'✓ Cuenta creada y conectada. Usa el mismo correo y contraseña para entrar en otros dispositivos.',
+authCreated2:'✓ Cuenta creada. Entra con ese correo y la contraseña que elegiste.',authFail:'No se pudo crear la cuenta: {e}',
+sbFail:'No se pudo cargar Supabase. Recarga la página.',errDefault:'No se pudo completar la operación.',busyWait:'Espera…',
+errRate:'Demasiados intentos seguidos. Espera un minuto e inténtalo de nuevo.',errExists:'Ya existe una cuenta con ese correo. Prueba a entrar.',
+errCreds:'Correo o contraseña incorrectos.',errConfirm:'Confirma el correo en el enlace que recibiste antes de entrar.',
+errNoUser:'No existe ninguna cuenta con ese correo.',errShort:'La contraseña necesita al menos 6 caracteres.',
+rankNovato:'Novato',rankExplorador:'Explorador',rankMinerador:'Minero',rankColecionador:'Coleccionista',rankSobrevivente:'Superviviente',rankLenda:'Leyenda del Overworld'
+},
+fr:{
+tag:'Chaque stack compte.',menuAria:'Menu de configuration',menuCfg:'⚙ Menu',import:'Importer la progression',reset:'Réinitialiser la progression',
+hero2:'Votre inventaire.<br>Votre voyage.<br>Votre collection.',heroP:'Cochez chaque objet du Survival que vous avez rangé dans vos coffres, découvrez ce qui manque et synchronisez la progression entre appareils.',
+rankNow:'Votre titre actuel',mission:'MISSION · COLLECTION COMPLÈTE',level:'NIVEAU',rest:'Restants',fullCats:'Catégories complètes',
+mile100:'100 objets',mile500:'500 objets',mile1000:'1000 objets',mileFull:'100% complet',
+legend:'★ LÉGENDE DE L’OVERWORLD ★<br>Vous avez collecté tous les objets du Survival !',
+searchPH:'Rechercher objets, blocs ou minecraft:id…',searchAria:'Rechercher des objets',clearAria:'Effacer la recherche',
+filters:'⚙ Filtres',filterAria:'Filtres',all:'Tous',missing:'Manquants',doneInv:'Mon inventaire',
+catAria:'Catégorie',langAria:'Langue des noms',sortAria:'Tri',allCats:'Toutes les catégories',catsAll:'Tous',
+sortDef:'Ordre par défaut',az:'Nom A → Z',za:'Nom Z → A',doneFirst:'Collectés d’abord',missFirst:'Manquants d’abord',catsAria:'Catégories',
+marked:'✓ Cocher les visibles',unmarked:'Décocher les visibles',backupTitle:'Télécharger une sauvegarde de ce qui est enregistré',backup:'💾 Sauvegarde',
+panelProg:'PROGRESSION PAR CATÉGORIE',panelCloud:'☁ COLLECTION PARTAGÉE',
+emailPH:'Votre e-mail',pwPH:'Mot de passe (6 caractères min.)',btnSignIn:'Se connecter',btnSignUp:'Créer un compte',
+colNamePH:'Nom de la nouvelle collection',newCol:'+ Nouvelle collection',colCodePH:'Code reçu (ex. : A1B2-C3D4)',joinCol:'Rejoindre la collection',
+activeCol:'Collection active',signOut:'Se déconnecter',details:'👥 Détails',rename:'✏️ Renommer',delCol:'🗑 Supprimer la collection',leaveCol:'🚪 Quitter la collection',
+authMsg:'Connectez-vous pour créer ou partager une collection.',gridAria:'Inventaire d’objets',
+emptyH:'AUCUN OBJET',emptyP:'Rien ici. Essayez un autre nom ou ID.',clearFilters:'Effacer les filtres',
+footTitle:'· Minecraft Collection Tracker · v26.3',made:'Fait pour les joueurs de Minecraft ⛏',iconsCredit:'Icônes et modèles :',
+close:'Fermer',mId:'ID',mCat:'Catégorie',mStatus:'État',mCopy:'Copier l’ID',mCopied:'✓ Copié',
+mToggleMark:'Marquer comme collecté',mToggleUnmark:'Démarquer comme collecté',stDone:'✓ Collecté',notDone:'Manquant',
+resetTitle:'Réinitialiser la progression ?',resetMsg:'Tous les objets marqués seront décochés. Faites d’abord une sauvegarde si vous voulez garder une copie.',cancel:'Annuler',resetYes:'Tout réinitialiser',
+delTitle:'Supprimer la collection ?',delYes:'Supprimer',renTitle:'Renommer la collection',renSub:'Le code de partage reste le même.',renPH:'Nouveau nom',save:'Enregistrer',
+detTitle:'Détails de la collection',mCol:'Collection',mCode:'Code',mCreated:'Créée le',mSub:'Qui a rejoint, qui est parti, date et heure. Seul le propriétaire gère les membres.',
+rm:'Retirer',rmTitle:'Retirer {e} de la collection',confRmTitle:'Retirer un membre ?',confRmMsg:'Retirer « {e} » de « {x} » ? Cette personne ne verra plus la progression partagée et l’historique enregistre le départ.',
+confDelMsg:'La collection « {x} » (code {c}) sera supprimée pour tous les membres, avec toute la progression cochée. Action irréversible.',
+confLeaveTitle:'Quitter la collection ?',confLeaveMsg:'Vous ne verrez plus la progression partagée de « {x} ». Le propriétaire et les autres membres gardent tout, et vous pouvez rejoindre à nouveau avec le code {c}.',
+detIn:'Dans la collection ({n})',detNobody:'Personne ici.',detOut:'Partis ({n})',detNobodyOut:'Personne n’est encore parti.',
+detJoined:'A rejoint le ',detLeft:'Est parti le ',tagOwner:'👑 Propriétaire',tagMember:'Membre',tagLeft:'Parti',loading:'Chargement…',
+histMissing:'L’historique n’existe pas encore dans la base. Exécutez le fichier supabase_migration_member_events.sql dans l’éditeur SQL de Supabase.',
+detLoadFail:'Impossible de charger : {e}',detRemoveFail:'Impossible de retirer : {e}',
+footA:'objets obtenables en Survival sur',footB:'enregistrements',footC:'exclus (Créatif/commandes/techniques)',footD:'Les données et la progression restent sur cet appareil.',
+ariaCollected:'Collecté : ',ariaDetails:'Détails de ',ariaCopyId:'Copier l’ID minecraft:',
+t100:'★ Félicitations ! Checklist terminée à 100%.',tMarked:'✓ {n} objets cochés',tUnmarked:'{n} objets décochés',tCopied:'✓ Copié : minecraft:{id}',
+tBackup:'💾 Sauvegarde créée !',tImported:'✓ Progression importée ! {n} objets cochés.',tBadFile:'Fichier de progression invalide.',tReset:'Progression réinitialisée',
+colDeleted:'🗑 Collection « {x} » supprimée.',colLeft:'🚪 Vous avez quitté « {x} »',colRenamed:'✏️ Collection renommée en « {x} »',memberRemoved:'Membre retiré de « {x} »',
+jbNoCol:'Créez une collection ou rejoignez-en une avec un code.',jbSyncFail:'Échec de la synchronisation : {e}',jbNoName:'Saisissez un nom pour la collection.',
+jbCreated:'✓ {x} créée · code {c}',jbCreateFail:'Impossible de créer : {e}',jbNoCode:'Saisissez le code de la collection.',
+jbJoined:'✓ Vous avez rejoint {x} · code {c}',jbJoinFail:'Impossible de rejoindre : {e}',jbDelFail:'Impossible de supprimer : {e}',
+jbLeaveFail:'Impossible de quitter : {e}',jbNameLong:'Le nom peut contenir au maximum 80 caractères.',jbRenFail:'Impossible de renommer : {e}',
+jbLoadFail:'Impossible de charger vos collections : {e}',
+authNeed:'Saisissez e-mail et mot de passe.',authWeak:'Saisissez un e-mail et un mot de passe d’au moins 6 caractères.',
+authWait:'Vous avez récemment essayé de créer un compte. Attendez {m} min avant de réessayer.',
+authCreated:'✓ Compte créé et connecté. Utilisez le même e-mail et le même mot de passe sur les autres appareils.',
+authCreated2:'✓ Compte créé. Connectez-vous avec cet e-mail et le mot de passe choisi.',authFail:'Impossible de créer le compte : {e}',
+sbFail:'Impossible de charger Supabase. Rechargez la page.',errDefault:'Impossible de terminer l’opération.',busyWait:'Veuillez patienter…',
+errRate:'Trop de tentatives. Patientez une minute puis réessayez.',errExists:'Un compte existe déjà avec cet e-mail. Essayez de vous connecter.',
+errCreds:'E-mail ou mot de passe incorrects.',errConfirm:'Confirmez l’e-mail depuis le lien reçu avant de vous connecter.',
+errNoUser:'Aucun compte avec cet e-mail.',errShort:'Le mot de passe doit contenir au moins 6 caractères.',
+rankNovato:'Novice',rankExplorador:'Explorateur',rankMinerador:'Mineur',rankColecionador:'Collectionneur',rankSobrevivente:'Survivant',rankLenda:'Légende de l’Overworld'
+},
+de:{
+tag:'Jeder Stack zählt.',menuAria:'Einstellungsmenü',menuCfg:'⚙ Menü',import:'Fortschritt importieren',reset:'Fortschritt zurücksetzen',
+hero2:'Dein Inventar.<br>Deine Reise.<br>Deine Sammlung.',heroP:'Markiere jedes Survival-Item, das du in deinen Truhen gelagert hast, sieh, was fehlt und synchronisiere den Fortschritt zwischen Geräten.',
+rankNow:'Dein aktueller Titel',mission:'MISSION · VOLLSTÄNDIGE SAMMLUNG',level:'LEVEL',rest:'Verbleibend',fullCats:'Kategorien komplett',
+mile100:'100 Items',mile500:'500 Items',mile1000:'1000 Items',mileFull:'100% komplett',
+legend:'★ LEGENDE DER OVERWORLD ★<br>Du hast alle Survival-Items gesammelt!',
+searchPH:'Items, Blöcke oder minecraft:id suchen…',searchAria:'Items durchsuchen',clearAria:'Suche leeren',
+filters:'⚙ Filter',filterAria:'Filter',all:'Alle',missing:'Fehlend',doneInv:'Mein Inventar',
+catAria:'Kategorie',langAria:'Sprache der Namen',sortAria:'Sortierung',allCats:'Alle Kategorien',catsAll:'Alle',
+sortDef:'Standardreihenfolge',az:'Name A → Z',za:'Name Z → A',doneFirst:'Gesammelte zuerst',missFirst:'Fehlende zuerst',catsAria:'Kategorien',
+marked:'✓ Sichtbare markieren',unmarked:'Sichtbare entfernen',backupTitle:'Sicherung der gespeicherten Daten herunterladen',backup:'💾 Sicherung',
+panelProg:'FORTSCHRITT PRO KATEGORIE',panelCloud:'☁ GETEILTE SAMMLUNG',
+emailPH:'Deine E-Mail',pwPH:'Passwort (mind. 6 Zeichen)',btnSignIn:'Anmelden',btnSignUp:'Konto erstellen',
+colNamePH:'Name der neuen Sammlung',newCol:'+ Neue Sammlung',colCodePH:'Erhaltener Code (z. B. A1B2-C3D4)',joinCol:'Sammlung beitreten',
+activeCol:'Aktive Sammlung',signOut:'Abmelden',details:'👥 Details',rename:'✏️ Umbenennen',delCol:'🗑 Sammlung löschen',leaveCol:'🚪 Sammlung verlassen',
+authMsg:'Melde dich an, um eine Sammlung zu erstellen oder zu teilen.',gridAria:'Item-Inventar',
+emptyH:'KEINE ITEMS',emptyP:'Nichts hier. Versuche einen anderen Namen oder ID.',clearFilters:'Filter zurücksetzen',
+footTitle:'· Minecraft Collection Tracker · v26.3',made:'Gemacht für Minecraft-Spieler ⛏',iconsCredit:'Icons und Modelle:',
+close:'Schließen',mId:'ID',mCat:'Kategorie',mStatus:'Status',mCopy:'ID kopieren',mCopied:'✓ Kopiert',
+mToggleMark:'Als gesammelt markieren',mToggleUnmark:'Markierung entfernen',stDone:'✓ Gesammelt',notDone:'Fehlt',
+resetTitle:'Fortschritt zurücksetzen?',resetMsg:'Alle markierten Items werden entfernt. Erstelle vorher eine Sicherung, wenn du eine Kopie behalten willst.',cancel:'Abbrechen',resetYes:'Alles zurücksetzen',
+delTitle:'Sammlung löschen?',delYes:'Löschen',renTitle:'Sammlung umbenennen',renSub:'Der Freigabecode bleibt gleich.',renPH:'Neuer Name',save:'Speichern',
+detTitle:'Sammlungsdetails',mCol:'Sammlung',mCode:'Code',mCreated:'Erstellt am',mSub:'Wer beigetreten ist, wer gegangen ist, Datum und Uhrzeit. Nur der Besitzer verwaltet Mitglieder.',
+rm:'Entfernen',rmTitle:'{e} aus der Sammlung entfernen',confRmTitle:'Mitglied entfernen?',confRmMsg:'„{e}“ aus „{x}“ entfernen? Diese Person sieht den geteilten Fortschritt nicht mehr, und die Historie protokolliert den Austritt.',
+confDelMsg:'Die Sammlung „{x}“ (Code {c}) wird für alle Mitglieder gelöscht, samt allen markierten Fortschritts. Das lässt sich nicht rückgängig machen.',
+confLeaveTitle:'Sammlung verlassen?',confLeaveMsg:'Du siehst den geteilten Fortschritt von „{x}“ nicht mehr. Besitzer und andere Mitglieder behalten alles, und du kannst mit dem Code {c} wieder beitreten.',
+detIn:'In der Sammlung ({n})',detNobody:'Niemand hier.',detOut:'Gegangen ({n})',detNobodyOut:'Niemand ist bisher gegangen.',
+detJoined:'Beigetreten am ',detLeft:'Gegangen am ',tagOwner:'👑 Besitzer',tagMember:'Mitglied',tagLeft:'Gegangen',loading:'Wird geladen…',
+histMissing:'Die Historie existiert noch nicht in der Datenbank. Führe die Datei supabase_migration_member_events.sql im SQL Editor von Supabase aus.',
+detLoadFail:'Konnte nicht geladen werden: {e}',detRemoveFail:'Konnte nicht entfernt werden: {e}',
+footA:'im Survival erhältliche Items von',footB:'Einträgen',footC:'ausgeschlossen (Kreativ/Befehle/technisch)',footD:'Daten und Fortschritt bleiben auf diesem Gerät.',
+ariaCollected:'Gesammelt: ',ariaDetails:'Details zu ',ariaCopyId:'ID minecraft kopieren:',
+t100:'★ Glückwunsch! Checkliste zu 100% komplett.',tMarked:'✓ {n} Items markiert',tUnmarked:'{n} Items entfernt',tCopied:'✓ Kopiert: minecraft:{id}',
+tBackup:'💾 Sicherung erstellt!',tImported:'✓ Fortschritt importiert! {n} Items markiert.',tBadFile:'Ungültige Fortschrittsdatei.',tReset:'Fortschritt zurückgesetzt',
+colDeleted:'🗑 Sammlung „{x}“ gelöscht.',colLeft:'🚪 Du hast „{x}“ verlassen.',colRenamed:'✏️ Sammlung umbenannt in „{x}“',memberRemoved:'Mitglied aus „{x}“ entfernt',
+jbNoCol:'Erstelle eine Sammlung oder tritt mit einem Code bei.',jbSyncFail:'Synchronisierung fehlgeschlagen: {e}',jbNoName:'Gib einen Namen für die Sammlung ein.',
+jbCreated:'✓ {x} erstellt · Code {c}',jbCreateFail:'Konnte nicht erstellt werden: {e}',jbNoCode:'Gib den Sammlungscode ein.',
+jbJoined:'✓ Du bist {x} beigetreten · Code {c}',jbJoinFail:'Konnte nicht beitreten: {e}',jbDelFail:'Konnte nicht gelöscht werden: {e}',
+jbLeaveFail:'Konnte nicht verlassen werden: {e}',jbNameLong:'Der Name darf höchstens 80 Zeichen haben.',jbRenFail:'Konnte nicht umbenannt werden: {e}',
+jbLoadFail:'Deine Sammlungen konnten nicht geladen werden: {e}',
+authNeed:'Gib E-Mail und Passwort ein.',authWeak:'Gib eine E-Mail und ein Passwort mit mindestens 6 Zeichen ein.',
+authDupe:'ok',authWait:'Du hast vor kurzem versucht, ein Konto zu erstellen. Warte {m} Min., bevor du es erneut versuchst.',
+authCreated:'✓ Konto erstellt und verbunden. Nutze dieselbe E-Mail und Passwort, um dich auf anderen Geräten anzumelden.',
+authCreated2:'✓ Konto erstellt. Melde dich mit dieser E-Mail und dem gewählten Passwort an.',authFail:'Konto konnte nicht erstellt werden: {e}',
+sbFail:'Supabase konnte nicht geladen werden. Lade die Seite neu.',errDefault:'Vorgang konnte nicht abgeschlossen werden.',busyWait:'Bitte warten…',
+errRate:'Zu viele Versuche. Warte eine Minute und versuche es erneut.',errExists:'Es gibt bereits ein Konto mit dieser E-Mail. Versuche dich anzumelden.',
+errCreds:'E-Mail oder Passwort falsch.',errConfirm:'Bestätige die E-Mail über den Link, den du erhalten hast, bevor du dich anmeldest.',
+errNoUser:'Es gibt kein Konto mit dieser E-Mail.',errShort:'Das Passwort braucht mindestens 6 Zeichen.',
+rankNovato:'Neuling',rankExplorador:'Entdecker',rankMinerador:'Bergmann',rankColecionador:'Sammler',rankSobrevivente:'Überlebender',rankLenda:'Legende der Overworld'
+},
+it:{
+tag:'Ogni stack conta.',menuAria:'Menu di configurazione',menuCfg:'⚙ Menu',import:'Importa progressi',reset:'Azzera progressi',
+hero2:'Il tuo inventario.<br>Il tuo viaggio.<br>La tua collezione.',heroP:'Segna ogni oggetto del Survival che hai nei forzieri, scopri cosa manca e sincronizza i progressi tra dispositivi.',
+rankNow:'Il tuo titolo attuale',mission:'MISSIONE · COLLEZIONE COMPLETA',level:'LIVELLO',rest:'Rimanenti',fullCats:'Categorie complete',
+mile100:'100 oggetti',mile500:'500 oggetti',mile1000:'1000 oggetti',mileFull:'100% completo',
+legend:'★ LEGGENDA DELL’OVERWORLD ★<br>Hai raccolto tutti gli oggetti del Survival!',
+searchPH:'Cerca oggetti, blocchi o minecraft:id…',searchAria:'Cerca oggetti',clearAria:'Cancella ricerca',
+filters:'⚙ Filtri',filterAria:'Filtri',all:'Tutti',missing:'Mancanti',doneInv:'Il mio inventario',
+catAria:'Categoria',langAria:'Lingua dei nomi',sortAria:'Ordinamento',allCats:'Tutte le categorie',catsAll:'Tutti',
+sortDef:'Ordine predefinito',az:'Nome A → Z',za:'Nome Z → A',doneFirst:'Raccolti prima',missFirst:'Mancanti prima',catsAria:'Categorie',
+marked:'✓ Seleziona visibili',unmarked:'Deseleziona visibili',backupTitle:'Scarica un backup di ciò che è salvato',backup:'💾 Backup',
+panelProg:'PROGRESSO PER CATEGORIA',panelCloud:'☁ COLLEZIONE CONDIVISA',
+emailPH:'La tua e-mail',pwPH:'Password (min 6 caratteri)',btnSignIn:'Accedi',btnSignUp:'Crea account',
+colNamePH:'Nome della nuova collezione',newCol:'+ Nuova collezione',colCodePH:'Codice ricevuto (es. A1B2-C3D4)',joinCol:'Entra nella collezione',
+activeCol:'Collezione attiva',signOut:'Esci',details:'👥 Dettagli',rename:'✏️ Rinomina',delCol:'🗑 Elimina collezione',leaveCol:'🚪 Esci dalla collezione',
+authMsg:'Accedi per creare o condividere una collezione.',gridAria:'Inventario degli oggetti',
+emptyH:'NESSUN OGGETTO',emptyP:'Niente qui. Prova un altro nome o ID.',clearFilters:'Cancella filtri',
+footTitle:'· Minecraft Collection Tracker · v26.3',made:'Fatto per i giocatori di Minecraft ⛏',iconsCredit:'Icone e modelli:',
+close:'Chiudi',mId:'ID',mCat:'Categoria',mStatus:'Stato',mCopy:'Copia ID',mCopied:'✓ Copiato',
+mToggleMark:'Segna come raccolto',mToggleUnmark:'Togli segno',stDone:'✓ Raccolto',notDone:'Manca',
+resetTitle:'Azzerare i progressi?',resetMsg:'Tutti gli oggetti segnati verranno deselezionati. Fai prima un backup se vuoi conservare una copia.',cancel:'Annulla',resetYes:'Azzera tutto',
+delTitle:'Eliminare la collezione?',delYes:'Elimina',renTitle:'Rinomina collezione',renSub:'Il codice di condivisione resta lo stesso.',renPH:'Nuovo nome',save:'Salva',
+detTitle:'Dettagli della collezione',mCol:'Collezione',mCode:'Codice',mCreated:'Creata il',mSub:'Chi è entrato, chi è uscito, data e ora. Solo il proprietario gestisce i membros.',
+rm:'Rimuovi',rmTitle:'Rimuovi {e} dalla collezione',confRmTitle:'Rimuovere un membro?',confRmMsg:'Rimuovere "{e}" da "{x}"? La persona smette di vedere i progressi condivisi e la cronologia registra l’uscita.',
+confDelMsg:'La collezione "{x}" (codice {c}) verrà eliminata per tutti i membros, insieme a tutti i progressi segnati. Non è reversibile.',
+confLeaveTitle:'Esci dalla collezione?',confLeaveMsg:'Smetterai di vedere i progressi condivisi di "{x}". Il proprietario e gli altri membri tengono tutto, e puoi rientrare con il codice {c}.',
+detIn:'Nella collezione ({n})',detNobody:'Nessuno qui.',detOut:'Usciti ({n})',detNobodyOut:'Non è ancora uscito nessuno.',
+detJoined:'Entrato il ',detLeft:'Uscito il ',tagOwner:'👑 Proprietario',tagMember:'Membro',tagLeft:'Uscito',loading:'Caricamento…',
+histMissing:'La cronologia non esiste ancora nel database. Esegui il file supabase_migration_member_events.sql nell’SQL Editor di Supabase.',
+detLoadFail:'Impossibile caricare: {e}',detRemoveFail:'Impossibile rimuovere: {e}',
+footA:'oggetti ottenibili nel Survival su',footB:'record',footC:'esclusi (Creativo/comandi/tecnici)',footD:'Dati e progressi restano su questo dispositivo.',
+ariaCollected:'Raccolto: ',ariaDetails:'Dettagli di ',ariaCopyId:'Copia ID minecraft:',
+t100:'★ Complimenti! Checklist completa al 100%.',tMarked:'✓ {n} oggetti segnati',tUnmarked:'{n} oggetti deselezionati',tCopied:'✓ Copiato: minecraft:{id}',
+tBackup:'💾 Backup creato!',tImported:'✓ Progressi importati! {n} oggetti segnati.',tBadFile:'File di progressi non valido.',tReset:'Progressi azzerati',
+colDeleted:'🗑 Collezione "{x}" eliminata.',colLeft:'🚪 Sei uscito da "{x}"',colRenamed:'✏️ Collezione rinominata in "{x}"',memberRemoved:'Membro rimosso da "{x}"',
+jbNoCol:'Crea una collezione o entrane una con un codice.',jbSyncFail:'Sincronizzazione non riuscita: {e}',jbNoName:'Inserisci un nome per la collezione.',
+jbCreated:'✓ {x} creata · codice {c}',jbCreateFail:'Impossibile creare: {e}',jbNoCode:'Inserisci il codice della collezione.',
+jbJoined:'✓ Sei entrato in {x} · codice {c}',jbJoinFail:'Impossibile entrare: {e}',jbDelFail:'Impossibile eliminare: {e}',
+jbLeaveFail:'Impossibile uscire: {e}',jbNameLong:'Il nome può avere al massimo 80 caratteri.',jbRenFail:'Impossibile rinominare: {e}',
+jbLoadFail:'Impossibile caricare le tue collezioni: {e}',
+authNeed:'Inserisci e-mail e password.',authWeak:'Inserisci un’e-mail e una password di almeno 6 caratteri.',
+authWait:'Hai provato a creare un account di recente. Attendi {m} min prima di riprovare.',
+authCreated:'✓ Account creato e connesso. Usa la stessa e-mail e password per accedere da altri dispositivi.',
+authCreated2:'✓ Account creato. Accedi con quella e-mail e la password scelta.',authFail:'Impossibile creare l’account: {e}',
+sbFail:'Impossibile caricare Supabase. Ricarica la pagina.',errDefault:'Impossibile completare l’operazione.',busyWait:'Attendi…',
+errRate:'Troppi tentativi. Attendi un minuto e riprova.',errExists:'Esiste già un account con questa e-mail. Prova ad accedere.',
+errCreds:'E-mail o password errati.',errConfirm:'Conferma l’e-mail dal link ricevuto prima di accedere.',
+errNoUser:'Non esiste un account con questa e-mail.',errShort:'La password deve avere almeno 6 caratteri.',
+rankNovato:'Novizio',rankExplorador:'Esploratore',rankMinerador:'Minatore',rankColecionador:'Collezionista',rankSobrevivente:'Sopravvissuto',rankLenda:'Leggenda dell’Overworld'
+},
+ja:{
+tag:'すべてのスタックが意味を持つ。',menuAria:'設定メニュー',menuCfg:'⚙ メニュー',import:'進捗を読み込む',reset:'進捗をリセット',
+hero2:'あなたのインベントリ。<br>あなたの旅。<br>あなたのコレクション。',heroP:'チェストに保管したサバイバルのアイテムをひとつずつマークし、何が足りないかを確認して、端末間で進捗を同期しましょう。',
+rankNow:'現在の称号',mission:'ミッション · コレクション完成',level:'レベル',rest:'残り',fullCats:'カテゴリ完成',
+mile100:'100 個',mile500:'500 個',mile1000:'1000 個',mileFull:'100% 完成',
+legend:'★ オーバーワールドの伝説 ★<br>サバイバルのすべてのアイテムを集めました！',
+searchPH:'アイテム、ブロック、minecraft:id を検索…',searchAria:'アイテムを検索',clearAria:'検索をクリア',
+filters:'⚙ フィルター',filterAria:'フィルター',all:'すべて',missing:'未取得',doneInv:'マイインベントリ',
+catAria:'カテゴリ',langAria:'アイテム名の言語',sortAria:'並べ替え',allCats:'すべてのカテゴリ',catsAll:'すべて',
+sortDef:'標準順',az:'名前 A → Z',za:'名前 Z → A',doneFirst:'取得済みが先',missFirst:'未取得が先',catsAria:'カテゴリ',
+marked:'✓ 表示中をマーク',unmarked:'表示中を解除',backupTitle:'保存済みのバックアップをダウンロード',backup:'💾 バックアップ',
+panelProg:'カテゴリ別の進捗',panelCloud:'☁ 共有コレクション',
+emailPH:'メールアドレス',pwPH:'パスワード（6文字以上）',btnSignIn:'ログイン',btnSignUp:'アカウント作成',
+colNamePH:'新しいコレクション名',newCol:'+ 新規コレクション',colCodePH:'受け取ったコード（例: A1B2-C3D4）',joinCol:'コレクションに参加',
+activeCol:'アクティブなコレクション',signOut:'ログアウト',details:'👥 詳細',rename:'✏️ 名前を変更',delCol:'🗑 コレクションを削除',leaveCol:'🚪 コレクションを退出',
+authMsg:'ログインするとコレクションを作成・共有できます。',gridAria:'アイテムのインベントリ',
+emptyH:'アイテムがありません',emptyP:'何もありません。別の名前や ID を試してください。',clearFilters:'フィルターを解除',
+footTitle:'· Minecraft Collection Tracker · v26.3',made:'Minecraft プレイヤーのために ⛏',iconsCredit:'アイコンとモデル:',
+close:'閉じる',mId:'ID',mCat:'カテゴリ',mStatus:'状態',mCopy:'ID をコピー',mCopied:'✓ コピーしました',
+mToggleMark:'取得済みにする',mToggleUnmark:'未取得に戻す',stDone:'✓ 取得済み',notDone:'未取得',
+resetTitle:'進捗をリセットしますか？',resetMsg:'マークしたアイテムはすべて解除されます。コピーを残す場合は先にバックアップしてください。',cancel:'キャンセル',resetYes:'すべてリセット',
+delTitle:'コレクションを削除しますか？',delYes:'削除',renTitle:'コレクション名の変更',renSub:'共有コードはそのままです。',renPH:'新しい名前',save:'保存',
+detTitle:'コレクションの詳細',mCol:'コレクション',mCode:'コード',mCreated:'作成日',mSub:'誰が参加し、誰が退出したか、日時。メンバーの管理はオーナーのみ。',
+rm:'削除',rmTitle:'{e} をコレクションから削除',confRmTitle:'メンバーを削除しますか？',confRmMsg:'"{x}" から "{e}" を削除しますか？その人は共有進捗を見られなくなり、履歴に退出が記録されます。',
+confDelMsg:'コレクション "{x}"（コード {c}）は全メンバーから、マークした進捗とともに削除されます。元に戻せません。',
+confLeaveTitle:'コレクションから退出しますか？',confLeaveMsg:'"{x}" の共有進捗を見られなくなります。オーナーと他のメンバーはそのままなので、コード {c} で再参加できます。',
+detIn:'参加中（{n}）',detNobody:'誰もいません。',detOut:'退出（{n}）',detNobodyOut:'まだ誰もいません。',
+detJoined:'参加日 ',detLeft:'退出日 ',tagOwner:'👑 オーナー',tagMember:'メンバー',tagLeft:'退出',loading:'読み込み中…',
+histMissing:'履歴テーブルがまだありません。Supabase の SQL Editor で supabase_migration_member_events.sql を実行してください。',
+detLoadFail:'読み込めませんでした: {e}',detRemoveFail:'削除できませんでした: {e}',
+footA:'サバイバルで入手可能なアイテム /',footB:'件のレコード',footC:'件を除外（クリエイティブ/コマンド/技術的）',footD:'データと進捗はこの端末に保存されます。',
+ariaCollected:'取得済み: ',ariaDetails:'詳細: ',ariaCopyId:'ID minecraft をコピー:',
+t100:'★ おめでとう！チェックリスト 100% 完成。',tMarked:'✓ {n} 個をマークしました',tUnmarked:'{n} 個のマークを解除しました',tCopied:'✓ コピーしました: minecraft:{id}',
+tBackup:'💾 バックアップを作成しました！',tImported:'✓ 進捗を読み込みました！{n} 個をマーク。',tBadFile:'無効な進捗ファイルです。',tReset:'進捗をリセットしました',
+colDeleted:'🗑 コレクション "{x}" を削除しました。',colLeft:'🚪 "{x}" から退出しました',colRenamed:'✏️ コレクション名を "{x}" に変更しました',memberRemoved:'"{x}" からメンバーを削除しました',
+jbNoCol:'コレクションを作成するか、コードで参加してください。',jbSyncFail:'同期に失敗しました: {e}',jbNoName:'コレクション名を入力してください。',
+jbCreated:'✓ {x} を作成 · コード {c}',jbCreateFail:'作成できませんでした: {e}',jbNoCode:'コレクションコードを入力してください。',
+jbJoined:'✓ {x} に参加しました · コード {c}',jbJoinFail:'参加できませんでした: {e}',jbDelFail:'削除できませんでした: {e}',
+jbLeaveFail:'退出できませんでした: {e}',jbNameLong:'名前は 80 文字までです。',jbRenFail:'名前を変更できませんでした: {e}',
+jbLoadFail:'コレクションを読み込めませんでした: {e}',
+authNeed:'メールアドレスとパスワードを入力してください。',authWeak:'メールアドレスと 6 文字以上のパスワードを入力してください。',
+authWait:'しばらく前にアカウント作成を試みています。{m} 分待ってから再試行してください。',
+authCreated:'✓ アカウントを作成し接続しました。別の端末でも同じメールとパスワードでログインできます。',
+authCreated2:'✓ アカウントを作成しました。そのメールと設定したパスワードでログインしてください。',authFail:'アカウントを作成できませんでした: {e}',
+sbFail:'Supabase を読み込めませんでした。ページを再読み込みしてください。',errDefault:'操作を完了できませんでした。',busyWait:'お待ちください…',
+errRate:'試行回数が多すぎます。1 分待ってから再試行してください。',errExists:'このメールのアカウントは既にあります。ログインを試してください。',
+errCreds:'メールまたはパスワードが違います。',errConfirm:'ログイン前に受信したメールのリンクで確認してください。',
+errNoUser:'このメールのアカウントはありません。',errShort:'パスワードは 6 文字以上必要です。',
+rankNovato:'初心者',rankExplorador:'探検家',rankMinerador:'採掘者',rankColecionador:'コレクター',rankSobrevivente:'サバイバー',rankLenda:'オーバーワールドの伝説'
+},
+ko:{
+tag:'모든 스택이 중요합니다.',menuAria:'설정 메뉴',menuCfg:'⚙ 메뉴',import:'진행률 가져오기',reset:'진행률 초기화',
+hero2:'나의 인벤토리.<br>나의 여정.<br>나의 컬렉션.',heroP:'상자에 보관한 서바이벌 아이템을 하나씩 표시하고, 무엇이 부족한지 확인하며 기기 간 진행률을 동기화하세요.',
+rankNow:'현재 칭호',mission:'임무 · 컬렉션 완성',level:'레벨',rest:'남은 항목',fullCats:'완성된 카테고리',
+mile100:'100개',mile500:'500개',mile1000:'1000개',mileFull:'100% 완성',
+legend:'★ 오버월드의 전설 ★<br>서바이벌의 모든 아이템을 모았습니다!',
+searchPH:'아이템, 블록 또는 minecraft:id 검색…',searchAria:'아이템 검색',clearAria:'검색 지우기',
+filters:'⚙ 필터',filterAria:'필터',all:'전체',missing:'부족한 항목',doneInv:'내 인벤토리',
+catAria:'카테고리',langAria:'아이템 이름 언어',sortAria:'정렬',allCats:'모든 카테고리',catsAll:'전체',
+sortDef:'기본 순서',az:'이름 A → Z',za:'이름 Z → A',doneFirst:'모은 항목 먼저',missFirst:'부족한 항목 먼저',catsAria:'카테고리',
+marked:'✓ 보이는 항목 표시',unmarked:'보이는 항목 해제',backupTitle:'저장된 내용의 백업 내려받기',backup:'💾 백업',
+panelProg:'카테고리별 진행률',panelCloud:'☁ 공유 컬렉션',
+emailPH:'이메일',pwPH:'비밀번호 (6자 이상)',btnSignIn:'로그인',btnSignUp:'계정 만들기',
+colNamePH:'새 컬렉션 이름',newCol:'+ 새 컬렉션',colCodePH:'받은 코드 (예: A1B2-C3D4)',joinCol:'컬렉션 참가',
+activeCol:'활성 컬렉션',signOut:'로그아웃',details:'👥 상세정보',rename:'✏️ 이름 바꾸기',delCol:'🗑 컬렉션 삭제',leaveCol:'🚪 컬렉션 나가기',
+authMsg:'로그인하면 컬렉션을 만들거나 공유할 수 있습니다.',gridAria:'아이템 인벤토리',
+emptyH:'아이템 없음',emptyP:'여기에는 없습니다. 다른 이름이나 ID를 시도해 보세요.',clearFilters:'필터 해제',
+footTitle:'· Minecraft Collection Tracker · v26.3',made:'Minecraft 플레이어를 위해 ⛏',iconsCredit:'아이콘과 모델:',
+close:'닫기',mId:'ID',mCat:'카테고리',mStatus:'상태',mCopy:'ID 복사',mCopied:'✓ 복사됨',
+mToggleMark:'모은 항목으로 표시',mToggleUnmark:'표시 해제',stDone:'✓ 모음',notDone:'부족',
+resetTitle:'진행률을 초기화할까요?',resetMsg:'표시된 모든 아이템이 해제됩니다. 사본을 남기려면 먼저 백업하세요.',cancel:'취소',resetYes:'모두 초기화',
+delTitle:'컬렉션을 삭제할까요?',delYes:'삭제',renTitle:'컬렉션 이름 바꾸기',renSub:'공유 코드는 그대로입니다.',renPH:'새 이름',save:'저장',
+detTitle:'컬렉션 상세정보',mCol:'컬렉션',mCode:'코드',mCreated:'생성일',mSub:'누가 들어왔고 누가 나갔는지, 날짜와 시간. 멤버 관리는 소유자만 합니다.',
+rm:'제거',rmTitle:'{e}을(를) 컬렉션에서 제거',confRmTitle:'멤버를 제거할까요?',confRmMsg:'"{x}"에서 "{e}"을(를) 제거할까요? 그 사람은 공유 진행률을 보지 못하며 기록에 나감이 남습니다.',
+confDelMsg:'컬렉션 "{x}"(코드 {c})는 모든 멤버에게서 표시된 진행률과 함께 삭제됩니다. 되돌릴 수 없습니다.',
+confLeaveTitle:'컬렉션에서 나갈까요?',confLeaveMsg:'"{x}"의 공유 진행률을 더 이상 볼 수 없습니다. 소유자와 다른 멤버는 그대로이며, 코드 {c}로 다시 참가할 수 있습니다.',
+detIn:'컬렉션 내 ({n})',detNobody:'아무도 없습니다.',detOut:'나감 ({n})',detNobodyOut:'아직 나간 사람이 없습니다.',
+detJoined:'참가 ',detLeft:'나감 ',tagOwner:'👑 소유자',tagMember:'멤버',tagLeft:'나감',loading:'불러오는 중…',
+histMissing:'기록 테이블이 아직 없습니다. Supabase SQL Editor에서 supabase_migration_member_events.sql을 실행하세요.',
+detLoadFail:'불러오지 못했습니다: {e}',detRemoveFail:'제거하지 못했습니다: {e}',
+footA:'서바이벌에서 얻을 수 있는 아이템 /',footB:'개의 레코드',footC:'개 제외 (크리에이티브/명령어/기술적)',footD:'데이터와 진행률은 이 기기에 저장됩니다.',
+ariaCollected:'모음: ',ariaDetails:'상세정보: ',ariaCopyId:'ID minecraft 복사:',
+t100:'★ 축하합니다! 체크리스트 100% 완성.',tMarked:'✓ {n}개 표시됨',tUnmarked:'{n}개 표시 해제됨',tCopied:'✓ 복사됨: minecraft:{id}',
+tBackup:'💾 백업이 만들어졌습니다!',tImported:'✓ 진행률을 가져왔습니다! {n}개 표시.',tBadFile:'잘못된 진행률 파일입니다.',tReset:'진행률이 초기화되었습니다',
+colDeleted:'🗑 컬렉션 "{x}"을(를) 삭제했습니다.',colLeft:'🚪 "{x}"에서 나왔습니다',colRenamed:'✏️ 컬렉션 이름을 "{x}"(으)로 바꿨습니다',memberRemoved:'"{x}"에서 멤버를 제거했습니다',
+jbNoCol:'컬렉션을 만들거나 코드로 참가하세요.',jbSyncFail:'동기화 실패: {e}',jbNoName:'컬렉션 이름을 입력하세요.',
+jbCreated:'✓ {x} 생성 · 코드 {c}',jbCreateFail:'만들지 못했습니다: {e}',jbNoCode:'컬렉션 코드를 입력하세요.',
+jbJoined:'✓ {x}에 참가했습니다 · 코드 {c}',jbJoinFail:'참가하지 못했습니다: {e}',jbDelFail:'삭제하지 못했습니다: {e}',
+jbLeaveFail:'나가지 못했습니다: {e}',jbNameLong:'이름은 최대 80자까지 가능합니다.',jbRenFail:'이름을 바꾸지 못했습니다: {e}',
+jbLoadFail:'컬렉션을 불러오지 못했습니다: {e}',
+authNeed:'이메일과 비밀번호를 입력하세요.',authWeak:'이메일과 6자 이상 비밀번호를 입력하세요.',
+authWait:'최근에 계정 만들기를 시도했습니다. {m}분 후에 다시 시도하세요.',
+authCreated:'✓ 계정이 만들어졌고 연결되었습니다. 같은 이메일과 비밀번호로 다른 기기에서 로그인하세요.',
+authCreated2:'✓ 계정이 만들어졌습니다. 그 이메일과 설정한 비밀번호로 로그인하세요.',authFail:'계정을 만들지 못했습니다: {e}',
+sbFail:'Supabase를 불러오지 못했습니다. 페이지를 새로고침하세요.',errDefault:'작업을 완료하지 못했습니다.',busyWait:'잠시만요…',
+errRate:'시도가 너무 많습니다. 1분 후 다시 시도하세요.',errExists:'이미 이 이메일의 계정이 있습니다. 로그인해 보세요.',
+errCreds:'이메일 또는 비밀번호가 잘못되었습니다.',errConfirm:'로그인 전에 받은 메일의 링크에서 이메일을 확인하세요.',
+errNoUser:'이 이메일의 계정이 없습니다.',errShort:'비밀번호는 6자 이상이어야 합니다.',
+rankNovato:'초보',rankExplorador:'탐험가',rankMinerador:'광부',rankColecionador:'수집가',rankSobrevivente:'생존자',rankLenda:'오버월드의 전설'
+},
+zh:{
+tag:'每一份堆叠都算数。',menuAria:'设置菜单',menuCfg:'⚙ 菜单',import:'导入进度',reset:'重置进度',
+hero2:'你的物品栏。<br>你的旅程。<br>你的收藏。',heroP:'标记你存放在箱子里的每个生存物品，看看还缺什么，并在多设备之间同步进度。',
+rankNow:'当前称号',mission:'任务 · 收藏集齐',level:'等级',rest:'剩余',fullCats:'已完成分类',
+mile100:'100 个物品',mile500:'500 个物品',mile1000:'1000 个物品',mileFull:'100% 完成',
+legend:'★ 主世界传说 ★<br>你已收集了生存中的所有物品！',
+searchPH:'搜索物品、方块或 minecraft:id…',searchAria:'搜索物品',clearAria:'清除搜索',
+filters:'⚙ 筛选',filterAria:'筛选',all:'全部',missing:'缺少',doneInv:'我的物品栏',
+catAria:'分类',langAria:'物品名称语言',sortAria:'排序方式',allCats:'所有分类',catsAll:'全部',
+sortDef:'默认顺序',az:'名称 A → Z',za:'名称 Z → A',doneFirst:'已收集优先',missFirst:'缺少优先',catsAria:'分类',
+marked:'✓ 标记可见项',unmarked:'取消标记可见项',backupTitle:'下载已保存内容的备份',backup:'💾 备份',
+panelProg:'分类进度',panelCloud:'☁ 共享收藏',
+emailPH:'你的邮箱',pwPH:'密码（至少 6 位）',btnSignIn:'登录',btnSignUp:'注册账号',
+colNamePH:'新收藏名称',newCol:'+ 新建收藏',colCodePH:'收到的代码（例如 A1B2-C3D4）',joinCol:'加入收藏',
+activeCol:'当前收藏',signOut:'退出登录',details:'👥 详情',rename:'✏️ 重命名',delCol:'🗑 删除收藏',leaveCol:'🚪 离开收藏',
+authMsg:'登录后即可创建或共享收藏。',gridAria:'物品列表',
+emptyH:'没有物品',emptyP:'这里什么都没有。换个名称或 ID 试试。',clearFilters:'清除筛选',
+footTitle:'· Minecraft Collection Tracker · v26.3',made:'为 Minecraft 玩家打造 ⛏',iconsCredit:'图标与模型：',
+close:'关闭',mId:'ID',mCat:'分类',mStatus:'状态',mCopy:'复制 ID',mCopied:'✓ 已复制',
+mToggleMark:'标记为已收集',mToggleUnmark:'取消标记',stDone:'✓ 已收集',notDone:'缺少',
+resetTitle:'重置进度？',resetMsg:'所有已标记的物品都会被取消标记。如果想留一份副本，请先备份。',cancel:'取消',resetYes:'全部重置',
+delTitle:'删除收藏？',delYes:'删除',renTitle:'重命名收藏',renSub:'分享代码保持不变。',renPH:'新名称',save:'保存',
+detTitle:'收藏详情',mCol:'收藏',mCode:'代码',mCreated:'创建于',mSub:'谁加入了、谁退出了、日期与时间。只有所有者可以管理成员。',
+rm:'移除',rmTitle:'将 {e} 从收藏中移除',confRmTitle:'移除成员？',confRmMsg:'要把 "{e}" 从 "{x}" 中移除吗？此人将无法再看到共享进度，历史会记录退出。',
+confDelMsg:'收藏 "{x}"（代码 {c}）将连同所有已标记的进度一起对所有成员删除，无法撤销。',
+confLeaveTitle:'离开收藏？',confLeaveMsg:'你将不再看到 "{x}" 的共享进度。所有者和其他成员不受影响，你还可以用代码 {c} 重新加入。',
+detIn:'在收藏中（{n}）',detNobody:'这里没有人。',detOut:'已退出（{n}）',detNobodyOut:'还没有人退出。',
+detJoined:'加入于 ',detLeft:'退出于 ',tagOwner:'👑 所有者',tagMember:'成员',tagLeft:'已退出',loading:'加载中…',
+histMissing:'历史记录表尚不存在。请在 Supabase SQL Editor 中运行 supabase_migration_member_events.sql。',
+detLoadFail:'加载失败：{e}',detRemoveFail:'移除失败：{e}',
+footA:'个生存可获取物品，共',footB:'条记录',footC:'条已排除（创造/命令/技术性）',footD:'数据与进度保存在本设备上。',
+ariaCollected:'已收集：',ariaDetails:'详情：',ariaCopyId:'复制 ID minecraft：',
+t100:'★ 恭喜！清单 100% 完成。',tMarked:'✓ 已标记 {n} 个物品',tUnmarked:'已取消 {n} 个物品的标记',tCopied:'✓ 已复制：minecraft:{id}',
+tBackup:'💾 备份已生成！',tImported:'✓ 进度已导入！已标记 {n} 个物品。',tBadFile:'无效的进度文件。',tReset:'进度已重置',
+colDeleted:'🗑 收藏 "{x}" 已删除。',colLeft:'🚪 你已离开 "{x}"',colRenamed:'✏️ 收藏已重命名为 "{x}"',memberRemoved:'已从 "{x}" 移除成员',
+jbNoCol:'创建一个收藏，或使用代码加入。',jbSyncFail:'同步失败：{e}',jbNoName:'请输入收藏名称。',
+jbCreated:'✓ {x} 已创建 · 代码 {c}',jbCreateFail:'创建失败：{e}',jbNoCode:'请输入收藏代码。',
+jbJoined:'✓ 你已加入 {x} · 代码 {c}',jbJoinFail:'加入失败：{e}',jbDelFail:'删除失败：{e}',
+jbLeaveFail:'退出失败：{e}',jbNameLong:'名称最多 80 个字符。',jbRenFail:'重命名失败：{e}',
+jbLoadFail:'无法加载你的收藏：{e}',
+authNeed:'请输入邮箱和密码。',authWeak:'请输入邮箱和至少 6 位的密码。',
+authWait:'你刚刚尝试过创建账号。请等待 {m} 分钟后再试。',
+authCreated:'✓ 账号已创建并连接。可在其他设备使用同一邮箱和密码登录。',
+authCreated2:'✓ 账号已创建。请用该邮箱和你设置的密码登录。',authFail:'无法创建账号：{e}',
+sbFail:'无法加载 Supabase。请刷新页面。',errDefault:'无法完成该操作。',busyWait:'请稍候…',
+errRate:'尝试次数过多。请等一分钟后再试。',errExists:'该邮箱已存在账号，请尝试登录。',
+errCreds:'邮箱或密码不正确。',errConfirm:'请先点击收到的邮件链接确认邮箱，然后再登录。',
+errNoUser:'该邮箱没有账号。',errShort:'密码至少需要 6 位。',
+rankNovato:'新手',rankExplorador:'探索者',rankMinerador:'矿工',rankColecionador:'收藏家',rankSobrevivente:'幸存者',rankLenda:'主世界传说'
+},
+ru:{
+tag:'Каждый стак важен.',menuAria:'Меню настроек',menuCfg:'⚙ Меню',import:'Импорт прогресса',reset:'Сбросить прогресс',
+hero2:'Твой инвентарь.<br>Твоё путешествие.<br>Твоя коллекция.',heroP:'Отмечай каждый предмет выживания, который ты сложил в сундуки, смотри, чего не хватает, и синхронизируй прогресс между устройствами.',
+rankNow:'Твоё текущее звание',mission:'МИССИЯ · ПОЛНАЯ КОЛЛЕКЦИЯ',level:'УРОВЕНЬ',rest:'Осталось',fullCats:'Категорий завершено',
+mile100:'100 предметов',mile500:'500 предметов',mile1000:'1000 предметов',mileFull:'100% готово',
+legend:'★ ЛЕГЕНДА ВЕРХНЕГО МИРА ★<br>Ты собрал все предметы выживания!',
+searchPH:'Поиск предметов, блоков или minecraft:id…',searchAria:'Поиск предметов',clearAria:'Очистить поиск',
+filters:'⚙ Фильтры',filterAria:'Фильтры',all:'Все',missing:'Недостающие',doneInv:'Мой инвентарь',
+catAria:'Категория',langAria:'Язык названий',sortAria:'Сортировка',allCats:'Все категории',catsAll:'Все',
+sortDef:'По умолчанию',az:'Название А → Я',za:'Название Я → А',doneFirst:'Собранные первыми',missFirst:'Недостающие первыми',catsAria:'Категории',
+marked:'✓ Отметить видимые',unmarked:'Снять отметку',backupTitle:'Скачать резервную копию сохранённого',backup:'💾 Копия',
+panelProg:'ПРОГРЕСС ПО КАТЕГОРИЯМ',panelCloud:'☁ ОБЩАЯ КОЛЛЕКЦИЯ',
+emailPH:'Твоя почта',pwPH:'Пароль (минимум 6 символов)',btnSignIn:'Войти',btnSignUp:'Создать аккаунт',
+colNamePH:'Название новой коллекции',newCol:'+ Новая коллекция',colCodePH:'Полученный код (напр. A1B2-C3D4)',joinCol:'Войти в коллекцию',
+activeCol:'Активная коллекция',signOut:'Выйти',details:'👥 Подробности',rename:'✏️ Переименовать',delCol:'🗑 Удалить коллекцию',leaveCol:'🚪 Выйти из коллекции',
+authMsg:'Войди, чтобы создать или поделиться коллекцией.',gridAria:'Инвентарь предметов',
+emptyH:'НЕТ ПРЕДМЕТОВ',emptyP:'Здесь пусто. Попробуй другое название или ID.',clearFilters:'Сбросить фильтры',
+footTitle:'· Minecraft Collection Tracker · v26.3',made:'Для игроков Minecraft ⛏',iconsCredit:'Иконки и модели:',
+close:'Закрыть',mId:'ID',mCat:'Категория',mStatus:'Статус',mCopy:'Копировать ID',mCopied:'✓ Скопировано',
+mToggleMark:'Отметить как собранное',mToggleUnmark:'Снять отметку',stDone:'✓ Собрано',notDone:'Не хватает',
+resetTitle:'Сбросить прогресс?',resetMsg:'Все отмеченные предметы будут сняты. Сделай резервную копию, если хочешь сохранить список.',cancel:'Отмена',resetYes:'Сбросить всё',
+delTitle:'Удалить коллекцию?',delYes:'Удалить',renTitle:'Переименовать коллекцию',renSub:'Код для совместного доступа останется прежним.',renPH:'Новое название',save:'Сохранить',
+detTitle:'Подробности коллекции',mCol:'Коллекция',mCode:'Код',mCreated:'Создана',mSub:'Кто вошёл, кто вышел, дата и время. Участниками управляет только владелец.',
+rm:'Убрать',rmTitle:'Убрать {e} из коллекции',confRmTitle:'Убрать участника?',confRmMsg:'Убрать "{e}" из "{x}"? Человек больше не увидит общий прогресс, а выход запишется в историю.',
+confDelMsg:'Коллекция "{x}" (код {c}) будет удалена у всех участников вместе со всем отмеченным прогрессом. Отменить нельзя.',
+confLeaveTitle:'Выйти из коллекции?',confLeaveMsg:'Ты больше не будешь видеть общий прогресс "{x}". Владелец и другие участники сохранят всё, а ты сможешь войти снова по коду {c}.',
+detIn:'В коллекции ({n})',detNobody:'Здесь никого нет.',detOut:'Вышли ({n})',detNobodyOut:'Пока никто не выходил.',
+detJoined:'Вошёл ',detLeft:'Вышел ',tagOwner:'👑 Владелец',tagMember:'Участник',tagLeft:'Вышел',loading:'Загрузка…',
+histMissing:'Истории в базе ещё нет. Выполни файл supabase_migration_member_events.sql в SQL Editor Supabase.',
+detLoadFail:'Не удалось загрузить: {e}',detRemoveFail:'Не удалось убрать: {e}',
+footA:'предметов выживания из',footB:'записей',footC:'исключено (творчество/команды/технические)',footD:'Данные и прогресс хранятся на этом устройстве.',
+ariaCollected:'Собрано: ',ariaDetails:'Подробности: ',ariaCopyId:'Копировать ID minecraft:',
+t100:'★ Поздравляем! Список собран на 100%.',tMarked:'✓ Отмечено предметов: {n}',tUnmarked:'Снято отметок: {n}',tCopied:'✓ Скопировано: minecraft:{id}',
+tBackup:'💾 Резервная копия создана!',tImported:'✓ Прогресс импортирован! Отмечено предметов: {n}.',tBadFile:'Недействительный файл прогресса.',tReset:'Прогресс сброшен',
+colDeleted:'🗑 Коллекция "{x}" удалена.',colLeft:'🚪 Ты вышел из "{x}"',colRenamed:'✏️ Коллекция переименована в "{x}"',memberRemoved:'Участник удалён из "{x}"',
+jbNoCol:'Создай коллекцию или войди по коду.',jbSyncFail:'Ошибка синхронизации: {e}',jbNoName:'Введи название коллекции.',
+jbCreated:'✓ {x} создана · код {c}',jbCreateFail:'Не удалось создать: {e}',jbNoCode:'Введи код коллекции.',
+jbJoined:'✓ Ты вошёл в {x} · код {c}',jbJoinFail:'Не удалось войти: {e}',jbDelFail:'Не удалось удалить: {e}',
+jbLeaveFail:'Не удалось выйти: {e}',jbNameLong:'В названии максимум 80 символов.',jbRenFail:'Не удалось переименовать: {e}',
+jbLoadFail:'Не удалось загрузить коллекции: {e}',
+authNeed:'Введи почту и пароль.',authWeak:'Введи почту и пароль минимум из 6 символов.',
+authWait:'Ты недавно пытался создать аккаунт. Подожди {m} мин и попробуй снова.',
+authCreated:'✓ Аккаунт создан и подключён. Используй ту же почту и пароль на других устройствах.',
+authCreated2:'✓ Аккаунт создан. Войди с этой почтой и выбранным паролем.',authFail:'Не удалось создать аккаунт: {e}',
+sbFail:'Не удалось загрузить Supabase. Перезагрузи страницу.',errDefault:'Не удалось выполнить операцию.',busyWait:'Подожди…',
+errRate:'Слишком много попыток. Подожди минуту и попробуй снова.',errExists:'Аккаунт с этой почтой уже есть. Попробуй войти.',
+errCreds:'Неверная почта или пароль.',errConfirm:'Подтверди почту по ссылке из письма перед входом.',
+errNoUser:'Аккаунта с такой почтой нет.',errShort:'Пароль должен быть не короче 6 символов.',
+rankNovato:'Новичок',rankExplorador:'Исследователь',rankMinerador:'Шахтёр',rankColecionador:'Коллекционер',rankSobrevivente:'Выживший',rankLenda:'Легенда Верхнего мира'
 }
-;
+};
+const CATN={
+pt:{'Pedras':'Pedras','Terra, areia e cascalho':'Terra, areia e cascalho','Minérios e metais':'Minérios e metais','Madeiras':'Madeiras','Tijolos e blocos decorativos':'Tijolos e blocos decorativos','Cobre':'Cobre','Vidro':'Vidro','Terracota':'Terracota','Concreto':'Concreto','Lã e carpetes':'Lã e carpetes','Corantes':'Corantes','Plantas e flores':'Plantas e flores','Agricultura':'Agricultura','Corais e vida marinha':'Corais e vida marinha','Neve e gelo':'Neve e gelo','Nether':'Nether','End':'End','Comidas':'Comidas','Poções e frascos':'Poções e frascos','Drops de mobs':'Drops de mobs','Ferramentas':'Ferramentas','Armas e munição':'Armas e munição','Armaduras':'Armaduras','Redstone e mecanismos':'Redstone e mecanismos','Iluminação':'Iluminação','Armazenamento':'Armazenamento','Estações de trabalho':'Estações de trabalho','Livros e papel':'Livros e papel','Transporte':'Transporte','Decoração e utilitários':'Decoração e utilitários','Camas e almofadas':'Camas e almofadas','Estandartes':'Estandartes','Mapas':'Mapas','Discos musicais':'Discos musicais','Moldes de ferraria':'Moldes de ferraria','Óstracos de cerâmica':'Óstracos de cerâmica','Cabeças e crânios':'Cabeças e crânios','Diversos':'Diversos'},
+en:{'Pedras':'Stones','Terra, areia e cascalho':'Dirt, sand & gravel','Minérios e metais':'Ores & metals','Madeiras':'Wood','Tijolos e blocos decorativos':'Bricks & decorative blocks','Cobre':'Copper','Vidro':'Glass','Terracota':'Terracotta','Concreto':'Concrete','Lã e carpetes':'Wool & carpets','Corantes':'Dyes','Plantas e flores':'Plants & flowers','Agricultura':'Farming','Corais e vida marinha':'Corals & sea life','Neve e gelo':'Snow & ice','Nether':'Nether','End':'End','Comidas':'Food','Poções e frascos':'Potions & bottles','Drops de mobs':'Mob drops','Ferramentas':'Tools','Armas e munição':'Weapons & ammo','Armaduras':'Armor','Redstone e mecanismos':'Redstone & mechanisms','Iluminação':'Lighting','Armazenamento':'Storage','Estações de trabalho':'Workstations','Livros e papel':'Books & paper','Transporte':'Transport','Decoração e utilitários':'Decoration & utilities','Camas e almofadas':'Beds & pillows','Estandartes':'Banners','Mapas':'Maps','Discos musicais':'Music discs','Moldes de ferraria':'Smithing templates','Óstracos de cerâmica':'Pottery sherds','Cabeças e crânios':'Heads & skulls','Diversos':'Miscellaneous'},
+es:{'Pedras':'Piedras','Terra, areia e cascalho':'Tierra, arena y grava','Minérios e metais':'Minerales y metales','Madeiras':'Maderas','Tijolos e blocos decorativos':'Ladrillos y bloques decorativos','Cobre':'Cobre','Vidro':'Vidrio','Terracota':'Terracota','Concreto':'Hormigón','Lã e carpetes':'Lana y alfombras','Corantes':'Tintes','Plantas e flores':'Plantas y flores','Agricultura':'Agricultura','Corais e vida marinha':'Corales y vida marina','Neve e gelo':'Nieve y hielo','Nether':'Nether','End':'End','Comidas':'Comidas','Poções e frascos':'Pociones y frascos','Drops de mobs':'Drops de mobs','Ferramentas':'Herramientas','Armas e munição':'Armas y munición','Armaduras':'Armaduras','Redstone e mecanismos':'Redstone y mecanismos','Iluminação':'Iluminación','Armazenamento':'Almacenamiento','Estações de trabalho':'Estaciones de trabajo','Livros e papel':'Libros y papel','Transporte':'Transporte','Decoração e utilitários':'Decoración y utilidades','Camas e almofadas':'Camas y almohadas','Estandartes':'Estandartes','Mapas':'Mapas','Discos musicais':'Discos musicales','Moldes de ferraria':'Plantillas de fragua','Óstracos de cerâmica':'Fragmentos de cerámica','Cabeças e crânios':'Cabezas y cráneos','Diversos':'Varios'},
+fr:{'Pedras':'Pierres','Terra, areia e cascalho':'Terre, sable et gravier','Minérios e metais':'Minerais et métaux','Madeiras':'Bois','Tijolos e blocos decorativos':'Briques et blocs décoratifs','Cobre':'Cuivre','Vidro':'Verre','Terracota':'Terre cuite','Concreto':'Béton','Lã e carpetes':'Laine et tapis','Corantes':'Teintures','Plantas e flores':'Plantes et fleurs','Agricultura':'Agriculture','Corais e vida marinha':'Coraux et vie marine','Neve e gelo':'Neige et glace','Nether':'Nether','End':'End','Comidas':'Nourriture','Poções e frascos':'Potions et fioles','Drops de mobs':'Butins de mobs','Ferramentas':'Outils','Armas e munição':'Armes et munitions','Armaduras':'Armures','Redstone e mecanismos':'Redstone et mécanismes','Iluminação':'Éclairage','Armazenamento':'Stockage','Estações de trabalho':'Postes de travail','Livros e papel':'Livres et papier','Transporte':'Transport','Decoração e utilitários':'Décoration et utilités','Camas e almofadas':'Lits et coussins','Estandartes':'Bannières','Mapas':'Cartes','Discos musicais':'Disques de musique','Moldes de ferraria':'Modèles de forgeron','Óstracos de cerâmica':'Tessons de poterie','Cabeças e crânios':'Têtes et crânes','Diversos':'Divers'},
+de:{'Pedras':'Steine','Terra, areia e cascalho':'Erde, Sand & Kies','Minérios e metais':'Erze & Metalle','Madeiras':'Hölzer','Tijolos e blocos decorativos':'Ziegel & Dekoblöcke','Cobre':'Kupfer','Vidro':'Glas','Terracota':'Terrakotta','Concreto':'Beton','Lã e carpetes':'Wolle & Teppiche','Corantes':'Farbstoffe','Plantas e flores':'Pflanzen & Blumen','Agricultura':'Landwirtschaft','Corais e vida marinha':'Korallen & Meeresleben','Neve e gelo':'Schnee & Eis','Nether':'Nether','End':'End','Comidas':'Essen','Poções e frascos':'Tränke & Flaschen','Drops de mobs':'Mob-Beute','Ferramentas':'Werkzeuge','Armas e munição':'Waffen & Munition','Armaduras':'Rüstungen','Redstone e mecanismos':'Redstone & Mechanismen','Iluminação':'Beleuchtung','Armazenamento':'Lagerung','Estações de trabalho':'Arbeitsstationen','Livros e papel':'Bücher & Papier','Transporte':'Transport','Decoração e utilitários':'Deko & Nützliches','Camas e almofadas':'Betten & Kissen','Estandartes':'Banner','Mapas':'Karten','Discos musicais':'Musikscheiben','Moldes de ferraria':'Schmiedevorlagen','Óstracos de cerâmica':'Keramikscherben','Cabeças e crânios':'Köpfe & Schädel','Diversos':'Sonstiges'},
+it:{'Pedras':'Pietre','Terra, areia e cascalho':'Terra, sabbia e ghiaia','Minérios e metais':'Minerali e metalli','Madeiras':'Legni','Tijolos e blocos decorativos':'Mattoni e blocchi decorativi','Cobre':'Rame','Vidro':'Vetro','Terracota':'Terracotta','Concreto':'Cemento','Lã e carpetes':'Lana e tappeti','Corantes':'Coloranti','Plantas e flores':'Piante e fiori','Agricultura':'Agricoltura','Corais e vida marinha':'Coralli e vita marina','Neve e gelo':'Neve e ghiaccio','Nether':'Nether','End':'End','Comidas':'Cibi','Poções e frascos':'Pozioni e fiale','Drops de mobs':'Drop di mob','Ferramentas':'Strumenti','Armas e munição':'Armi e munizioni','Armaduras':'Armature','Redstone e mecanismos':'Redstone e meccanismi','Iluminação':'Illuminazione','Armazenamento':'Contenitori','Estações de trabalho':'Postazioni di lavoro','Livros e papel':'Libri e carta','Transporte':'Trasporti','Decoração e utilitários':'Decorazione e utilità','Camas e almofadas':'Letti e cuscini','Estandartes':'Bandiere','Mapas':'Mappe','Discos musicais':'Dischi musicali','Moldes de ferraria':'Modelli per fucina','Óstracos de cerâmica':'Cocci di ceramica','Cabeças e crânios':'Teste e teschi','Diversos':'Vari'},
+ja:{'Pedras':'石','Terra, areia e cascalho':'土・砂・砂利','Minérios e metais':'鉱石と金属','Madeiras':'木材','Tijolos e blocos decorativos':'レンガと装飾ブロック','Cobre':'銅','Vidro':'ガラス','Terracota':'テラコッタ','Concreto':'コンクリート','Lã e carpetes':'羊毛とカーペット','Corantes':'染料','Plantas e flores':'植物と花','Agricultura':'農業','Corais e vida marinha':'サンゴと海洋生物','Neve e gelo':'雪と氷','Nether':'ネザー','End':'エンド','Comidas':'食料','Poções e frascos':'ポーションと瓶','Drops de mobs':'モブのドロップ','Ferramentas':'ツール','Armas e munição':'武器と弾薬','Armaduras':'防具','Redstone e mecanismos':'レッドストーンと機構','Iluminação':'照明','Armazenamento':'保管','Estações de trabalho':'作業台','Livros e papel':'本と紙','Transporte':'輸送','Decoração e utilitários':'装飾とユーティリティ','Camas e almofadas':'ベッドと枕','Estandartes':'旗','Mapas':'地図','Discos musicais':'レコード','Moldes de ferraria':'鍛冶テンプレート','Óstracos de cerâmica':'陶器の欠片','Cabeças e crânios':'頭と頭蓋骨','Diversos':'その他'},
+ko:{'Pedras':'석재','Terra, areia e cascalho':'흙·모래·자갈','Minérios e metais':'광석과 금속','Madeiras':'원목','Tijolos e blocos decorativos':'벽돌과 장식 블록','Cobre':'구리','Vidro':'유리','Terracota':'테라코타','Concreto':'콘크리트','Lã e carpetes':'양털과 카펫','Corantes':'염료','Plantas e flores':'식물과 꽃','Agricultura':'농업','Corais e vida marinha':'산호와 해양 생물','Neve e gelo':'눈과 얼음','Nether':'네더','End':'엔드','Comidas':'음식','Poções e frascos':'물약과 병','Drops de mobs':'몬스터 드롭','Ferramentas':'도구','Armas e munição':'무기와 탄약','Armaduras':'방어구','Redstone e mecanismos':'레드스톤과 메커니즘','Iluminação':'조명','Armazenamento':'보관','Estações de trabalho':'작업대','Livros e papel':'책과 종이','Transporte':'운송','Decoração e utilitários':'장식과 유틸리티','Camas e almofadas':'침대와 베개','Estandartes':'배너','Mapas':'지도','Discos musicais':'음반','Moldes de ferraria':'제작 템플릿','Óstracos de cerâmica':'도자기 파편','Cabeças e crânios':'머리와 해골','Diversos':'기타'},
+zh:{'Pedras':'石头','Terra, areia e cascalho':'泥土、沙子和沙砾','Minérios e metais':'矿石和金属','Madeiras':'木材','Tijolos e blocos decorativos':'砖块和装饰性方块','Cobre':'铜','Vidro':'玻璃','Terracota':'陶瓦','Concreto':'混凝土','Lã e carpetes':'羊毛和地毯','Corantes':'染料','Plantas e flores':'植物和花朵','Agricultura':'农业','Corais e vida marinha':'珊瑚和海洋生物','Neve e gelo':'雪和冰','Nether':'下界','End':'末地','Comidas':'食物','Poções e frascos':'药水和瓶子','Drops de mobs':'怪物掉落物','Ferramentas':'工具','Armas e munição':'武器和弹药','Armaduras':'护甲','Redstone e mecanismos':'红石和机械装置','Iluminação':'照明','Armazenamento':'存储','Estações de trabalho':'工作站','Livros e papel':'书和纸','Transporte':'运输','Decoração e utilitários':'装饰和实用物品','Camas e almofadas':'床和枕头','Estandartes':'旗帜','Mapas':'地图','Discos musicais':'音乐唱片','Moldes de ferraria':'锻造模板','Óstracos de cerâmica':'陶器碎片','Cabeças e crânios':'头颅和头骨','Diversos':'杂项'},
+ru:{'Pedras':'Камни','Terra, areia e cascalho':'Земля, песок и гравий','Minérios e metais':'Руда и металлы','Madeiras':'Древесина','Tijolos e blocos decorativos':'Кирпичи и декоративные блоки','Cobre':'Медь','Vidro':'Стекло','Terracota':'Терракота','Concreto':'Бетон','Lã e carpetes':'Шерсть и ковры','Corantes':'Красители','Plantas e flores':'Растения и цветы','Agricultura':'Фермерство','Corais e vida marinha':'Кораллы и морская жизнь','Neve e gelo':'Снег и лёд','Nether':'Незер','End':'Энд','Comidas':'Еда','Poções e frascos':'Зелья и флаконы','Drops de mobs':'Добыча мобов','Ferramentas':'Инструменты','Armas e munição':'Оружие и боеприпасы','Armaduras':'Броня','Redstone e mecanismos':'Редстоун и механизмы','Iluminação':'Освещение','Armazenamento':'Хранилище','Estações de trabalho':'Рабочие станции','Livros e papel':'Книги и бумага','Transporte':'Транспорт','Decoração e utilitários':'Декор и утилиты','Camas e almofadas':'Кровати и подушки','Estandartes':'Знамёна','Mapas':'Карты','Discos musicais':'Музыкальные пластинки','Moldes de ferraria':'Кузничные шаблоны','Óstracos de cerâmica':'Керамические черепки','Cabeças e crânios':'Головы и черепа','Diversos':'Разное'}
+};
+const RANKN={
+pt:{novato:'Novato',explorador:'Explorador',minerador:'Minerador',colecionador:'Colecionador',sobrevivente:'Sobrevivente',lenda:'Lenda do Overworld'},
+en:{novato:'Novice',explorador:'Explorer',minerador:'Miner',colecionador:'Collector',sobrevivente:'Survivor',lenda:'Overworld Legend'},
+es:{novato:'Novato',explorador:'Explorador',minerador:'Minero',colecionador:'Coleccionista',sobrevivente:'Superviviente',lenda:'Leyenda del Overworld'},
+fr:{novato:'Novice',explorador:'Explorateur',minerador:'Mineur',colecionador:'Collectionneur',sobrevivente:'Survivant',lenda:'Légende de l’Overworld'},
+de:{novato:'Neuling',explorador:'Entdecker',minerador:'Bergmann',colecionador:'Sammler',sobrevivente:'Überlebender',lenda:'Legende der Overworld'},
+it:{novato:'Novizio',explorador:'Esploratore',minerador:'Minatore',colecionador:'Collezionista',sobrevivente:'Sopravvissuto',lenda:'Leggenda dell’Overworld'},
+ja:{novato:'初心者',explorador:'探検家',minerador:'採掘者',colecionador:'コレクター',sobrevivente:'サバイバー',lenda:'オーバーワールドの伝説'},
+ko:{novato:'초보',explorador:'탐험가',minerador:'광부',colecionador:'수집가',sobrevivente:'생존자',lenda:'오버월드의 전설'},
+zh:{novato:'新手',explorador:'探索者',minerador:'矿工',colecionador:'收藏家',sobrevivente:'幸存者',lenda:'主世界传说'},
+ru:{novato:'Новичок',explorador:'Исследователь',minerador:'Шахтёр',colecionador:'Коллекционер',sobrevivente:'Выживший',lenda:'Легенда Верхнего мира'}
+};
+function uiLang(){return (S&&UI[S.lang])?S.lang:'pt'}
+function $t(k,fb){const d=UI[S.lang];if(d&&d[k]!==undefined&&d[k]!=='')return d[k];if(UI.en&&UI.en[k]!==undefined&&UI.en[k]!=='')return UI.en[k];if(UI.pt&&UI.pt[k]!==undefined)return UI.pt[k];return fb!==undefined?fb:k}
+function $tf(k,v,fb){let s=$t(k,fb);if(v)for(const a in v)s=s.split('{'+a+'}').join(v[a]);return s}
+function $cat(name){const d=CATN[S.lang];if(d&&d[name])return d[name];if(CATN.en&&CATN.en[name])return CATN.en[name];return name}
+function $rank(id){const d=RANKN[S.lang];if(d&&d[id])return d[id];if(RANKN.en&&RANKN.en[id])return RANKN.en[id];return id}
+const LOCALE={pt:'pt-BR',en:'en-US',es:'es-ES',fr:'fr-FR',de:'de-DE',it:'it-IT',ja:'ja-JP',ko:'ko-KR',zh:'zh-CN',ru:'ru-RU'};
+/* motor: aplica a tradução em TODO o DOM, guardando a chave original */
+let _rev=null;
+const _nKey=new WeakMap(),_eKey=new WeakMap(),_aKey=new WeakMap();
+function _buildRev(){if(_rev)return _rev;const txt={},htm={};const p=UI.pt||{};
+ for(const k in p){const v=p[k];if(typeof v!=='string')continue;
+  if(v.indexOf('<br>')>=0)htm[v.trim()]=k;
+  const t=v.trim();if(t&&!txt[t])txt[t]=k}
+ _rev={txt,htm};return _rev}
+function applyI18n(){
+ const R=_buildRev();
+ const walk=(root)=>{
+  for(const n of root.childNodes){
+   if(n.nodeType===3){
+    const raw=n.nodeValue,t=raw.trim();if(!t)continue;
+    let key=_nKey.get(n)||R.txt[t];if(!key)continue;
+    _nKey.set(n,key);
+    const i=raw.indexOf(t);n.nodeValue=raw.slice(0,i)+$t(key)+raw.slice(i+t.length);
+   }else if(n.nodeType===1){
+    const tag=n.tagName;if(tag==='SCRIPT'||tag==='STYLE')continue;
+    let hk=_eKey.get(n);if(!hk){const h=n.innerHTML.trim();hk=R.htm[h]}
+    if(hk){_eKey.set(n,hk);n.innerHTML=$t(hk)}
+    for(const a of ['placeholder','aria-label','title']){
+     const v=n.getAttribute(a);if(!v)continue;
+     const store=_aKey.get(n)||{};
+     let key=store[a];if(!key){const vv=v.trim();if(R.txt[vv])key=R.txt[vv]}
+     if(!key)continue;store[a]=key;_aKey.set(n,store);
+     n.setAttribute(a,$t(key));
+    }
+    walk(n);
+   }
+  }
+ };
+ walk(document.body);
+ renderFoot();
+ refreshLangExtras();
+}
+function renderFoot(){
+ const el=document.getElementById('foot');if(!el)return;
+ try{el.textContent=nf.format(SURVIVAL_ITEMS.length)+' '+$t('footA')+' '+nf.format(ALL_ITEMS.length)+' '+$t('footB')+' · '+nf.format(EXCLUDED.length)+' '+$t('footC')+'. '+$t('footD')}
+ catch(_){}
+}
+function refreshLangExtras(){
+ try{const mt=document.getElementById('mToggle');if(mt&&typeof cur!=='undefined'&&cur)mt.textContent=checked.has(cur)?$t('mToggleUnmark'):$t('mToggleMark')}catch(_){}
+ try{
+  const cs=document.getElementById('collectionSelect');
+  if(cs){for(const o of cs.options){o.dataset && 0}}
+ }catch(_){}
+ try{const meta=document.querySelector('meta[name="description"]');if(meta)meta.setAttribute('content',$t('tag'))}catch(_){}
+}
+Object.assign(UI.pt,{countOf:' de {t} itens',markVisible:'\u2713 Marcar {n} itens vis\u00edveis',unmarkVisible:'Desmarcar {n} vis\u00edveis',removeFilter:'Remover filtro {c}',idPrefix:'ID ',signInFail:'N\u00e3o foi poss\u00edvel entrar: {e}',dashAria:'Progresso geral',barAria:'Progresso da cole\u00e7\u00e3o',milesAria:'Marcos'});
+Object.assign(UI.en,{countOf:' of {t} items',markVisible:'\u2713 Mark {n} visible items',unmarkVisible:'Unmark {n} visible',removeFilter:'Remove filter {c}',idPrefix:'ID ',signInFail:'Could not sign in: {e}',dashAria:'Overall progress',barAria:'Collection progress',milesAria:'Milestones'});
+Object.assign(UI.es,{countOf:' de {t} objetos',markVisible:'\u2713 Marcar {n} objetos visibles',unmarkVisible:'Desmarcar {n} visibles',removeFilter:'Quitar filtro {c}',idPrefix:'ID ',signInFail:'No se pudo entrar: {e}',dashAria:'Progreso general',barAria:'Progreso de la colecci\u00f3n',milesAria:'Hitos'});
+Object.assign(UI.fr,{countOf:' sur {t} objets',markVisible:'\u2713 Cocher {n} objets visibles',unmarkVisible:'D\u00e9cocher {n} visibles',removeFilter:'Retirer le filtre {c}',idPrefix:'ID ',signInFail:'Impossible de se connecter : {e}',dashAria:'Progression g\u00e9n\u00e9rale',barAria:'Progression de la collection',milesAria:'Jalons'});
+Object.assign(UI.de,{countOf:' von {t} Items',markVisible:'\u2713 {n} sichtbare markieren',unmarkVisible:'{n} sichtbare entfernen',removeFilter:'Filter {c} entfernen',idPrefix:'ID ',signInFail:'Anmeldung nicht m\u00f6glich: {e}',dashAria:'Gesamtfortschritt',barAria:'Sammlungsfortschritt',milesAria:'Meilensteine'});
+Object.assign(UI.it,{countOf:' di {t} oggetti',markVisible:'\u2713 Segna {n} oggetti visibili',unmarkVisible:'Deseleziona {n} visibili',removeFilter:'Rimuovi filtro {c}',idPrefix:'ID ',signInFail:'Impossibile accedere: {e}',dashAria:'Progresso generale',barAria:'Progresso della collezione',milesAria:'Traguardi'});
+Object.assign(UI.ja,{countOf:' / {t} \u500b',markVisible:'\u2713 \u8868\u793a\u4e2d {n} \u500b\u3092\u30de\u30fc\u30af',unmarkVisible:'\u8868\u793a\u4e2d {n} \u500b\u3092\u89e3\u9664',removeFilter:'\u30d5\u30a3\u30eb\u30bf\u30fc {c} \u3092\u89e3\u9664',idPrefix:'ID ',signInFail:'\u30ed\u30b0\u30a4\u30f3\u3067\u304d\u307e\u305b\u3093\u3067\u3057\u305f: {e}',dashAria:'\u5168\u4f53\u306e\u9032\u6357',barAria:'\u30b3\u30ec\u30af\u30b7\u30e7\u30f3\u306e\u9032\u6357',milesAria:'\u30de\u30a4\u30eb\u30b9\u30c8\u30fc\u30f3'});
+Object.assign(UI.ko,{countOf:' / {t}\uac1c',markVisible:'\u2713 \ubcf4\uc774\ub294 {n}\uac1c \ud45c\uc2dc',unmarkVisible:'\ubcf4\uc774\ub294 {n}\uac1c \ud574\uc81c',removeFilter:'\ud544\ud130 {c} \uc81c\uac70',idPrefix:'ID ',signInFail:'\ub85c\uadf8\uc778\ud558\uc9c0 \ubabb\ud588\uc2b5\ub2c8\ub2e4: {e}',dashAria:'\uc804\uccb4 \uc9c4\ud589\ub960',barAria:'\uceec\ub809\uc158 \uc9c4\ud589\ub960',milesAria:'\uc774\uc815\ud45c'});
+Object.assign(UI.zh,{countOf:' / \u5171 {t} \u4e2a',markVisible:'\u2713 \u6807\u8bb0 {n} \u4e2a\u53ef\u89c1\u9879',unmarkVisible:'\u53d6\u6d88\u6807\u8bb0 {n} \u4e2a\u53ef\u89c1\u9879',removeFilter:'\u79fb\u9664\u7b5b\u9009 {c}',idPrefix:'ID ',signInFail:'\u65e0\u6cd5\u767b\u5f55\uff1a{e}',dashAria:'\u603b\u4f53\u8fdb\u5ea6',barAria:'\u6536\u85cf\u8fdb\u5ea6',milesAria:'\u91cc\u7a0b\u7891'});
+Object.assign(UI.ru,{countOf:' \u0438\u0437 {t} \u043f\u0440\u0435\u0434\u043c\u0435\u0442\u043e\u0432',markVisible:'\u2713 \u041e\u0442\u043c\u0435\u0442\u0438\u0442\u044c {n} \u0432\u0438\u0434\u0438\u043c\u044b\u0445',unmarkVisible:'\u0421\u043d\u044f\u0442\u044c {n} \u0432\u0438\u0434\u0438\u043c\u044b\u0445',removeFilter:'\u0423\u0431\u0440\u0430\u0442\u044c \u0444\u0438\u043b\u044c\u0442\u0440 {c}',idPrefix:'ID ',signInFail:'\u041d\u0435 \u0443\u0434\u0430\u043b\u043e\u0441\u044c \u0432\u043e\u0439\u0442\u0438: {e}',dashAria:'\u041e\u0431\u0449\u0438\u0439 \u043f\u0440\u043e\u0433\u0440\u0435\u0441\u0441',barAria:'\u041f\u0440\u043e\u0433\u0440\u0435\u0441\u0441 \u043a\u043e\u043b\u043b\u0435\u043a\u0446\u0438\u0438',milesAria:'\u0412\u0435\u0445\u0438'});
 const LANGS={pt:'Português (PT-BR)',en:'English (US)',es:'Español',fr:'Français',de:'Deutsch',it:'Italiano',ja:'日本語',ko:'한국어',zh:'中文 (简体)',ru:'Русский'};
 const NAMES={};for(const l in NAMES_RAW){const m=NAMES[l]={};NAME_IDS.forEach((id,i)=>{if(NAMES_RAW[l][i])m[id]=NAMES_RAW[l][i]})}
 for(const x of SURVIVAL_ITEMS){x.ptName=NAMES.pt[x.id]||x.ptName;x.enName=NAMES.en[x.id]||x.enName}
@@ -479,46 +1065,35 @@ const ACTIVE_COLLECTION_KEY='stackvault_active_collection_v1';
 const sb=window.supabase&&window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 let currentUser=null,currentCollection=null,realtimeChannel=null,syncTimer=null,collectionRows=[],collectionsSeq=0,pendingConfirm=null;
 function jbStatus(cls,msg){const t=$('#jbTxt');t.className='out '+cls;t.textContent=msg||'';t.hidden=!msg}
-const ERR_MSG={
- over_email_send_rate_limit:'Muitas tentativas seguidas. Aguarde um minuto e tente de novo.',
- over_request_rate_limit:'Muitas tentativas seguidas. Aguarde um minuto e tente de novo.',
- over_email_rate_limit:'Muitas tentativas seguidas. Aguarde um minuto e tente de novo.',
- too_many_requests:'Muitas tentativas seguidas. Aguarde um minuto e tente de novo.',
- user_already_exists:'Já existe uma conta com esse e-mail. Tente entrar.',
- invalid_credentials:'E-mail ou senha incorretos.',
- email_not_confirmed:'Confirme o e-mail no link que recebeu antes de entrar.',
- user_not_found:'Não existe conta com esse e-mail.',
- weak_password:'Senha muito fraca. Use pelo menos 6 caracteres.',
- password_too_short:'A senha precisa ter pelo menos 6 caracteres.'
-};
-function friendlyError(error){if(!error)return 'Não foi possível concluir a operação.';
+const ERR_KEY={over_email_send_rate_limit:'errRate',over_request_rate_limit:'errRate',over_email_rate_limit:'errRate',too_many_requests:'errRate',user_already_exists:'errExists',invalid_credentials:'errCreds',email_not_confirmed:'errConfirm',user_not_found:'errNoUser',weak_password:'errShort',password_too_short:'errShort'};
+function friendlyError(error){if(!error)return $t('errDefault');
  const code=error.error_code||error.code;
- if(code&&ERR_MSG[code])return ERR_MSG[code];
+ if(code&&ERR_KEY[code])return $t(ERR_KEY[code]);
  const msg=error.message||'';
- if(/already (been )?registered/i.test(msg))return ERR_MSG.user_already_exists;
- if(/Invalid login credentials/i.test(msg))return ERR_MSG.invalid_credentials;
- if(/Email not confirmed/i.test(msg))return ERR_MSG.email_not_confirmed;
- return msg||'Não foi possível concluir a operação.'}
+ if(/already (been )?registered/i.test(msg))return $t('errExists');
+ if(/Invalid login credentials/i.test(msg))return $t('errCreds');
+ if(/Email not confirmed/i.test(msg))return $t('errConfirm');
+ return msg||$t('errDefault')}
 function setSignedInUi(){const signed=!!currentUser;$('#authBox').hidden=signed;$('#collectionBox').hidden=!signed}
-function setBusy(button,busy,label){button.disabled=busy;if(label)button.textContent=busy?'Aguarde…':label}
+function setBusy(button,busy,label){button.disabled=busy;if(label)button.textContent=busy?$t('busyWait'):label}
 function updateCollectionSelect(rows){collectionRows=rows;const select=$('#collectionSelect'),wanted=localStorage.getItem(ACTIVE_COLLECTION_KEY);select.replaceChildren();for(const c of rows){const o=new Option(c.name+' · '+c.code,c.id);o.dataset.code=c.code;select.add(o)}if(currentCollection)select.value=currentCollection.id;else if(wanted)select.value=wanted}
 function updateCollectionActions(){const on=!!(currentUser&&currentCollection),owner=!!(on&&currentCollection.owner_id===currentUser.id),r=$('#renameCollectionBtn'),d=$('#deleteCollectionBtn'),l=$('#leaveCollectionBtn'),v=$('#detailsBtn');if(r)r.hidden=!owner;if(d)d.hidden=!owner;if(v)v.hidden=!owner;if(l)l.hidden=owner||!on}
-async function loadCollections(preferredId){if(!currentUser)return;const seq=++collectionsSeq,{data,error}=await sb.from('collection_members').select('collections!inner(id,name,code,owner_id,created_at)').eq('user_id',currentUser.id).order('joined_at',{ascending:false});if(error)throw error;if(seq!==collectionsSeq)return;const rows=(data||[]).map(r=>r.collections).filter(Boolean);updateCollectionSelect(rows);const id=preferredId||localStorage.getItem(ACTIVE_COLLECTION_KEY)||$('#collectionSelect').value;const found=rows.find(c=>c.id===id);if(!found){currentCollection=null;updateCollectionActions();jbStatus('','Crie uma coleção ou entre usando um código.');return}if(currentCollection&&currentCollection.id===found.id)return;await activateCollection(found)}
+async function loadCollections(preferredId){if(!currentUser)return;const seq=++collectionsSeq,{data,error}=await sb.from('collection_members').select('collections!inner(id,name,code,owner_id,created_at)').eq('user_id',currentUser.id).order('joined_at',{ascending:false});if(error)throw error;if(seq!==collectionsSeq)return;const rows=(data||[]).map(r=>r.collections).filter(Boolean);updateCollectionSelect(rows);const id=preferredId||localStorage.getItem(ACTIVE_COLLECTION_KEY)||$('#collectionSelect').value;const found=rows.find(c=>c.id===id);if(!found){currentCollection=null;updateCollectionActions();jbStatus('',$t('jbNoCol'));return}if(currentCollection&&currentCollection.id===found.id)return;await activateCollection(found)}
 async function activateCollection(c){currentCollection=c;localStorage.setItem(ACTIVE_COLLECTION_KEY,c.id);const select=$('#collectionSelect');if(![...select.options].some(o=>o.value===c.id))select.add(new Option(c.name+' · '+c.code,c.id));select.value=c.id;$('#collectionCode').value=c.code;updateCollectionActions();jbStatus('','');subscribeRealtime();await loadProgress()}
 async function selectCollection(id){if(!id)return;let c=collectionRows.find(x=>x.id===id);if(!c){const{data,error}=await sb.from('collections').select('id,name,code,owner_id,created_at').eq('id',id).single();if(error)throw error;c=data}await activateCollection(c)}
 async function loadProgress(){if(!currentCollection)return;const col=currentCollection,{data,error}=await sb.from('item_progress').select('item_id').eq('collection_id',col.id).eq('checked',true);if(error)throw error;if(currentCollection!==col)return;checked.clear();extra.clear();for(const row of data||[]){const id=row.item_id;(BYID.has(id)?checked:extra).add(id)}recount();persist();updateStats();applyFilters();}
 function subscribeRealtime(){if(realtimeChannel)sb.removeChannel(realtimeChannel);if(!currentCollection)return;realtimeChannel=sb.channel('stackvault-progress-'+currentCollection.id).on('postgres_changes',{event:'*',schema:'public',table:'item_progress',filter:'collection_id=eq.'+currentCollection.id},payload=>{const row=payload.new||payload.old;if(!row||!BYID.has(row.item_id))return;if(payload.eventType==='DELETE'||!payload.new.checked)checked.delete(row.item_id);else checked.add(row.item_id);recount();persist();updateStats();applyFilters();}).subscribe();}
 async function syncProgress(ids){if(!currentUser||!currentCollection||!ids||!ids.length)return;const now=new Date().toISOString(),unique=[...new Set(ids)].filter(id=>BYID.has(id));for(let i=0;i<unique.length;i+=1000){const rows=unique.slice(i,i+1000).map(id=>({collection_id:currentCollection.id,item_id:id,checked:checked.has(id),checked_by:currentUser.id,updated_at:now}));const {error}=await sb.from('item_progress').upsert(rows,{onConflict:'collection_id,item_id'});if(error)throw error;}}
-function markCloudDirty(ids){if(!currentCollection||!currentUser)return;clearTimeout(syncTimer);const changed=Array.isArray(ids)?ids:[];syncTimer=setTimeout(()=>syncProgress(changed).catch(e=>jbStatus('err','Falha ao sincronizar: '+friendlyError(e))),350)}
-async function createCollection(){const input=$('#collectionName'),name=input.value.trim(),button=$('#createCollectionBtn');if(!name){jbStatus('err','Digite um nome para a coleção.');input.focus();return}setBusy(button,true,'+ Nova coleção');try{const {data,error}=await sb.rpc('create_collection',{p_name:name});if(error)throw error;const c=Array.isArray(data)?data[0]:data;if(!c||!c.id)throw new Error('A coleção foi criada, mas não retornou os dados esperados.');input.value='';await activateCollection(c);jbStatus('ok','✓ '+c.name+' criada · código '+c.code);loadCollections().catch(()=>{});}catch(e){jbStatus('err','Não foi possível criar: '+friendlyError(e));}finally{setBusy(button,false,'+ Nova coleção')}}
-async function joinCollection(){const input=$('#collectionCode'),code=input.value.trim().toUpperCase(),button=$('#joinCollectionBtn');if(!code){jbStatus('err','Digite o código da coleção.');input.focus();return}setBusy(button,true,'Entrar na coleção');try{const {data,error}=await sb.rpc('join_collection',{p_code:code});if(error)throw error;const c=Array.isArray(data)?data[0]:data;if(!c||!c.id)throw new Error('A coleção não retornou os dados esperados.');await activateCollection(c);jbStatus('ok','✓ Você entrou em '+c.name+' · código '+c.code);loadCollections().catch(()=>{});}catch(e){jbStatus('err','Não foi possível entrar: '+friendlyError(e));}finally{setBusy(button,false,'Entrar na coleção')}}
-async function deleteCollection(){const c=currentCollection;if(!c||!currentUser||c.owner_id!==currentUser.id)return;const button=$('#deleteCollectionBtn');setBusy(button,true,'Apagando…');try{const {error}=await sb.from('collections').delete().eq('id',c.id);if(error)throw error;localStorage.removeItem(ACTIVE_COLLECTION_KEY);currentCollection=null;collectionRows=collectionRows.filter(x=>x.id!==c.id);updateCollectionSelect(collectionRows);updateCollectionActions();if(realtimeChannel)sb.removeChannel(realtimeChannel);realtimeChannel=null;$('#delCfm').close();toast('🗑 Coleção "'+c.name+'" excluída.');await loadCollections();}catch(e){jbStatus('err','Não foi possível excluir: '+friendlyError(e));}finally{setBusy(button,false,'🗑 Excluir coleção')}}
-async function leaveCollection(){const c=currentCollection;if(!c||!currentUser||c.owner_id===currentUser.id)return;const button=$('#leaveCollectionBtn');setBusy(button,true,'Saindo…');try{const {error}=await sb.from('collection_members').delete().eq('collection_id',c.id).eq('user_id',currentUser.id);if(error)throw error;localStorage.removeItem(ACTIVE_COLLECTION_KEY);currentCollection=null;collectionRows=collectionRows.filter(x=>x.id!==c.id);updateCollectionSelect(collectionRows);updateCollectionActions();if(realtimeChannel)sb.removeChannel(realtimeChannel);realtimeChannel=null;$('#delCfm').close();toast('🚪 Você saiu de "'+c.name+'"');await loadCollections();}catch(e){jbStatus('err','Não foi possível sair: '+friendlyError(e));}finally{setBusy(button,false,'🚪 Sair da coleção')}}
+function markCloudDirty(ids){if(!currentCollection||!currentUser)return;clearTimeout(syncTimer);const changed=Array.isArray(ids)?ids:[];syncTimer=setTimeout(()=>syncProgress(changed).catch(e=>jbStatus('err',$tf('jbSyncFail',{e:friendlyError(e)}))),350)}
+async function createCollection(){const input=$('#collectionName'),name=input.value.trim(),button=$('#createCollectionBtn');if(!name){jbStatus('err',$t('jbNoName'));input.focus();return}setBusy(button,true,$t('newCol'));try{const {data,error}=await sb.rpc('create_collection',{p_name:name});if(error)throw error;const c=Array.isArray(data)?data[0]:data;if(!c||!c.id)throw new Error('A coleção foi criada, mas não retornou os dados esperados.');input.value='';await activateCollection(c);jbStatus('ok',$tf('jbCreated',{x:c.name,c:c.code}));loadCollections().catch(()=>{});}catch(e){jbStatus('err',$tf('jbCreateFail',{e:friendlyError(e)}));}finally{setBusy(button,false,$t('newCol'))}}
+async function joinCollection(){const input=$('#collectionCode'),code=input.value.trim().toUpperCase(),button=$('#joinCollectionBtn');if(!code){jbStatus('err',$t('jbNoCode'));input.focus();return}setBusy(button,true,$t('joinCol'));try{const {data,error}=await sb.rpc('join_collection',{p_code:code});if(error)throw error;const c=Array.isArray(data)?data[0]:data;if(!c||!c.id)throw new Error('A coleção não retornou os dados esperados.');await activateCollection(c);jbStatus('ok',$tf('jbJoined',{x:c.name,c:c.code}));loadCollections().catch(()=>{});}catch(e){jbStatus('err',$tf('jbJoinFail',{e:friendlyError(e)}));}finally{setBusy(button,false,$t('joinCol'))}}
+async function deleteCollection(){const c=currentCollection;if(!c||!currentUser||c.owner_id!==currentUser.id)return;const button=$('#deleteCollectionBtn');setBusy(button,true,$t('busyWait'));try{const {error}=await sb.from('collections').delete().eq('id',c.id);if(error)throw error;localStorage.removeItem(ACTIVE_COLLECTION_KEY);currentCollection=null;collectionRows=collectionRows.filter(x=>x.id!==c.id);updateCollectionSelect(collectionRows);updateCollectionActions();if(realtimeChannel)sb.removeChannel(realtimeChannel);realtimeChannel=null;$('#delCfm').close();toast($tf('colDeleted',{x:c.name}));await loadCollections();}catch(e){jbStatus('err',$tf('jbDelFail',{e:friendlyError(e)}));}finally{setBusy(button,false,$t('delCol'))}}
+async function leaveCollection(){const c=currentCollection;if(!c||!currentUser||c.owner_id===currentUser.id)return;const button=$('#leaveCollectionBtn');setBusy(button,true,$t('busyWait'));try{const {error}=await sb.from('collection_members').delete().eq('collection_id',c.id).eq('user_id',currentUser.id);if(error)throw error;localStorage.removeItem(ACTIVE_COLLECTION_KEY);currentCollection=null;collectionRows=collectionRows.filter(x=>x.id!==c.id);updateCollectionSelect(collectionRows);updateCollectionActions();if(realtimeChannel)sb.removeChannel(realtimeChannel);realtimeChannel=null;$('#delCfm').close();toast($tf('colLeft',{x:c.name}));await loadCollections();}catch(e){jbStatus('err',$tf('jbLeaveFail',{e:friendlyError(e)}));}finally{setBusy(button,false,$t('leaveCol'))}}
 function openRename(){if(!currentCollection)return;const input=$('#renName');input.value=currentCollection.name;$('#renDlg').showModal();input.focus();input.select()}
-async function renameCollection(){const c=currentCollection;if(!c||!currentUser||c.owner_id!==currentUser.id)return;const input=$('#renName'),name=input.value.trim();if(!name){jbStatus('err','Digite um nome para a coleção.');input.focus();return}if(name.length>80){jbStatus('err','O nome pode ter no máximo 80 caracteres.');input.focus();return}const button=$('#renSave');setBusy(button,true,'Aguarde…');try{const {error}=await sb.from('collections').update({name}).eq('id',c.id);if(error)throw error;currentCollection=Object.assign({},c,{name});collectionRows=collectionRows.some(x=>x.id===c.id)?collectionRows.map(x=>x.id===c.id?currentCollection:x):[currentCollection].concat(collectionRows);updateCollectionSelect(collectionRows);updateCollectionActions();$('#renDlg').close();toast('✏️ Coleção renomeada para "'+name+'"');}catch(e){jbStatus('err','Não foi possível renomear: '+friendlyError(e));}finally{setBusy(button,false,'Salvar')}}
+async function renameCollection(){const c=currentCollection;if(!c||!currentUser||c.owner_id!==currentUser.id)return;const input=$('#renName'),name=input.value.trim();if(!name){jbStatus('err',$t('jbNoName'));input.focus();return}if(name.length>80){jbStatus('err',$t('jbNameLong'));input.focus();return}const button=$('#renSave');setBusy(button,true,$t('busyWait'));try{const {error}=await sb.from('collections').update({name}).eq('id',c.id);if(error)throw error;currentCollection=Object.assign({},c,{name});collectionRows=collectionRows.some(x=>x.id===c.id)?collectionRows.map(x=>x.id===c.id?currentCollection:x):[currentCollection].concat(collectionRows);updateCollectionSelect(collectionRows);updateCollectionActions();$('#renDlg').close();toast($tf('colRenamed',{x:name}));}catch(e){jbStatus('err',$tf('jbRenFail',{e:friendlyError(e)}));}finally{setBusy(button,false,$t('save'))}}
 function askConfirm(title,text,label,fn){$('#delTitle').textContent=title;$('#delCfmTxt').textContent=text;$('#delYes').textContent=label;pendingConfirm=fn;$('#delCfm').showModal()}
-function fmtWhen(iso){if(!iso)return '—';const d=new Date(iso);if(isNaN(d))return '—';const p=n=>String(n).padStart(2,'0');return p(d.getDate())+'/'+p(d.getMonth()+1)+'/'+d.getFullYear()+' às '+p(d.getHours())+':'+p(d.getMinutes())}
-function detEmail(uid){for(const e of detEvents)if(e.user_id===uid&&e.email)return e.email;if(currentUser&&uid===currentUser.id&&currentUser.email)return currentUser.email;return 'ID '+String(uid).slice(0,8)}
+function fmtWhen(iso){if(!iso)return '—';const d=new Date(iso);if(isNaN(d))return '—';try{return new Intl.DateTimeFormat(LOCALE[S.lang]||'pt-BR',{dateStyle:'short',timeStyle:'short'}).format(d)}catch(_){const p=n=>String(n).padStart(2,'0');return p(d.getDate())+'/'+p(d.getMonth()+1)+'/'+d.getFullYear()+' '+p(d.getHours())+':'+p(d.getMinutes())}}
+function detEmail(uid){for(const e of detEvents)if(e.user_id===uid&&e.email)return e.email;if(currentUser&&uid===currentUser.id&&currentUser.email)return currentUser.email;return $t('idPrefix')+String(uid).slice(0,8)}
 function detSec(list,text){const h=document.createElement('div');h.className='msec';h.textContent=text;list.appendChild(h)}
 function detMsg(list,text,err){const d=document.createElement('div');d.className='msub'+(err?' err':'');d.textContent=text;list.appendChild(d)}
 function detRow(list,email,tag,tagCls,lines,uid,onRemove){
@@ -527,7 +1102,7 @@ function detRow(list,email,tag,tagCls,lines,uid,onRemove){
  const em=document.createElement('span');em.className='em';em.textContent=email;em.title=email;
  const tg=document.createElement('span');tg.className='tag'+(tagCls?' '+tagCls:'');tg.textContent=tag;
  who.append(em,tg);
- if(uid&&onRemove){const rm=document.createElement('button');rm.type='button';rm.className='rm';rm.textContent='Remover';rm.title='Remover '+email+' da coleção';rm.addEventListener('click',()=>onRemove(uid));who.appendChild(rm)}
+ if(uid&&onRemove){const rm=document.createElement('button');rm.type='button';rm.className='rm';rm.textContent=$t('rm');rm.title=$tf('rmTitle',{e:email});rm.addEventListener('click',()=>onRemove(uid));who.appendChild(rm)}
  r.appendChild(who);
  for(const [label,iso] of lines){const w=document.createElement('div');w.className='when';const b=document.createElement('b');b.textContent=fmtWhen(iso);w.append(label,b);r.appendChild(w)}
  list.appendChild(r)
@@ -539,24 +1114,24 @@ function renderDetails(members,events){
  const active=members.slice().sort((a,b)=>String(a.joined_at).localeCompare(String(b.joined_at)));
  const activeIds=new Set(active.map(m=>m.user_id));
  const gone=[...lastLeave.keys()].filter(uid=>!activeIds.has(uid)).sort((a,b)=>String(lastLeave.get(b)).localeCompare(String(lastLeave.get(a))));
- detSec(list,'Na coleção ('+active.length+')');
- if(!active.length)detMsg(list,'Ninguém por aqui.');
+ detSec(list,$tf('detIn',{n:active.length}));
+ if(!active.length)detMsg(list,$t('detNobody'));
  for(const m of active){
-  const remove=m.role==='owner'?null:(uid)=>askConfirm('Remover membro?','Remover "'+detEmail(uid)+'" de "'+currentCollection.name+'"? A pessoa para de ver o progresso compartilhado e o histórico registra a saída.','Remover',()=>removeMember(uid));
-  detRow(list,detEmail(m.user_id),m.role==='owner'?'👑 Dono':'Membro',m.role==='owner'?'own':'',[['Entrou em ',m.joined_at]],m.user_id,remove)
+  const remove=m.role==='owner'?null:(uid)=>askConfirm($t('confRmTitle'),$tf('confRmMsg',{e:detEmail(uid),x:currentCollection.name}),$t('rm'),()=>removeMember(uid));
+   detRow(list,detEmail(m.user_id),m.role==='owner'?$t('tagOwner'):$t('tagMember'),m.role==='owner'?'own':'',[[$t('detJoined'),m.joined_at]],m.user_id,remove)
  }
- detSec(list,'Saíram ('+gone.length+')');
- if(!gone.length)detMsg(list,'Ninguém saiu até agora.');
+ detSec(list,$tf('detOut',{n:gone.length}));
+ if(!gone.length)detMsg(list,$t('detNobodyOut'));
  for(const uid of gone){
   const lines=[];
-  if(firstJoin.has(uid))lines.push(['Entrou em ',firstJoin.get(uid)]);
-  lines.push(['Saiu em ',lastLeave.get(uid)]);
-  detRow(list,detEmail(uid),'Saiu','out',lines)
+  if(firstJoin.has(uid))lines.push([$t('detJoined'),firstJoin.get(uid)]);
+  lines.push([$t('detLeft'),lastLeave.get(uid)]);
+  detRow(list,detEmail(uid),$t('tagLeft'),'out',lines)
  }
 }
-let detEvents=[];
+let detEvents=[],detMembers=[];
 async function loadDetails(){
- const list=$('#detList');list.replaceChildren();detMsg(list,'Carregando…');
+ const list=$('#detList');list.replaceChildren();detMsg(list,$t('loading'));
  const c=currentCollection;
  if(!c||!currentUser||c.owner_id!==currentUser.id)return;
  try{
@@ -565,17 +1140,17 @@ async function loadDetails(){
    sb.from('collection_member_events').select('user_id,email,event,at').eq('collection_id',c.id).order('at')
   ]);
   if(m.error)throw m.error;if(e.error)throw e.error;
-  detEvents=e.data||[];renderDetails(m.data||[],detEvents);
+  detEvents=e.data||[];detMembers=m.data||[];renderDetails(detMembers,detEvents);
  }catch(err){const msg=friendlyError(err);list.replaceChildren();
   if(/collection_member_events|PGRST205|42P01|does not exist/i.test(String(err.message||'')))
-   detMsg(list,'O histórico ainda não existe no banco. Rode o arquivo supabase_migration_member_events.sql no SQL Editor do Supabase.',true);
-  else detMsg(list,'Não foi possível carregar: '+msg,true)}
+   detMsg(list,$t('histMissing'),true);
+  else detMsg(list,$tf('detLoadFail',{e:msg}),true)}
 }
 async function openDetails(){
  const c=currentCollection;
  if(!c||!currentUser||c.owner_id!==currentUser.id)return;
  $('#detName').textContent=c.name;$('#detCode').textContent=c.code;$('#detCreated').textContent=fmtWhen(c.created_at);
- $('#detSub').textContent='Quem entrou, quem saiu, data e hora. Só o dono gerencia os membros.';
+ $('#detSub').textContent=$t('mSub');
  $('#detDlg').showModal();
  await loadDetails();
 }
@@ -586,26 +1161,26 @@ async function removeMember(uid){
   const {error}=await sb.from('collection_members').delete().eq('collection_id',c.id).eq('user_id',uid);
   if(error)throw error;
   $('#delCfm').close();
-  toast('Membro removido de "'+c.name+'"');
+  toast($tf('memberRemoved',{x:c.name}));
   await loadDetails();
- }catch(err){detMsg($('#detList'),'Não foi possível remover: '+friendlyError(err),true)}
+ }catch(err){detMsg($('#detList'),$tf('detRemoveFail',{e:friendlyError(err)}),true)}
 }
-async function signIn(){const email=$('#authEmail').value.trim(),password=$('#authPassword').value,button=$('#signInBtn');if(!email||!password){jbStatus('err','Informe e-mail e senha.');return}setBusy(button,true,'Entrar');try{const {error}=await sb.auth.signInWithPassword({email,password});if(error)throw error;}catch(e){jbStatus('err','Não foi possível entrar: '+friendlyError(e));}finally{setBusy(button,false,'Entrar')}}
+async function signIn(){const email=$('#authEmail').value.trim(),password=$('#authPassword').value,button=$('#signInBtn');if(!email||!password){jbStatus('err',$t('authNeed'));return}setBusy(button,true,$t('btnSignIn'));try{const {error}=await sb.auth.signInWithPassword({email,password});if(error)throw error;}catch(e){jbStatus('err',$tf('signInFail',{e:friendlyError(e)}));}finally{setBusy(button,false,$t('btnSignIn'))}}
 const SIGNUP_WAIT_KEY='mc_signup_wait',SIGNUP_WAIT_MS=10*60*1000;
 function signupWaitLeft(){const until=+(localStorage.getItem(SIGNUP_WAIT_KEY)||0);return until>Date.now()?until-Date.now():0}
 async function signUp(){const email=$('#authEmail').value.trim(),password=$('#authPassword').value,button=$('#signUpBtn');
- if(!email||password.length<6){jbStatus('err','Informe e-mail e uma senha com pelo menos 6 caracteres.');return}
+ if(!email||password.length<6){jbStatus('err',$t('authWeak'));return}
  const wait=signupWaitLeft();
- if(wait){jbStatus('err','Você já tentou criar conta há pouco. Aguarde '+Math.ceil(wait/60000)+' min antes de tentar de novo.');return}
- setBusy(button,true,'Criar conta');
+ if(wait){jbStatus('err',$tf('authWait',{m:Math.ceil(wait/60000)}));return}
+ setBusy(button,true,$t('btnSignUp'));
  try{const {data,error}=await sb.auth.signUp({email,password});if(error)throw error;
   localStorage.removeItem(SIGNUP_WAIT_KEY);
-if(data.session)jbStatus('ok','✓ Conta criada e conectada. Use o mesmo e-mail e senha para entrar em outros aparelhos.');
-   else jbStatus('ok','✓ Conta criada. Entre com esse e-mail e a senha que você escolheu.');}
+if(data.session)jbStatus('ok',$t('authCreated'));
+   else jbStatus('ok',$t('authCreated2'));}
  catch(e){if(e&&(e.error_code||e.code)==='over_email_send_rate_limit')localStorage.setItem(SIGNUP_WAIT_KEY,String(Date.now()+SIGNUP_WAIT_MS));
-  jbStatus('err','Não foi possível criar a conta: '+friendlyError(e));}
- finally{setBusy(button,false,'Criar conta')}}
-async function initCloud(){if(!sb){jbStatus('err','Não foi possível carregar o Supabase. Recarregue a página.');return}$('#signInBtn').onclick=signIn;$('#signUpBtn').onclick=signUp;$('#createCollectionBtn').onclick=createCollection;$('#joinCollectionBtn').onclick=joinCollection;$('#signOutBtn').onclick=()=>sb.auth.signOut();$('#renameCollectionBtn').onclick=openRename;$('#detailsBtn').onclick=openDetails;$('#detClose').onclick=()=>$('#detDlg').close();$('#detCloseBtn').onclick=()=>$('#detDlg').close();$('#detDlg').addEventListener('click',e=>{if(e.target===$('#detDlg'))$('#detDlg').close()});$('#renCancel').onclick=()=>$('#renDlg').close();$('#renSave').onclick=renameCollection;$('#renName').addEventListener('keydown',e=>{if(e.key==='Enter')renameCollection()});$('#deleteCollectionBtn').onclick=()=>askConfirm('Excluir coleção?','A coleção "'+currentCollection.name+'" (código '+currentCollection.code+') será apagada para todos os membros, junto com todo o progresso marcado. Não é possível desfazer.','Excluir',deleteCollection);$('#leaveCollectionBtn').onclick=()=>askConfirm('Sair da coleção?','Você vai deixar de ver o progresso compartilhado de "'+currentCollection.name+'". O dono e os outros membros continuam com tudo, e você pode entrar de novo usando o código '+currentCollection.code+'.','Sair',leaveCollection);$('#delNo').onclick=()=>{pendingConfirm=null;$('#delCfm').close()};$('#delYes').onclick=()=>{const fn=pendingConfirm;pendingConfirm=null;if(fn)fn()};$('#collectionSelect').onchange=e=>selectCollection(e.target.value).catch(err=>jbStatus('err',friendlyError(err)));for(const el of [$('#authEmail'),$('#authPassword')])el.addEventListener('keydown',e=>{if(e.key==='Enter')signIn()});for(const el of [$('#collectionName'),$('#collectionCode')])el.addEventListener('keydown',e=>{if(e.key==='Enter')e.target===$('#collectionName')?createCollection():joinCollection()});const {data:{session}}=await sb.auth.getSession();currentUser=session&&session.user||null;setSignedInUi();if(currentUser)try{await loadCollections()}catch(e){jbStatus('err','Não foi possível carregar suas coleções: '+friendlyError(e));}sb.auth.onAuthStateChange((event,session)=>{currentUser=session&&session.user||null;setSignedInUi();updateCollectionActions();if(!currentUser){currentCollection=null;collectionRows=[];collectionsSeq++;$('#collectionSelect').replaceChildren();if(realtimeChannel)sb.removeChannel(realtimeChannel);realtimeChannel=null;jbStatus('','Entre para criar ou compartilhar uma coleção.');return}loadCollections().catch(e=>jbStatus('err','Não foi possível carregar suas coleções: '+friendlyError(e)));});}
+  jbStatus('err',$tf('authFail',{e:friendlyError(e)}));}
+ finally{setBusy(button,false,$t('btnSignUp'))}}
+async function initCloud(){if(!sb){jbStatus('err',$t('sbFail'));return}$('#signInBtn').onclick=signIn;$('#signUpBtn').onclick=signUp;$('#createCollectionBtn').onclick=createCollection;$('#joinCollectionBtn').onclick=joinCollection;$('#signOutBtn').onclick=()=>sb.auth.signOut();$('#renameCollectionBtn').onclick=openRename;$('#detailsBtn').onclick=openDetails;$('#detClose').onclick=()=>$('#detDlg').close();$('#detCloseBtn').onclick=()=>$('#detDlg').close();$('#detDlg').addEventListener('click',e=>{if(e.target===$('#detDlg'))$('#detDlg').close()});$('#renCancel').onclick=()=>$('#renDlg').close();$('#renSave').onclick=renameCollection;$('#renName').addEventListener('keydown',e=>{if(e.key==='Enter')renameCollection()});$('#deleteCollectionBtn').onclick=()=>askConfirm($t('delTitle'),$tf('confDelMsg',{x:currentCollection.name,c:currentCollection.code}),$t('delYes'),deleteCollection);$('#leaveCollectionBtn').onclick=()=>askConfirm($t('confLeaveTitle'),$tf('confLeaveMsg',{x:currentCollection.name,c:currentCollection.code}),$t('signOut'),leaveCollection);$('#delNo').onclick=()=>{pendingConfirm=null;$('#delCfm').close()};$('#delYes').onclick=()=>{const fn=pendingConfirm;pendingConfirm=null;if(fn)fn()};$('#collectionSelect').onchange=e=>selectCollection(e.target.value).catch(err=>jbStatus('err',friendlyError(err)));for(const el of [$('#authEmail'),$('#authPassword')])el.addEventListener('keydown',e=>{if(e.key==='Enter')signIn()});for(const el of [$('#collectionName'),$('#collectionCode')])el.addEventListener('keydown',e=>{if(e.key==='Enter')e.target===$('#collectionName')?createCollection():joinCollection()});const {data:{session}}=await sb.auth.getSession();currentUser=session&&session.user||null;setSignedInUi();if(currentUser)try{await loadCollections()}catch(e){jbStatus('err',$tf('jbLoadFail',{e:friendlyError(e)}));}sb.auth.onAuthStateChange((event,session)=>{currentUser=session&&session.user||null;setSignedInUi();updateCollectionActions();if(!currentUser){currentCollection=null;collectionRows=[];collectionsSeq++;$('#collectionSelect').replaceChildren();if(realtimeChannel)sb.removeChannel(realtimeChannel);realtimeChannel=null;jbStatus('',$t('authMsg'));return}loadCollections().catch(e=>jbStatus('err',$tf('jbLoadFail',{e:friendlyError(e)})));});}
 
 // ───────── Estado ─────────
 const S={q:'',status:'all',cat:'all',sort:'def',lang:(l=>LANGS[l]?l:'pt')(localStorage.getItem(LANG_KEY)),list:[],cols:1,first:-1,hl:null};
@@ -615,44 +1190,10 @@ function recount(){doneCount=0;for(const k in catTotal)catDone[k]=0;for(const id
 const CATS=CAT_ORDER.filter(c=>catTotal[c]);
 
 // ───────── Nomes / idioma ─────────
-  const $t=(k)=>UI[S.lang]&&UI[S.lang][k]!==undefined?UI[S.lang][k]:(UI.pt[k]||k);
-  function rebuildNames(){
-    for(const x of SURVIVAL_ITEMS){x.name=nameIn(x,S.lang);x.n=norm(x.name);x.s=norm(x.name+' '+x.ptName+' '+x.enName+' '+x.id+' '+x.id.replace(/_/g,' '))}
-    // UI básica
-    const t=$t;
-    const q=(sel)=>{try{return document.querySelector(sel)}catch(_){return null}};
-    const TX=(sel,v)=>{const e=q(sel); if(e!=null) e.textContent=v;};
-    const PH=(sel,v)=>{const e=q(sel); if(e!=null) e.placeholder=v;};
-    const OPT=(sel,i,v)=>{const e=q(sel); if(e&&e.options&&e.options[i]) e.options[i].text=v;};
-    const HTML=(sel,v)=>{const e=q(sel); if(e!=null) e.innerHTML=v;};
-    TX('#menuCfg',t('menuCfg')); TX('#importBtn',t('import')); TX('#resetBtn',t('reset'));
-    PH('#search',t('searchPH')); TX('#filterBtn',t('filters'));
-    TX('#allBtn',t('all')); TX('#missingBtn',t('missing')); TX('#doneBtn',t('doneInv'));
-    OPT('#catSel',0,t('allCats'));
-    OPT('#sortSel',0,t('sortDef')); OPT('#sortSel',1,t('az')); OPT('#sortSel',2,t('za'));
-    OPT('#sortSel',3,t('doneFirst')); OPT('#sortSel',4,t('missFirst'));
-    TX('#markBtn',t('marked')); TX('#unmarkBtn',t('unmarked')); TX('#backupBtn',t('backup'));
-    TX('#progSum',t('panelProg')); TX('#cloudSum',t('panelCloud'));
-    HTML('.hero-copy h2',t('hero2')); TX('.hero-copy p',t('heroP'));
-    TX('#rankNow',t('rankNow')); TX('#mission',t('mission')); TX('#lvlTxt',t('level'));
-    TX('#restTxt',t('rest')); TX('#fcatsTxt',t('fullCats'));
-    TX('[data-n="100"]',t('mile100')); TX('[data-n="500"]',t('mile500'));
-    TX('[data-n="1000"]',t('mile1000')); TX('[data-n="0"]',t('mileFull'));
-    HTML('.done-msg',t('legend'));
-    TX('#empty h2',t('emptyH')); TX('#empty p',t('emptyP')); TX('#clearBtn',t('clearFilters'));
-    TX('#signInBtn',t('btnSignIn')); TX('#signUpBtn',t('btnSignUp'));
-    PH('#collectionName',t('colNamePH')); TX('#createCollectionBtn',t('newCol'));
-    PH('#collectionCode',t('colCodePH')); TX('#joinCollectionBtn',t('joinCol'));
-    const cs=q('#collectionSelect'); if(cs) cs.setAttribute('aria-label',t('activeCol'));
-    TX('#signOutBtn',t('signOut')); TX('#detailsBtn',t('details'));
-    TX('#renameCollectionBtn',t('rename')); TX('#deleteCollectionBtn',t('delCol'));
-    TX('#leaveCollectionBtn',t('leaveCol')); TX('#jbTxt',t('authMsg')); TX('#footMade',t('made'));
-    TX('#mCopy',t('mCopy'));
-    const mt=q('#mToggle'); if(mt) mt.textContent=checked.has(cur)?t('mToggleUnmark'):t('mToggleMark');
-    TX('#detTitle',t('details')); TX('#detSub',t('mSub')); TX('#kvCol',t('mCol'));
-    TX('#kvCode',t('mCode')); TX('#kvCreated',t('mCreated')); TX('#detCloseBtn',t('close'));
-    TX('#langLbl',t('langLabel')); TX('#sortLbl',t('sortLbl'));
-  }
+function rebuildNames(){
+  for(const x of SURVIVAL_ITEMS){x.name=nameIn(x,S.lang);x.n=norm(x.name);x.s=norm(x.name+' '+x.ptName+' '+x.enName+' '+x.id+' '+x.id.replace(/_/g,' '))}
+  applyI18n();
+}
 
 // ───────── Filtros / pesquisa ─────────
 function applyFilters(){
@@ -700,8 +1241,9 @@ function applyFit(d,im,f){
   const S=parseFloat(d.style.width)||SPR;
   d.style.overflow='hidden';
   im.style.transformOrigin='0 0';
-  // f.k limitado com segurança
-  const k=Math.min(f.k,1.85);
+  // margem de segurança: o sprite ocupa no maximo 90% da caixa, entao
+  // nenhuma borda do item encosta (nem é cortada pelo overflow:hidden)
+  const k=Math.min(f.k,1.85)*0.9;
   im.style.transform='translate('+(S/2-k*f.ox*S)+'px,'+(S/2-k*f.oy*S)+'px) scale('+k+')'
 }
 async function measure(blob){
@@ -775,10 +1317,10 @@ function icon(x,S){
  return d}
 function card(x){
  const c=checked.has(x.id),d=h('div','item'+(c?' done':'')+(x.id===S.hl?' hl':''));d.dataset.id=x.id;
- const cb=h('input','ck');cb.type='checkbox';cb.checked=c;cb.setAttribute('aria-label','Coletado: '+x.name);
- const det=h('button','det','ⓘ');det.type='button';det.setAttribute('aria-label','Detalhes de '+x.name);
- const idb=h('button','id','minecraft:'+x.id);idb.type='button';idb.title='Copiar ID';idb.setAttribute('aria-label','Copiar ID minecraft:'+x.id);
- d.append(cb,det,icon(x),h('span','name',x.name),idb,h('span','st','✓ Coletado'));return d;
+ const cb=h('input','ck');cb.type='checkbox';cb.checked=c;cb.setAttribute('aria-label',$t('ariaCollected')+x.name);
+ const det=h('button','det','ⓘ');det.type='button';det.setAttribute('aria-label',$t('ariaDetails')+x.name);
+ const idb=h('button','id','minecraft:'+x.id);idb.type='button';idb.title=$t('mCopy');idb.setAttribute('aria-label',$t('ariaCopyId')+x.id);
+ d.append(cb,det,icon(x),h('span','name',x.name),idb,h('span','st',$t('stDone')));return d;
 }
 let vis=0,CARDS=new Map();
 function draw(force){
@@ -805,37 +1347,37 @@ let lastW=0,lastRH=0;new ResizeObserver(()=>{const w=grid.clientWidth,r=readRH()
 function updateStats(){
  const t=SURVIVAL_ITEMS.length,p=t?Math.floor(doneCount/t*100):0,wasDone=$('#dash').classList.contains('complete');
  $('#dTotal').textContent=nf.format(t);$('#dDone').textContent=nf.format(doneCount);$('#dMiss').textContent=nf.format(t-doneCount);
- $('#dPct').textContent=(t?doneCount/t*100:0).toLocaleString('pt-BR',{maximumFractionDigits:2})+'%';$('#bar').style.width=(t?doneCount/t*100:0)+'%';$('#barWrap').setAttribute('aria-valuenow',p);
+ $('#dPct').textContent=(t?doneCount/t*100:0).toLocaleString(LOCALE[S.lang]||'pt-BR',{maximumFractionDigits:2})+'%';$('#bar').style.width=(t?doneCount/t*100:0)+'%';$('#barWrap').setAttribute('aria-valuenow',p);
  $('#mini').innerHTML='';const b=h('b',null,nf.format(doneCount)+'/'+nf.format(t));$('#mini').append(b,' · '+p+'%');
  const full=t>0&&doneCount===t;$('#dash').classList.toggle('complete',full);
- if(full&&!wasDone)toast('★ Parabéns! Checklist 100% completa.');
+ if(full&&!wasDone)toast($t('t100'));
  updateCatPanel();gamify();
 }
 function gamify(){
  const t=SURVIVAL_ITEMS.length,full=t>0&&doneCount===t;
- let r='Novato';for(const[n,l]of [[100,'Explorador'],[300,'Minerador'],[600,'Colecionador'],[1000,'Sobrevivente']])if(doneCount>=n)r=l;
- $('#rank').textContent=full?'Lenda do Overworld':r;$('#lvl').textContent=Math.floor(doneCount/50)+1;
+ let r='novato';for(const[n,l]of [[100,'explorador'],[300,'minerador'],[600,'colecionador'],[1000,'sobrevivente']])if(doneCount>=n)r=l;
+ $('#rank').textContent=$rank(full?'lenda':r);$('#lvl').textContent=Math.floor(doneCount/50)+1;
  let cc=0;for(const c of CATS)if(catDone[c]===catTotal[c])cc++;$('#dCats').textContent=cc+' / '+CATS.length;
  for(const m of $('#miles').children){const n=+m.dataset.n;m.classList.toggle('got',n?doneCount>=n:full)}
 }
 function updateCount(){
  const n=S.list.length,t=SURVIVAL_ITEMS.length,el=$('#count');el.textContent='';
- el.append(h('b',null,nf.format(n)),' de '+nf.format(t)+' itens');
- if(S.cat!=='all'){const c=h('button','fchip','✕ '+S.cat);c.type='button';c.setAttribute('aria-label','Remover filtro '+S.cat);c.onclick=()=>setCat('all');el.append(c)}
- $('#markBtn').textContent='✓ Marcar '+nf.format(n)+' itens visíveis';
- $('#unmarkBtn').textContent='Desmarcar '+nf.format(n)+' visíveis';
+ el.append(h('b',null,nf.format(n)),$tf('countOf',{t:nf.format(t)}));
+ if(S.cat!=='all'){const c=h('button','fchip','✕ '+$cat(S.cat));c.type='button';c.setAttribute('aria-label',$tf('removeFilter',{c:$cat(S.cat)}));c.onclick=()=>setCat('all');el.append(c)}
+ $('#markBtn').textContent=$tf('markVisible',{n:nf.format(n)});
+ $('#unmarkBtn').textContent=$tf('unmarkVisible',{n:nf.format(n)});
  $('#markBtn').disabled=$('#unmarkBtn').disabled=!n;
 }
 function catBtn(c,cls){
  const b=h('button',cls);b.type='button';b.dataset.c=c;
- const w=h('span','tw');w.append(h('span','t',c==='all'?'Todas':c),h('span','n',''));
+ const w=h('span','tw');w.append(h('span','t',c==='all'?$t('catsAll'):$cat(c)),h('span','n',''));
  if(cls==='cat'){const bar=h('span','b');bar.append(h('i'));w.append(bar)}
  b.append(icon({id:c==='all'?'grass_block':CAT_REP[c],cat:c},32),w);return b;
 }
 function buildCatPanel(){
  const box=$('#cats'),bar=$('#chipbar');box.replaceChildren();bar.replaceChildren(catBtn('all','cchip'));
  const sel=$('#catSel');sel.replaceChildren(new Option($t('allCats','Todas as categorias'),'all'));
- for(const c of CATS){box.append(catBtn(c,'cat'));bar.append(catBtn(c,'cchip'));sel.add(new Option(c+' · '+nf.format(catTotal[c]),c))}
+ for(const c of CATS){box.append(catBtn(c,'cat'));bar.append(catBtn(c,'cchip'));sel.add(new Option($cat(c)+' · '+nf.format(catTotal[c]),c))}
 }
 function updateCatPanel(){
  for(const box of [$('#cats'),$('#chipbar')])for(const b of box.children){
@@ -859,14 +1401,14 @@ function bulk(on){
  const n=S.list.length;if(!n)return;
  for(const x of S.list)on?checked.add(x.id):checked.delete(x.id);
  recount();persist();markCloudDirty(S.list.map(x=>x.id));updateStats();applyFilters();
- toast(on?'✓ '+nf.format(n)+' itens marcados':nf.format(n)+' itens desmarcados');
+ toast(on?$tf('tMarked',{n:nf.format(n)}):$tf('tUnmarked',{n:nf.format(n)}));
 }
-function setCard(it,on){it.classList.toggle('done',on);const cb=it.firstChild;cb.checked=on;cb.setAttribute('aria-label','Coletado: '+BYID.get(it.dataset.id).name);toggle(it.dataset.id,on);it.classList.add('pulse');setTimeout(()=>it.classList.remove('pulse'),450)}
+function setCard(it,on){it.classList.toggle('done',on);const cb=it.firstChild;cb.checked=on;cb.setAttribute('aria-label',$t('ariaCollected')+BYID.get(it.dataset.id).name);toggle(it.dataset.id,on);it.classList.add('pulse');setTimeout(()=>it.classList.remove('pulse'),450)}
 layer.addEventListener('click',e=>{
  const it=e.target.closest('.item');if(!it)return;const id=it.dataset.id,t=e.target;
  if(t.classList.contains('ck'))setCard(it,t.checked);
  else if(t.closest('.det'))openModal(id);
- else if(t.closest('.id'))copyText('minecraft:'+id).then(()=>toast('✓ Copiado: minecraft:'+id));
+ else if(t.closest('.id'))copyText('minecraft:'+id).then(()=>toast($tf('tCopied',{id})));
  else setCard(it,!checked.has(id));
 });
 
@@ -877,7 +1419,7 @@ if(matchMedia('(hover:hover)').matches){
   const it=e.target.closest('.item');if(!it){tip.classList.remove('on');tipId=null;return}
   if(it.dataset.id===tipId&&tip.classList.contains('on'))return;
   tipId=it.dataset.id;const x=BYID.get(tipId),c=checked.has(tipId);
-  tip.replaceChildren(h('b',null,x.name),h('span','tid','minecraft:'+x.id),h('span','tc',x.cat),h('span',c?'ts ok':'ts',c?'✓ Coletado':'Faltando'));tip.classList.add('on');
+  tip.replaceChildren(h('b',null,x.name),h('span','tid','minecraft:'+x.id),h('span','tc',$cat(x.cat)),h('span',c?'ts ok':'ts',c?$t('stDone'):$t('notDone')));tip.classList.add('on');
  });
  layer.addEventListener('mousemove',e=>{const w=tip.offsetWidth,hh=tip.offsetHeight;let x=e.clientX+16,y=e.clientY-8;if(x+w>innerWidth-8)x=e.clientX-w-16;if(y+hh>innerHeight-8)y=innerHeight-hh-8;tip.style.transform='translate('+x+'px,'+y+'px)'});
  layer.addEventListener('mouseleave',()=>{tip.classList.remove('on');tipId=null});
@@ -889,16 +1431,16 @@ const dlg=$('#dlg');let cur=null;
 function renderModal(){
  const x=BYID.get(cur),c=checked.has(cur);
  $('#mName').textContent=x.name;
- $('#mEn').textContent=S.lang==='en'?x.ptName:x.enName;$('#mId').textContent='minecraft:'+x.id;$('#mCat').textContent=x.cat;
- $('#mSt').textContent=c?'✓ Coletado':'Faltando';$('#mToggle').textContent=c?'Desmarcar como coletado':'Marcar como coletado';
+ $('#mEn').textContent=S.lang==='en'?x.ptName:x.enName;$('#mId').textContent='minecraft:'+x.id;$('#mCat').textContent=$cat(x.cat);
+ $('#mSt').textContent=c?$t('stDone'):$t('notDone');$('#mToggle').textContent=c?$t('mToggleUnmark'):$t('mToggleMark');
  $('#mIcon').replaceChildren(icon(x,96));
 }
-function openModal(id){cur=id;renderModal();$('#mCopy').textContent='Copiar ID';dlg.showModal()}
+function openModal(id){cur=id;renderModal();$('#mCopy').textContent=$t('mCopy');dlg.showModal()}
 $('#mClose').onclick=()=>dlg.close();
 dlg.addEventListener('click',e=>{if(e.target===dlg)dlg.close()});
 $('#mToggle').onclick=()=>{const on=!checked.has(cur);toggle(cur,on);renderModal();const el=layer.querySelector('[data-id="'+cur+'"]');if(el){el.classList.toggle('done',on);el.firstChild.checked=on}};
 async function copyText(t){try{await navigator.clipboard.writeText(t)}catch(e){const a=h('textarea');a.value=t;document.body.append(a);a.select();document.execCommand('copy');a.remove()}}
-$('#mCopy').onclick=async()=>{await copyText('minecraft:'+cur);$('#mCopy').textContent='✓ Copiado';setTimeout(()=>$('#mCopy').textContent='Copiar ID',2000)};
+$('#mCopy').onclick=async()=>{await copyText('minecraft:'+cur);$('#mCopy').textContent=$t('mCopied');setTimeout(()=>$('#mCopy').textContent=$t('mCopy'),2000)};
 
 // ───────── Autocomplete ─────────
 const sug=$('#sug'),search=$('#search'),sclr=$('#sclr');let sugIdx=-1;
@@ -929,7 +1471,7 @@ $('#catSel').onchange=e=>setCat(e.target.value);
 $('#sortSel').onchange=e=>{S.sort=e.target.value;S.hl=null;applyFilters()};
 for(const l in LANGS){$('#langSel').add(new Option(LANGS[l],l))}
 $('#langSel').value=S.lang;
-$('#langSel').onchange=e=>{S.lang=e.target.value;try{localStorage.setItem(LANG_KEY,S.lang)}catch(_){}rebuildNames();applyFilters()};
+$('#langSel').onchange=e=>{S.lang=e.target.value;try{localStorage.setItem(LANG_KEY,S.lang)}catch(_){}rebuildNames();buildCatPanel();updateCatPanel();updateStats();applyFilters();if(cur)renderModal();if($('#detDlg').open){$('#detSub').textContent=$t('mSub');renderDetails(detMembers,detEvents)}};
 $('#chipbar').addEventListener('click',e=>{const b=e.target.closest('.cchip');if(b)setCat(b.dataset.c)});
 $('#cats').addEventListener('click',e=>{const b=e.target.closest('.cat');if(b)setCat(S.cat===b.dataset.c?'all':b.dataset.c)});
 $('#markBtn').onclick=()=>bulk(true);$('#unmarkBtn').onclick=()=>bulk(false);
@@ -944,20 +1486,20 @@ $('#backupBtn').onclick=()=>{
  const now=new Date(),pad=n=>String(n).padStart(2,'0'),stamp=now.getFullYear()+'-'+pad(now.getMonth()+1)+'-'+pad(now.getDate())+'_'+pad(now.getHours())+pad(now.getMinutes());
  const b=new Blob([JSON.stringify({app:'StackVault',version:'26.3',backup:stamp,checked:[...checked],extra:[...extra]},null,2)],{type:'application/json'}),a=h('a');
  a.href=URL.createObjectURL(b);a.download='backup_minecraft_26_3_'+stamp+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
- toast('💾 Backup gerado!');
+ toast($t('tBackup'));
 };
 $('#importBtn').onclick=()=>{menu.open=false;$('#importFile').click()};
 $('#importFile').onchange=async e=>{
  try{
   const o=JSON.parse(await e.target.files[0].text()),a=Array.isArray(o)?o:o.checked;if(!Array.isArray(a))throw 0;
   checked.clear();for(const id of a){if(typeof id!=='string')continue;BYID.has(id)?checked.add(id):extra.add(id)}
-  recount();persist();markCloudDirty(SURVIVAL_ITEMS.map(x=>x.id));updateStats();applyFilters();toast('✓ Progresso importado! '+nf.format(checked.size)+' itens marcados.');
- }catch(_){toast('Arquivo de progresso inválido.')}
+  recount();persist();markCloudDirty(SURVIVAL_ITEMS.map(x=>x.id));updateStats();applyFilters();toast($tf('tImported',{n:nf.format(checked.size)}));
+ }catch(_){toast($t('tBadFile'))}
  e.target.value='';
 };
 $('#resetBtn').onclick=()=>{menu.open=false;$('#cfm').showModal()};
 $('#cNo').onclick=()=>$('#cfm').close();
-$('#cYes').onclick=()=>{checked.clear();recount();persist();markCloudDirty(SURVIVAL_ITEMS.map(x=>x.id));updateStats();applyFilters();$('#cfm').close();toast('Progresso zerado')};
+$('#cYes').onclick=()=>{checked.clear();recount();persist();markCloudDirty(SURVIVAL_ITEMS.map(x=>x.id));updateStats();applyFilters();$('#cfm').close();toast($t('tReset'))};
 document.addEventListener('click',e=>{if(menu.open&&!menu.contains(e.target))menu.open=false});
 
 // ───────── Atalhos ─────────
@@ -972,9 +1514,6 @@ addEventListener('keydown',e=>{
 
 // ───────── Inicialização ─────────
 recount();rebuildNames();buildCatPanel();persist();updateStats();applyFilters();initCloud();syncSearchUi();
-$('#foot').textContent=nf.format(SURVIVAL_ITEMS.length)+' itens obteníveis no Survival de '+nf.format(ALL_ITEMS.length)+' registros · '+nf.format(EXCLUDED.length)+' excluídos (Creative/comandos/técnicos)'+'. Dados e progresso ficam neste dispositivo.';
-  const t=$t;
-  $('#menuCfg').textContent=t('menuCfg');$('#importBtn').textContent=t('import');$('#resetBtn').textContent=t('reset');$('#search').placeholder=t('searchPH');$('#filterBtn').textContent=t('filters');$('#allBtn').textContent=t('all');$('#missingBtn').textContent=t('missing');$('#doneBtn').textContent=t('doneInv');$('#catSel').options[0].text=t('allCats');$('#sortSel').options[0].text=t('sortDef');$('#sortSel').options[1].text=t('az');$('#sortSel').options[2].text=t('za');$('#sortSel').options[3].text=t('doneFirst');$('#sortSel').options[4].text=t('missFirst');$('#markBtn').textContent=t('marked');$('#unmarkBtn').textContent=t('unmarked');$('#backupBtn').textContent=t('backup');$('#progSum').textContent=t('panelProg');$('#cloudSum').textContent=t('panelCloud');$('.hero-copy h2').innerHTML=t('hero2');$('.hero-copy p').textContent=t('heroP');$('#rankNow').textContent=t('rankNow');$('#mission').textContent=t('mission');$('#lvlTxt').textContent=t('level');$('#restTxt').textContent=t('rest');$('#fcatsTxt').textContent=t('fullCats');$('[data-n="100"]').textContent=t('mile100');$('[data-n="500"]').textContent=t('mile500');$('[data-n="1000"]').textContent=t('mile1000');$('[data-n="0"]').textContent=t('mileFull');$('.done-msg').innerHTML=t('legend');$('#empty h2').textContent=t('emptyH');$('#empty p').textContent=t('emptyP');$('#clearBtn').textContent=t('clearFilters');$('#signInBtn').textContent=t('btnSignIn');$('#signUpBtn').textContent=t('btnSignUp');$('#collectionName').placeholder=t('colNamePH');$('#createCollectionBtn').textContent=t('newCol');$('#collectionCode').placeholder=t('colCodePH');$('#joinCollectionBtn').textContent=t('joinCol');$('#collectionSelect').setAttribute('aria-label',t('activeCol'));$('#signOutBtn').textContent=t('signOut');$('#detailsBtn').textContent=t('details');$('#renameCollectionBtn').textContent=t('rename');$('#deleteCollectionBtn').textContent=t('delCol');$('#leaveCollectionBtn').textContent=t('leaveCol');$('#jbTxt').textContent=t('authMsg');$('#footMade').textContent=t('made');
 })();
 </script>
 </body></html>
