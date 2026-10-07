@@ -130,7 +130,7 @@ select option{background:#23262e}
 .fchip{border:0;background:var(--grass2);color:#fff;padding:3px 10px;font-size:12px;margin-left:8px;box-shadow:inset 2px 2px 0 #8fdc7a,inset -2px -2px 0 #1f5a1a}
 details.panel{background:var(--stone);margin-bottom:10px;box-shadow:var(--bev),0 0 0 2px var(--lo)}
 details.panel>summary{padding:13px 16px;cursor:pointer;font:400 10px var(--px);list-style:none;color:#fff}
-details.panel>summary::before{content:"▶ ";color:var(--gold);display:inline-block;transition:transform .25s cubic-bezier(.2,.8,.2,1)}details.panel[open]>summary::before{content:"▶ ";transform:rotate(90deg)}details.panel>summary{transition:background .2s}details.panel>summary:hover{background:#31353f}details[open]>summary::before{content:"▼ "}
+details.panel>summary::before{content:"▶";width:1em;text-align:center;margin-right:.7em;color:var(--gold);display:inline-block;transition:transform .25s cubic-bezier(.2,.8,.2,1)}details.panel[open]>summary::before{content:"▶";transform:rotate(90deg)}details.panel>summary{transition:background .2s}details.panel>summary:hover{background:#31353f}details[open]>summary::before{content:"▼ "}
 .pbody{padding:2px 16px 16px}
 .cats{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr));gap:8px}
 .cat{display:flex;align-items:center;gap:10px;text-align:left;border:0;background:var(--deep);padding:9px 11px;box-shadow:inset 2px 2px 0 #12141a,inset -2px -2px 0 #4a4f60;transition:background .15s,transform .1s}
@@ -190,9 +190,9 @@ dialog::backdrop{background:#05060acc;backdrop-filter:blur(2px)}@keyframes bdIn{
 .msub{color:var(--mut);font-size:12px;padding:6px 2px}
 .msub.err{color:#e6a8a2}
 .menu{position:relative}
-.menu>summary{list-style:none;display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none;transition:transform .2s cubic-bezier(.2,.8,.2,1),background .2s,box-shadow .2s,filter .2s}
+.menu>summary{list-style:none;display:inline-flex;align-items:center;gap:10px;cursor:pointer;user-select:none;transition:transform .2s cubic-bezier(.2,.8,.2,1),background .2s,box-shadow .2s,filter .2s}
 .menu>summary::-webkit-details-marker{display:none}
-.menu>summary::before,.menu[open]>summary::before{content:"▸";display:inline-block;color:var(--gold);transition:transform .28s cubic-bezier(.2,.8,.2,1)}
+.menu>summary::before,.menu[open]>summary::before{content:"▸";display:inline-block;width:1em;text-align:center;line-height:1;margin-right:2px;color:var(--gold);transition:transform .28s cubic-bezier(.2,.8,.2,1)}
 .menu:not(.on)>summary:hover{transform:translateY(-2px);filter:brightness(1.12)}
 .menu.on>summary{background:#6c7285;transform:translateY(2px);box-shadow:inset 2px 2px 0 #2c2f3a,inset -2px -2px 0 #8a90a3}
 .menu.on>summary::before{transform:rotate(90deg)}
@@ -1617,6 +1617,7 @@ function animDetails(d){
  sum.addEventListener('click',e=>{e.preventDefault();d._run(!d._want)});
 }
 document.querySelectorAll('details.panel,details.menu').forEach(animDetails);
+window.SV_BUILD='2026-10-07-anim-menu';
 
 
 // ───────── Atalhos ─────────
