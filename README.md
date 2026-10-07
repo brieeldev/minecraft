@@ -109,14 +109,6 @@ python -m http.server 8000
 
 ---
 
-## 🗺️ Roadmap
-
-- [ ] Mais idiomas
-- [ ] Modo escuro/claro
-- [ ] Exportar coleção como imagem
-
----
-
 <div align="center">
 
 Feito para jogadores de Minecraft ⛏
