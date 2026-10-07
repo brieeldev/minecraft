@@ -12,7 +12,7 @@ Rastreador de coleção de itens do **Minecraft Survival (Java & Bedrock 26.3)**
 [![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-222222?style=for-the-badge&logo=githubpages&logoColor=white)](https://brieeldev.github.io/minecraft/)
 [![Idiomas](https://img.shields.io/badge/idiomas-10-5eb34a?style=for-the-badge)](#-idiomas)
 
-### 🔗 [**Abrir o site**](https://brieeldev.github.io/minecraft/)
+### 🔗 [**Abrir o site**](https://brieeldev.github.io/stack_vault/)
 
 </div>
 
