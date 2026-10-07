@@ -445,15 +445,9 @@ const UI={
   pt:{menuCfg:'⚙ Menu',import:'Importar progresso',reset:'Zerar progresso',searchPH:'Pesquisar itens, blocos ou minecraft:id…',filters:'⚙ Filtros',all:'Todos',missing:'Faltantes',doneInv:'Meu Inventário',allCats:'Todas as categorias',sortDef:'Ordem padrão',az:'Nome A → Z',za:'Nome Z → A',doneFirst:'Coletados primeiro',missFirst:'Faltantes primeiro',langLabel:'Idioma dos nomes',catsAll:'Todas',marked:'✓ Marcar visíveis',unmarked:'Desmarcar visíveis',backup:'💾 Backup',panelProg:'PROGRESSO POR CATEGORIA',panelCloud:'☁ COLEÇÃO COMPARTILHADA',hero2:'Seu inventário.<br>Sua jornada.<br>Sua coleção.',heroP:'Marque cada item do Survival que você já guardou nos seus baús, descubra o que falta e sincronize o progresso entre dispositivos.',rankNow:'Seu título atual',mission:'MISSÃO · COLEÇÃO COMPLETA',level:'NÍVEL',rest:'Restantes',fullCats:'Categorias completas',mile100:'100 itens',mile500:'500 itens',mile1000:'1000 itens',mileFull:'100% completo',legend:'★ LENDA DO OVERWORLD ★<br>Você coletou todos os itens do Survival!',emptyH:'NENHUM ITEM',emptyP:'Nada por aqui. Tente outro nome ou ID.',clearFilters:'Limpar filtros',btnSignIn:'Entrar',btnSignUp:'Criar conta',colNamePH:'Nome da nova coleção',newCol:'+ Nova coleção',colCodePH:'Código recebido (ex.: A1B2-C3D4)',joinCol:'Entrar na coleção',activeCol:'Coleção ativa',signOut:'Sair',details:'👥 Detalhes',rename:'✏️ Renomear',delCol:'🗑 Excluir coleção',leaveCol:'🚪 Sair da coleção',authMsg:'Entre para criar ou compartilhar uma coleção.',made:'Feito para jogadores de Minecraft ⛏',mCopy:'Copiar ID',mToggleMark:'Marcar como coletado',mToggleUnmark:'Desmarcar como coletado',mCol:'Coleção',mCode:'Código',mCreated:'Criada em',mSub:'Quem entrou, quem saiu, data e hora. Só o dono gerencia os membros.',close:'Fechar'},
   en:{menuCfg:'⚙ Menu',import:'Import progress',reset:'Reset progress',searchPH:'Search items, blocks or minecraft:id…',filters:'⚙ Filters',all:'All',missing:'Missing',doneInv:'My Inventory',allCats:'All categories',sortDef:'Default order',az:'Name A → Z',za:'Name Z → A',doneFirst:'Collected first',missFirst:'Missing first',langLabel:'Language',catsAll:'All',marked:'✓ Mark visible',unmarked:'Unmark visible',backup:'💾 Backup',panelProg:'PROGRESS BY CATEGORY',panelCloud:'☁ SHARED COLLECTION',hero2:'Your inventory.<br>Your journey.<br>Your collection.',heroP:'Mark every Survival item you’ve stored in chests, see what’s missing and sync progress across devices.',rankNow:'Your current title',mission:'MISSION · COMPLETE COLLECTION',level:'LEVEL',rest:'Remaining',fullCats:'Categories complete',mile100:'100 items',mile500:'500 items',mile1000:'1000 items',mileFull:'100% complete',legend:'★ OVERWORLD LEGEND ★<br>You collected every Survival item!',emptyH:'NO ITEMS',emptyP:'Nothing here. Try another name or ID.',clearFilters:'Clear filters',btnSignIn:'Sign in',btnSignUp:'Sign up',colNamePH:'Collection name',newCol:'+ New collection',colCodePH:'Code (e.g. A1B2-C3D4)',joinCol:'Join collection',activeCol:'Active collection',signOut:'Sign out',details:'👥 Details',rename:'✏️ Rename',delCol:'🗑 Delete collection',leaveCol:'🚪 Leave collection',authMsg:'Sign in to create or share a collection.',made:'Made for Minecraft players ⛏',mCopy:'Copy ID',mToggleMark:'Mark as collected',mToggleUnmark:'Unmark as collected',mCol:'Collection',mCode:'Code',mCreated:'Created on',mSub:'Who joined, who left, date and time. Only owner manages members.',close:'Close'},
     es:{},fr:{},de:{},it:{},ja:{},ko:{},zh:{},ru:{}
-};
-const $t = (k, fallback='')=>{
-  try{
-    const l=S.lang||'pt';
-    const v=(UI[l]&&UI[l][k])||(UI.pt&&UI.pt[k])||(UI.en&&UI.en[k]);
-    return v!==undefined?v:fallback||k;
-  }catch(_){ return fallback||k; }
-};
+}
 ;
+const LANGS={pt:'Português (PT-BR)',en:'English (US)',es:'Español',fr:'Français',de:'Deutsch',it:'Italiano',ja:'日本語',ko:'한국어',zh:'中文 (简体)',ru:'Русский'};
 const NAMES={};for(const l in NAMES_RAW){const m=NAMES[l]={};NAME_IDS.forEach((id,i)=>{if(NAMES_RAW[l][i])m[id]=NAMES_RAW[l][i]})}
 for(const x of SURVIVAL_ITEMS){x.ptName=NAMES.pt[x.id]||x.ptName;x.enName=NAMES.en[x.id]||x.enName}
 const nameIn=(x,l)=>l==='pt'?x.ptName:l==='en'?x.enName:(NAMES[l]&&NAMES[l][x.id])||x.enName;
@@ -625,7 +619,39 @@ const CATS=CAT_ORDER.filter(c=>catTotal[c]);
   function rebuildNames(){
     for(const x of SURVIVAL_ITEMS){x.name=nameIn(x,S.lang);x.n=norm(x.name);x.s=norm(x.name+' '+x.ptName+' '+x.enName+' '+x.id+' '+x.id.replace(/_/g,' '))}
     // UI básica
-    const t=$t; if($('#menuCfg'))$('#menuCfg').textContent=t('menuCfg'); $('#importBtn').textContent=t('import'); $('#resetBtn').textContent=t('reset'); $('#search').placeholder=t('searchPH'); $('#filterBtn').textContent=t('filters'); $('#allBtn').textContent=t('all'); $('#missingBtn').textContent=t('missing'); $('#doneBtn').textContent=t('doneInv'); $('#catSel').options[0].text=t('allCats'); $('#sortSel').options[0].text=t('sortDef'); $('#sortSel').options[1].text=t('az'); $('#sortSel').options[2].text=t('za'); $('#sortSel').options[3].text=t('doneFirst'); $('#sortSel').options[4].text=t('missFirst'); $('#markBtn').textContent=t('marked'); $('#unmarkBtn').textContent=t('unmarked'); $('#backupBtn').textContent=t('backup'); $('#progSum').textContent=t('panelProg'); $('#cloudSum').textContent=t('panelCloud'); $('.hero-copy h2').innerHTML=t('hero2'); $('.hero-copy p').textContent=t('heroP'); $('#rankNow').textContent=t('rankNow'); $('#mission').textContent=t('mission'); $('#lvlTxt').textContent=t('level'); $('#restTxt').textContent=t('rest'); $('#fcatsTxt').textContent=t('fullCats'); $('[data-n="100"]').textContent=t('mile100'); $('[data-n="500"]').textContent=t('mile500'); $('[data-n="1000"]').textContent=t('mile1000'); $('[data-n="0"]').textContent=t('mileFull'); $('.done-msg').innerHTML=t('legend'); $('#empty h2').textContent=t('emptyH'); $('#empty p').textContent=t('emptyP'); $('#clearBtn').textContent=t('clearFilters'); $('#signInBtn').textContent=t('btnSignIn'); $('#signUpBtn').textContent=t('btnSignUp'); $('#collectionName').placeholder=t('colNamePH'); $('#createCollectionBtn').textContent=t('newCol'); $('#collectionCode').placeholder=t('colCodePH'); $('#joinCollectionBtn').textContent=t('joinCol'); $('#collectionSelect').setAttribute('aria-label',t('activeCol')); $('#signOutBtn').textContent=t('signOut'); $('#detailsBtn').textContent=t('details'); $('#renameCollectionBtn').textContent=t('rename'); $('#deleteCollectionBtn').textContent=t('delCol'); $('#leaveCollectionBtn').textContent=t('leaveCol'); $('#jbTxt').textContent=t('authMsg'); $('#footMade').textContent=t('made'); $('#mCopy').textContent=t('mCopy'); $('#mToggle').textContent(checked.has(cur)?t('mToggleUnmark'):t('mToggleMark')); $('#detTitle').textContent=t('details'); $('#detSub').textContent=t('mSub'); $('#kvCol').textContent=t('mCol'); $('#kvCode').textContent=t('mCode'); $('#kvCreated').textContent=t('mCreated'); $('#detCloseBtn').textContent=t('close');
+    const t=$t;
+    const q=(sel)=>{try{return document.querySelector(sel)}catch(_){return null}};
+    const TX=(sel,v)=>{const e=q(sel); if(e!=null) e.textContent=v;};
+    const PH=(sel,v)=>{const e=q(sel); if(e!=null) e.placeholder=v;};
+    const OPT=(sel,i,v)=>{const e=q(sel); if(e&&e.options&&e.options[i]) e.options[i].text=v;};
+    const HTML=(sel,v)=>{const e=q(sel); if(e!=null) e.innerHTML=v;};
+    TX('#menuCfg',t('menuCfg')); TX('#importBtn',t('import')); TX('#resetBtn',t('reset'));
+    PH('#search',t('searchPH')); TX('#filterBtn',t('filters'));
+    TX('#allBtn',t('all')); TX('#missingBtn',t('missing')); TX('#doneBtn',t('doneInv'));
+    OPT('#catSel',0,t('allCats'));
+    OPT('#sortSel',0,t('sortDef')); OPT('#sortSel',1,t('az')); OPT('#sortSel',2,t('za'));
+    OPT('#sortSel',3,t('doneFirst')); OPT('#sortSel',4,t('missFirst'));
+    TX('#markBtn',t('marked')); TX('#unmarkBtn',t('unmarked')); TX('#backupBtn',t('backup'));
+    TX('#progSum',t('panelProg')); TX('#cloudSum',t('panelCloud'));
+    HTML('.hero-copy h2',t('hero2')); TX('.hero-copy p',t('heroP'));
+    TX('#rankNow',t('rankNow')); TX('#mission',t('mission')); TX('#lvlTxt',t('level'));
+    TX('#restTxt',t('rest')); TX('#fcatsTxt',t('fullCats'));
+    TX('[data-n="100"]',t('mile100')); TX('[data-n="500"]',t('mile500'));
+    TX('[data-n="1000"]',t('mile1000')); TX('[data-n="0"]',t('mileFull'));
+    HTML('.done-msg',t('legend'));
+    TX('#empty h2',t('emptyH')); TX('#empty p',t('emptyP')); TX('#clearBtn',t('clearFilters'));
+    TX('#signInBtn',t('btnSignIn')); TX('#signUpBtn',t('btnSignUp'));
+    PH('#collectionName',t('colNamePH')); TX('#createCollectionBtn',t('newCol'));
+    PH('#collectionCode',t('colCodePH')); TX('#joinCollectionBtn',t('joinCol'));
+    const cs=q('#collectionSelect'); if(cs) cs.setAttribute('aria-label',t('activeCol'));
+    TX('#signOutBtn',t('signOut')); TX('#detailsBtn',t('details'));
+    TX('#renameCollectionBtn',t('rename')); TX('#deleteCollectionBtn',t('delCol'));
+    TX('#leaveCollectionBtn',t('leaveCol')); TX('#jbTxt',t('authMsg')); TX('#footMade',t('made'));
+    TX('#mCopy',t('mCopy'));
+    const mt=q('#mToggle'); if(mt) mt.textContent=checked.has(cur)?t('mToggleUnmark'):t('mToggleMark');
+    TX('#detTitle',t('details')); TX('#detSub',t('mSub')); TX('#kvCol',t('mCol'));
+    TX('#kvCode',t('mCode')); TX('#kvCreated',t('mCreated')); TX('#detCloseBtn',t('close'));
+    TX('#langLbl',t('langLabel')); TX('#sortLbl',t('sortLbl'));
   }
 
 // ───────── Filtros / pesquisa ─────────
@@ -808,7 +834,7 @@ function catBtn(c,cls){
 }
 function buildCatPanel(){
  const box=$('#cats'),bar=$('#chipbar');box.replaceChildren();bar.replaceChildren(catBtn('all','cchip'));
- const sel=$('#catSel');sel.replaceChildren(new Option('Todas as categorias','all'));
+ const sel=$('#catSel');sel.replaceChildren(new Option($t('allCats','Todas as categorias'),'all'));
  for(const c of CATS){box.append(catBtn(c,'cat'));bar.append(catBtn(c,'cchip'));sel.add(new Option(c+' · '+nf.format(catTotal[c]),c))}
 }
 function updateCatPanel(){
