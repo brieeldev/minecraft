@@ -113,7 +113,6 @@ python -m http.server 8000
 
 - [ ] Mais idiomas
 - [ ] Modo escuro/claro
-- [ ] Estatísticas avançadas por categoria
 - [ ] Exportar coleção como imagem
 
 ---
