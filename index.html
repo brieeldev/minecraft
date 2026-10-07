@@ -109,12 +109,12 @@ select option{background:#23262e}
 .sheetbg{display:none}
 /* ===== Seletor de categorias: lista abre SEMPRE para baixo ===== */
 @keyframes ddown{from{opacity:0;transform:translateY(-8px)}}
-.dd{position:relative;min-width:230px}
+.dd{position:relative;min-width:200px}
 .ddbtn{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;text-align:left;border:0;border-radius:0;background:var(--stone);color:#fff;padding:10px 12px;min-height:42px;font-weight:600;font-size:12px;box-shadow:inset 2px 2px 0 var(--hi),inset -2px -2px 0 var(--lo)}
 .ddbtn:hover{background:var(--stone2)}
 .ddtxt{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ddcar{color:var(--gold);transition:transform .15s}.dd.open .ddcar{transform:rotate(180deg)}
-.ddlist{position:absolute;top:calc(100% + 4px);bottom:auto;left:0;min-width:100%;width:max-content;max-width:min(92vw,440px);margin:0;padding:4px;list-style:none;overflow-y:auto;overscroll-behavior:contain;background:var(--stone);box-shadow:var(--bev),0 0 0 2px var(--lo),0 14px 28px #000a;z-index:35;display:none}
+.ddlist{position:fixed;top:0;left:0;bottom:auto;min-width:160px;width:max-content;max-width:min(92vw,440px);margin:0;padding:4px;list-style:none;overflow-y:auto;overscroll-behavior:contain;background:var(--stone);box-shadow:var(--bev),0 0 0 2px var(--lo),0 14px 28px #000a;z-index:80;display:none}
 .dd.open .ddlist{display:block;animation:ddown .15s ease}
 .ddopt{padding:9px 10px;cursor:pointer;font-weight:600;font-size:12px;white-space:nowrap}
 .ddopt.hi{background:var(--stone2)}.ddopt.sel{color:var(--grass);box-shadow:inset 3px 0 0 var(--grass)}
@@ -157,7 +157,7 @@ details.panel>summary::before{content:"▶ ";color:var(--gold)}details[open]>sum
 /* carregando: respiração lenta e discreta (o pulso rápido de 1s parecia "clique automático") */
 .ico.ld{background:#ffffff0d;animation:icold 2.8s ease-in-out infinite alternate}@keyframes icold{to{background:#ffffff1a}}
 @media (prefers-reduced-motion:reduce){.ico.ld{animation:none}.item{transition:none}.item.pulse{animation:none}}
-.ico img{display:block}
+.ico img{display:block;max-width:100%;max-height:100%}.ico,.item{overflow:visible}
 .det{position:absolute;top:3px;right:3px;border:0;background:none;color:#8d94a8;font-size:15px;padding:2px 5px;line-height:1;z-index:2}.det:hover{color:var(--dia)}
 .item .name{width:100%;font-weight:600;font-size:10px;line-height:1.3;min-height:26px;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:2px}
 .item .id{width:100%;border:0;background:none;padding:1px 0;color:#8d94a8;font:400 8px var(--ui);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.item .id:hover{color:var(--dia)}
@@ -270,7 +270,7 @@ dialog::backdrop{background:#05060acc;backdrop-filter:blur(2px)}dialog[open]{ani
    <div class="seg" id="seg">
       <button id="allBtn" data-s="all" aria-pressed="true">Todos</button><button id="missingBtn" data-s="missing" aria-pressed="false">Faltantes</button><button id="doneBtn" data-s="done" aria-pressed="false">Meu Inventário</button>
    </div>
-   <div class="dd" id="catDD"><select id="catSel" aria-label="Categoria" tabindex="-1" aria-hidden="true" hidden></select><button type="button" class="ddbtn" id="catBtn" title="Categoria" aria-haspopup="listbox" aria-expanded="false" aria-controls="catList"><span class="ddtxt" id="catTxt"></span><span class="ddcar" aria-hidden="true">▾</span></button><ul class="ddlist" id="catList" role="listbox" aria-label="Categoria"></ul></div>
+   <select id="catSel" aria-label="Categoria"></select>
    <select id="langSel" aria-label="Idioma dos nomes"></select>
    <select id="sortSel" aria-label="Ordenação"><option value="def">Ordem padrão</option><option value="az">Nome A → Z</option><option value="za">Nome Z → A</option><option value="doneFirst">Coletados primeiro</option><option value="missFirst">Faltantes primeiro</option></select>
   </div>
@@ -1032,7 +1032,7 @@ function refreshLangExtras(){
   const cs=document.getElementById('collectionSelect');
   if(cs){for(const o of cs.options){o.dataset && 0}}
  }catch(_){}
- applyBrand();
+ applyBrand();try{DDS.forEach(x=>x.build())}catch(_){}
 }
 function applyBrand(){
   try{
@@ -1283,7 +1283,7 @@ async function normalizeIcon(blob){
   const bm=await createImageBitmap(blob),fw=bm.width,fh=bm.height;
   if(!fw||!fh){bm.close();return null}
   // tiras animadas (ex.: 16x80) -> só o 1º quadro; imagens não quadradas -> centralizadas
-  const sw=fw,sh=(fh>fw&&fh%fw===0)?fw:fh,W=Math.max(sw,sh);
+  let sw=fw,sh=fh;if(fh>fw&&fh%fw===0)sh=fw;else if(fw>fh&&fw%fh===0)sw=fh;const W=Math.max(sw,sh);
   const a=document.createElement('canvas');a.width=a.height=W;
   const g=a.getContext('2d',{willReadFrequently:true});
   g.drawImage(bm,0,0,sw,sh,(W-sw)>>1,(W-sh)>>1,sw,sh);bm.close();
@@ -1506,30 +1506,46 @@ search.addEventListener('keydown',e=>{
 // ───────── Controles ─────────
 $('#seg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;S.status=b.dataset.s;S.hl=null;[...$('#seg').children].forEach(x=>x.setAttribute('aria-pressed',x===b));applyFilters()});
 $('#catSel').onchange=e=>setCat(e.target.value);
-// seletor de categorias personalizado: a lista abre SEMPRE para baixo
-const ddBox=$('#catDD'),ddBtn=$('#catBtn'),ddList=$('#catList'),ddTxt=$('#catTxt');let ddOpen=false,ddIdx=-1;
-function buildCatDD(){ddList.replaceChildren();[...$('#catSel').options].forEach((o,i)=>{const li=h('li','ddopt',o.text);li.setAttribute('role','option');li.id='catopt'+i;li.dataset.v=o.value;ddList.append(li)});syncCatDD()}
-function syncCatDD(){let t='';for(const li of ddList.children){const on=li.dataset.v===S.cat;li.classList.toggle('sel',on);li.setAttribute('aria-selected',on);if(on)t=li.textContent}ddTxt.textContent=t}
-function ddHi(i){const k=ddList.children;if(!k.length)return;ddIdx=(i+k.length)%k.length;[...k].forEach((l,j)=>l.classList.toggle('hi',j===ddIdx));const l=k[ddIdx];ddBtn.setAttribute('aria-activedescendant',l.id);if(l.offsetTop<ddList.scrollTop)ddList.scrollTop=l.offsetTop;else if(l.offsetTop+l.offsetHeight>ddList.scrollTop+ddList.clientHeight)ddList.scrollTop=l.offsetTop+l.offsetHeight-ddList.clientHeight}
-function ddSet(o){ddOpen=o;ddBox.classList.toggle('open',o);ddBtn.setAttribute('aria-expanded',o);if(!o){ddBtn.removeAttribute('aria-activedescendant');return}
- const room=innerHeight-ddBtn.getBoundingClientRect().bottom-16;ddList.style.maxHeight=Math.max(180,Math.min(380,room))+'px';
- if(room<180&&getComputedStyle($('#filters')).position!=='fixed')scrollBy({top:180-room,behavior:'smooth'});
- ddHi(Math.max(0,[...ddList.children].findIndex(l=>l.dataset.v===S.cat)))}
-ddBtn.onclick=()=>ddSet(!ddOpen);
-ddList.addEventListener('mousedown',e=>e.preventDefault());
-ddList.addEventListener('click',e=>{const li=e.target.closest('.ddopt');if(!li)return;setCat(li.dataset.v);ddSet(false);ddBtn.focus()});
-ddList.addEventListener('mousemove',e=>{const li=e.target.closest('.ddopt');if(li)ddHi([...ddList.children].indexOf(li))});
-ddBtn.addEventListener('keydown',e=>{const k=e.key;
- if(k==='ArrowDown'||k==='ArrowUp'){e.preventDefault();if(!ddOpen)ddSet(true);else ddHi(ddIdx+(k==='ArrowDown'?1:-1))}
- else if(k==='Home'&&ddOpen){e.preventDefault();ddHi(0)}else if(k==='End'&&ddOpen){e.preventDefault();ddHi(-1)}
- else if(k==='Enter'&&ddOpen){e.preventDefault();setCat(ddList.children[ddIdx].dataset.v);ddSet(false)}
- else if(k==='Escape'&&ddOpen){e.preventDefault();e.stopPropagation();ddSet(false)}
- else if(k==='Tab')ddSet(false)});
-document.addEventListener('click',e=>{if(ddOpen&&!ddBox.contains(e.target))ddSet(false)});
+// dropdowns personalizados (categoria, ordenação, idioma): a lista abre SEMPRE para baixo
+const DD={},DDS=[];let ddCur=null;
+function makeDD(sel){
+ const box=h('div','dd'),btn=h('button','ddbtn'),txt=h('span','ddtxt'),car=h('span','ddcar','▾'),list=h('ul','ddlist'),lab=sel.getAttribute('aria-label');
+ let open=false,idx=-1;
+ btn.type='button';btn.title=lab;btn.setAttribute('aria-haspopup','listbox');btn.setAttribute('aria-expanded','false');
+ car.setAttribute('aria-hidden','true');list.setAttribute('role','listbox');list.setAttribute('aria-label',lab);
+ btn.append(txt,car);box.append(btn,list);sel.before(box);sel.hidden=true;sel.tabIndex=-1;sel.setAttribute('aria-hidden','true');
+ const items=()=>[...list.children];
+ const d={sel,box,
+  build(){list.replaceChildren();[...sel.options].forEach((o,i)=>{const li=h('li','ddopt',o.text);li.setAttribute('role','option');li.id=sel.id+'_o'+i;li.dataset.v=o.value;list.append(li)});d.sync()},
+  sync(){let s='';for(const li of items()){const on=li.dataset.v===sel.value;li.classList.toggle('sel',on);li.setAttribute('aria-selected',on);if(on)s=li.textContent}txt.textContent=s},
+  hi(i){const k=items();if(!k.length)return;idx=(i+k.length)%k.length;k.forEach((l,j)=>l.classList.toggle('hi',j===idx));const l=k[idx];btn.setAttribute('aria-activedescendant',l.id);if(l.offsetTop<list.scrollTop)list.scrollTop=l.offsetTop;else if(l.offsetTop+l.offsetHeight>list.scrollTop+list.clientHeight)list.scrollTop=l.offsetTop+l.offsetHeight-list.clientHeight},
+  place(){const r=btn.getBoundingClientRect(),room=innerHeight-r.bottom-12;list.style.left=Math.max(4,Math.min(r.left,innerWidth-list.offsetWidth-4))+'px';list.style.top=(r.bottom+4)+'px';list.style.minWidth=r.width+'px';list.style.maxHeight=Math.max(120,Math.min(380,room))+'px'},
+  set(o){
+   if(o&&ddCur&&ddCur!==d)ddCur.set(false);
+   if(o&&getComputedStyle($('#filters')).position!=='fixed'){const room=innerHeight-btn.getBoundingClientRect().bottom;if(room<220)scrollBy({top:220-room,behavior:'instant'})}
+   open=o;ddCur=o?d:(ddCur===d?null:ddCur);box.classList.toggle('open',o);btn.setAttribute('aria-expanded',o);
+   if(o){d.place();d.hi(Math.max(0,items().findIndex(l=>l.dataset.v===sel.value)))}else btn.removeAttribute('aria-activedescendant')},
+  pick(v){if(sel.value!==v){sel.value=v;sel.dispatchEvent(new Event('change'))}d.sync();d.set(false);btn.focus()}};
+ btn.onclick=()=>d.set(!open);
+ list.addEventListener('mousedown',e=>e.preventDefault());
+ list.addEventListener('click',e=>{const li=e.target.closest('.ddopt');if(li)d.pick(li.dataset.v)});
+ list.addEventListener('mousemove',e=>{const li=e.target.closest('.ddopt');if(li)d.hi(items().indexOf(li))});
+ btn.addEventListener('keydown',e=>{const k=e.key;
+  if(k==='ArrowDown'||k==='ArrowUp'){e.preventDefault();if(!open)d.set(true);else d.hi(idx+(k==='ArrowDown'?1:-1))}
+  else if(k==='Home'&&open){e.preventDefault();d.hi(0)}else if(k==='End'&&open){e.preventDefault();d.hi(-1)}
+  else if(k==='Enter'&&open){e.preventDefault();d.pick(items()[idx].dataset.v)}
+  else if(k==='Escape'&&open){e.preventDefault();e.stopPropagation();d.set(false)}
+  else if(k==='Tab')d.set(false)});
+ DDS.push(d);d.build();return d}
+document.addEventListener('click',e=>{if(ddCur&&!ddCur.box.contains(e.target))ddCur.set(false)});
+addEventListener('scroll',()=>{if(ddCur)ddCur.place()},{passive:true});addEventListener('resize',()=>{if(ddCur)ddCur.place()});
+function buildCatDD(){DD.cat&&DD.cat.build()}
+function syncCatDD(){DD.cat&&DD.cat.sync()}
 $('#sortSel').onchange=e=>{S.sort=e.target.value;S.hl=null;applyFilters()};
 for(const l in LANGS){$('#langSel').add(new Option(LANGS[l],l))}
 $('#langSel').value=S.lang;
 $('#langSel').onchange=e=>{S.lang=e.target.value;try{localStorage.setItem(LANG_KEY,S.lang)}catch(_){}rebuildNames();buildCatPanel();updateCatPanel();updateStats();applyFilters();if(cur)renderModal();if($('#detDlg').open){$('#detSub').textContent=$t('mSub');renderDetails(detMembers,detEvents)}};
+DD.cat=makeDD($('#catSel'));DD.sort=makeDD($('#sortSel'));DD.lang=makeDD($('#langSel'));
 $('#chipbar').addEventListener('click',e=>{const b=e.target.closest('.cchip');if(b)setCat(b.dataset.c)});
 $('#cats').addEventListener('click',e=>{const b=e.target.closest('.cat');if(b)setCat(S.cat===b.dataset.c?'all':b.dataset.c)});
 $('#markBtn').onclick=()=>bulk(true);$('#unmarkBtn').onclick=()=>bulk(false);
@@ -1537,7 +1553,7 @@ function clearFilters(){S.q='';S.status='all';S.cat='all';S.hl=null;search.value
 $('#clearBtn').onclick=clearFilters;
 const topBar=$('.top');
 function setTopH(){document.documentElement.style.setProperty('--topH',Math.max(0,Math.round(topBar.getBoundingClientRect().bottom))+'px')}
-const sheet=o=>{if(o){setTopH();if(topBar.getBoundingClientRect().top>8)topBar.scrollIntoView({block:'start',behavior:'smooth'})}else ddSet(false);$('#filters').classList.toggle('open',o);$('#sheetbg').classList.toggle('on',o);$('#filterBtn').setAttribute('aria-expanded',o)};
+const sheet=o=>{if(o){setTopH();if(topBar.getBoundingClientRect().top>8)topBar.scrollIntoView({block:'start',behavior:'smooth'})}else if(ddCur)ddCur.set(false);$('#filters').classList.toggle('open',o);$('#sheetbg').classList.toggle('on',o);$('#filterBtn').setAttribute('aria-expanded',o)};
 addEventListener('scroll',()=>{if($('#filters').classList.contains('open'))setTopH()},{passive:true});addEventListener('resize',()=>{if($('#filters').classList.contains('open'))setTopH()});
 $('#filterBtn').onclick=()=>sheet(!$('#filters').classList.contains('open'));$('#sheetbg').onclick=()=>sheet(false);
 
