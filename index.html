@@ -6,6 +6,7 @@
 <title>StackVault — Rastreador de Coleção de Minecraft</title>
 <meta name="description" content="StackVault: acompanhe sua coleção de itens do Minecraft Survival (Java & Bedrock 26.3). Pesquise, filtre, marque e sincronize seu progresso.">
 <meta name="theme-color" content="#14161b">
+<script>try{if((localStorage.getItem('mc_theme')||'dark')==='light')document.documentElement.classList.add('light')}catch(e){}</script>
 <meta property="og:title" content="StackVault — Rastreador de Coleção de Minecraft">
 <meta property="og:description" content="Cada stack conta. Complete sua coleção de itens do Survival.">
 <meta property="og:type" content="website">
@@ -222,6 +223,45 @@ dialog::backdrop{background:#05060acc;backdrop-filter:blur(2px)}@keyframes bdIn{
 /* ===== Animations ===== */
 .hero-copy,.dash,.chipbar,.top{animation:rise .5s ease both}.dash{animation-delay:.1s}
 @media(prefers-reduced-motion:reduce){*,::before,::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+/* ===== Tema claro ===== */
+html{color-scheme:dark}
+html.light{color-scheme:light;--bg:#e9edf5;--deep:#dce2ee;--stone:#d1d8e6;--stone2:#c1c9dc;--hi:#ffffff;--lo:#6c7587;--txt:#1b1f29;--mut:#586074}
+html.light body::before{background:linear-gradient(#00000012 2px,transparent 2px) 0 0/64px 64px,linear-gradient(90deg,#00000012 2px,transparent 2px) 0 0/64px 64px,radial-gradient(ellipse at 50% 0,#ffffff 0,transparent 60%),var(--bg)}
+html.light .top{background:#e9edf5f2}
+html.light .sicon{color:var(--txt);filter:drop-shadow(1px 1px 0 #ffffffcc)}
+html.light .search{background:#ffffff;color:var(--txt);box-shadow:inset 3px 3px 0 #b3bccd,inset -3px -3px 0 #ffffff}
+html.light .search:focus{box-shadow:inset 3px 3px 0 #b3bccd,inset -3px -3px 0 var(--dia),0 0 0 3px #1aa79b33}
+html.light .search::placeholder{color:#8a93a6}
+html.light .field{background:#ffffff;color:var(--txt);box-shadow:inset 2px 2px 0 #b3bccd,inset -2px -2px 0 #ffffff}
+html.light .out{background:#f3f6fb;color:var(--grass2);box-shadow:inset 2px 2px 0 #b3bccd,inset -2px -2px 0 #ffffff}
+html.light .ddbtn{color:var(--txt)}
+html.light select{color:var(--txt)}
+html.light select option{background:var(--deep);color:var(--txt)}
+html.light .seg button:hover{color:var(--txt)}
+html.light .cat{box-shadow:inset 2px 2px 0 #ffffff,inset -2px -2px 0 #aab3c6}
+html.light .cat:hover{background:var(--stone2)}
+html.light .qstat{box-shadow:inset 2px 2px 0 #ffffff,inset -2px -2px 0 #aab3c6}
+html.light .qstat b{color:var(--txt)}
+html.light .mile{box-shadow:inset 2px 2px 0 #ffffff,inset -2px -2px 0 #aab3c6}
+html.light .item{background:#c6cedd;box-shadow:inset 3px 3px 0 #a6b0c2,inset -3px -3px 0 #ffffff}
+html.light .item:hover{background:#d3dbe9;box-shadow:inset 3px 3px 0 #a6b0c2,inset -3px -3px 0 #ffffff,0 10px 0 -2px #0003}
+html.light .item.done{background:#bfe3b4;box-shadow:inset 3px 3px 0 #8fc985,inset -3px -3px 0 #ffffff,0 0 16px #5eb34a33}
+html.light .item:not(.done) .ico{filter:saturate(.9) brightness(1)}
+html.light .item .id{color:#6a7288}
+html.light .empty h2{color:var(--txt)}
+html.light .count b{color:var(--txt)}
+html.light .x{color:var(--txt)}
+html.light .kv{box-shadow:inset 2px 2px 0 #ffffff,inset -2px -2px 0 #aab3c6}
+html.light .mrow{box-shadow:inset 2px 2px 0 #ffffff,inset -2px -2px 0 #aab3c6}
+html.light .mrow .when b{color:var(--txt)}
+html.light #mIcon{background:#c6cedd;box-shadow:inset 3px 3px 0 #a6b0c2,inset -3px -3px 0 #ffffff}
+html.light details.panel>summary{color:var(--txt)}
+html.light details.panel>summary:hover{background:var(--stone2)}
+html.light .pop button{color:var(--txt)}
+html.light .pop .dg{color:#c0392b}
+html.light .mcfoot .px{color:var(--txt)}
+html.light .cchip{box-shadow:inset 2px 2px 0 #ffffff,inset -2px -2px 0 #aab3c6}
+html.light .sclr{color:var(--txt)}
 </style>
 </head>
 <body>
@@ -236,6 +276,7 @@ dialog::backdrop{background:#05060acc;backdrop-filter:blur(2px)}@keyframes bdIn{
     </div>
     <div class="d-flex align-items-center gap-2">
       <span class="ver" id="verTxt">⛏ JAVA &amp; BEDROCK 26.3</span>
+      <button class="mbtn" id="themeBtn" type="button" aria-label="Alternar tema claro ou escuro">☀️ Modo claro</button>
       <details class="menu right"><summary class="mbtn" role="button" id="menuCfg" aria-label="Menu de configurações">⚙ Menu</summary>
        <div class="pop"><button id="importBtn">Importar progresso</button><button id="resetBtn" class="dng-t dg">Zerar progresso</button></div></details>
      <input id="importFile" class="hidden" type="file" accept="application/json,.json">
@@ -1042,6 +1083,7 @@ function refreshLangExtras(){
   if(cs){for(const o of cs.options){o.dataset && 0}}
  }catch(_){}
  applyBrand();try{DDS.forEach(x=>x.build())}catch(_){}
+ applyTheme();
 }
 function applyBrand(){
   try{
@@ -1074,6 +1116,16 @@ Object.assign(UI.ja,{brandA:'スタック',brandB:'ヴォルト',subtitle:'Minec
 Object.assign(UI.ko,{brandA:'스택',brandB:'볼트',subtitle:'Minecraft 컬렉션 트래커',footTitle:'· Minecraft 컬렉션 트래커 · v26.3',ariaCopyId:'ID 복사: minecraft:'});
 Object.assign(UI.zh,{brandA:'斯塔克',brandB:'沃尔特',subtitle:'Minecraft 收藏追踪器',footTitle:'· Minecraft 收藏追踪器 · v26.3',ariaCopyId:'复制 ID：minecraft:'});
 Object.assign(UI.ru,{brandA:'Стэк',brandB:'Волт',subtitle:'Трекер коллекции Minecraft',footTitle:'· Трекер коллекции Minecraft · v26.3'});
+Object.assign(UI.pt,{themeToLight:'Modo claro',themeToDark:'Modo escuro',themeToggle:'Alternar tema claro ou escuro'});
+Object.assign(UI.en,{themeToLight:'Light mode',themeToDark:'Dark mode',themeToggle:'Toggle light or dark theme'});
+Object.assign(UI.es,{themeToLight:'Modo claro',themeToDark:'Modo oscuro',themeToggle:'Alternar tema claro u oscuro'});
+Object.assign(UI.fr,{themeToLight:'Mode clair',themeToDark:'Mode sombre',themeToggle:'Basculer entre thème clair et sombre'});
+Object.assign(UI.de,{themeToLight:'Heller Modus',themeToDark:'Dunkler Modus',themeToggle:'Zwischen hellem und dunklem Design wechseln'});
+Object.assign(UI.it,{themeToLight:'Modalità chiara',themeToDark:'Modalità scura',themeToggle:'Cambia tra tema chiaro e scuro'});
+Object.assign(UI.ja,{themeToLight:'ライトモード',themeToDark:'ダークモード',themeToggle:'ライト/ダークテーマを切り替え'});
+Object.assign(UI.ko,{themeToLight:'라이트 모드',themeToDark:'다크 모드',themeToggle:'라이트/다크 테마 전환'});
+Object.assign(UI.zh,{themeToLight:'浅色模式',themeToDark:'深色模式',themeToggle:'切换浅色/深色主题'});
+Object.assign(UI.ru,{themeToLight:'Светлая тема',themeToDark:'Тёмная тема',themeToggle:'Переключить светлую или тёмную тему'});
 const LANGS={pt:'Português (PT-BR)',en:'English (US)',es:'Español',fr:'Français',de:'Deutsch',it:'Italiano',ja:'日本語',ko:'한국어',zh:'中文 (简体)',ru:'Русский'};
 const NAMES={};for(const l in NAMES_RAW){const m=NAMES[l]={};NAME_IDS.forEach((id,i)=>{if(NAMES_RAW[l][i])m[id]=NAMES_RAW[l][i]})}
 for(const x of SURVIVAL_ITEMS){x.ptName=NAMES.pt[x.id]||x.ptName;x.enName=NAMES.en[x.id]||x.enName}
@@ -1587,6 +1639,24 @@ $('#resetBtn').onclick=()=>{menu._run(false);$('#cfm').showModal()};
 $('#cNo').onclick=()=>$('#cfm').close();
 $('#cYes').onclick=()=>{checked.clear();recount();persist();markCloudDirty(SURVIVAL_ITEMS.map(x=>x.id));updateStats();applyFilters();$('#cfm').close();toast($t('tReset'))};
 document.addEventListener('click',e=>{if(menu.open&&!menu.contains(e.target))menu._run(false)});
+// ───────── Tema claro / escuro ─────────
+function applyTheme(){
+ const b=document.getElementById('themeBtn');if(!b)return;
+ const light=document.documentElement.classList.contains('light');
+ b.textContent=(light?'🌙 ':'☀️ ')+$t(light?'themeToDark':'themeToLight');
+ const m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',light?'#e9edf5':'#14161b');
+}
+function setTheme(light){
+ document.documentElement.classList.toggle('light',!!light);
+ try{localStorage.setItem('mc_theme',light?'light':'dark')}catch(_){}
+ applyTheme();
+}
+function initTheme(){
+ const b=document.getElementById('themeBtn');
+ if(b&&!b._themeBound){b._themeBound=1;b.addEventListener('click',e=>{e.preventDefault();setTheme(!document.documentElement.classList.contains('light'))})}
+ applyTheme();
+}
+initTheme();
 // ───────── Abas (details) com animação suave de abrir/fechar ─────────
 const RM=matchMedia('(prefers-reduced-motion:reduce)');
 function animDetails(d){
